@@ -24,28 +24,32 @@ class Listener(Widget):
         super(Listener, self).__init__(**kwargs)
 
         # get joystick events first
-        Window.bind(on_joy_hat=self.on_joy_hat)
+        # Window.bind(on_joy_hat=self.on_joy_hat)
         Window.bind(on_joy_ball=self.on_joy_ball)
         Window.bind(on_joy_axis=self.on_joy_axis)
         Window.bind(on_joy_button_up=self.on_joy_button_up)
         Window.bind(on_joy_button_down=self.on_joy_button_down)
-        # SDL_Init(SDL_INIT_GAMECONTROLLER)
-        # SDL_Init(SDL_INIT_HAPTIC)
-        # SDL_GameControllerAddMappingsFromFile(b"resources/gamecontrollerdb.txt")
-        # controller = SDL_GameControllerOpen(0)
-        # joy = SDL_GameControllerGetJoystick(controller)
-        # haptics = SDL_HapticOpenFromJoystick(joy)
-        # SDL_HapticRumbleInit(haptics)
-        # print(SDL_NumJoysticks())
+        # SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC)
+        SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC)
+        print(SDL_NumJoysticks())
         # print(SDL_IsGameController(0))
-        # print(SDL_HapticRumbleSupported(haptics))
+        # print(SDL_IsJoystick(0))
+        # SDL_GameControllerAddMappingsFromFile(b"resources/gamecontrollerdb.txt")
+        # self.controller = SDL_GameControllerOpen(0)
+        self.joy = SDL_JoystickOpen(0)
+        # self.joy = SDL_GameControllerGetJoystick(self.controller)
+        self.haptics = SDL_HapticOpenFromJoystick(self.joy)
+        print(SDL_HapticRumbleSupported(self.haptics))
+        SDL_HapticRumbleInit(self.haptics)
 
     # show values in console
     def print_values(self, *args):
         print(self.VALUES)
 
     def joy_motion(self, event, id, axis, value):
+        # print(sdl2.ext.get_events())
         # HAT first, returns max values
+        dir(event)
         if isinstance(value, tuple):
             if not value[0] and not value[1]:
                 Clock.unschedule(self.HOLD)
@@ -74,14 +78,14 @@ class Listener(Widget):
     def on_joy_ball(self, win, stickid, ballid, value):
         self.joy_motion('ball', ballid, axisid, value)
 
-    def on_joy_hat(self, win, stickid, hatid, value):
-        self.joy_motion('hat', stickid, hatid, value)
+    # def on_joy_hat(self, win, stickid, hatid, value):
+    #     self.joy_motion('hat', stickid, hatid, value)
 
     def on_joy_button_down(self, win, stickid, buttonid):
         print('button_down', stickid, buttonid)
-        if buttonid == 7:
+        if buttonid == 9:
             print('Rumbling.')
-            sdl2.SDL_HapticRumblePlay(haptics, float(0.5), 2000)
+            SDL_HapticRumblePlay(self.haptics, float(0.5), 2000)
 
     def on_joy_button_up(self, win, stickid, buttonid):
         print('button_up', stickid, buttonid)

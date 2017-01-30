@@ -41,7 +41,7 @@ def main():
             print('R pressed')
         if inputs['start']:
             print('Start pressed. Rumbling.')
-            controller.rumble(float(0.5), 3000)
+            controller.rumble(float(1.0), 1000)
         if inputs['ljoy_x']:
             print('Left Joystick X-axis:',inputs['ljoy_x'])
         if inputs['ljoy_y']:
