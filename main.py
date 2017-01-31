@@ -1,4 +1,4 @@
-import kivy, sdl2.ext
+import kivy, sdl2.ext, subprocess
 # kivy.require('1.1.1')
 
 from kivy.app import App
@@ -7,7 +7,7 @@ from kivy.properties import NumericProperty, ReferenceListProperty,\
     ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
-from sdl_controller import Input
+import sdl_controller
 
 
 class PongPaddle(Widget):
@@ -35,12 +35,12 @@ class PongGame(Widget):
     ball = ObjectProperty(None)
     player1 = ObjectProperty(None)
     player2 = ObjectProperty(None)
-    inputs = {}
+    # inputs = {}
 
     def __init__(self, **kwargs):
         super(PongGame, self).__init__(**kwargs)
-        self.controller = Input()
-        self.inputs = {}
+        # self.controller = Input()
+        # self.inputs = {}
 
 
     def serve_ball(self, vel=(4, 0)):
@@ -48,15 +48,16 @@ class PongGame(Widget):
         self.ball.velocity = vel
 
     def update(self, dt):
-        self.inputs = self.controller.update(sdl2.ext.get_events())
-        #print(self.inputs['start'])
-        if self.inputs['start']:
-            print('Start pressed. Rumbling.')
-            self.controller.rumble(float(1.0), 1000)
-        if self.inputs['ljoy_x']:
-            print('Left Joystick X-axis:',self.inputs['ljoy_x'])
-        if self.inputs['ljoy_y']:
-            print('Left Joystick Y-axis:',self.inputs['ljoy_y'])
+        # # self.inputs = self.controller.update(sdl2.ext.get_events())
+        # #print(self.inputs['start'])
+        # if self.inputs['start']:
+        #     print('Start pressed. Rumbling.')
+        #     # self.controller.rumble(float(1.0), 1000)
+        #     #subprocess.call("xboxdrv --silent --force-feedback --detach-kernel-driver --deadzone 8000", shell=True)
+        # if self.inputs['ljoy_x']:
+        #     print('Left Joystick X-axis:',self.inputs['ljoy_x'])
+        # if self.inputs['ljoy_y']:
+        #     print('Left Joystick Y-axis:',self.inputs['ljoy_y'])
         self.ball.move()
         # bounce ball off paddles
         self.player1.bounce_ball(self.ball)
@@ -90,5 +91,12 @@ class PongApp(App):
 
 
 if __name__ == '__main__':
-    # controller = Input()
+    from multiprocessing import Process
+    t = Process(group=None, target=sdl_controller.init_SDL_CONTROLLER, name='input thread')
+    t.daemon = True
+    # print "I made it here!!!! " + str(t.isDaemon())
+    
+    # t.run()
+    #print "I made it here!!!! {}" % t.isDaemon()
+    t.start()
     PongApp().run()

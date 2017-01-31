@@ -159,6 +159,11 @@ class Input():
 
         return self.inputs
 
-if __name__ == '__main__':
+def init_SDL_CONTROLLER():
+    global controller
     controller = Input()
     main()
+
+
+if __name__ == '__main__':
+    init_SDL_CONTROLLER()
