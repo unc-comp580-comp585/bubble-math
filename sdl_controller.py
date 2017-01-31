@@ -2,7 +2,7 @@
 from sdl2 import *
 import sdl2.ext, time
 
-def main():
+def main(rumble=None):
     running = True
     while running is True:
         new_events = sdl2.ext.get_events()
@@ -40,12 +40,15 @@ def main():
         if inputs['r']:
             print('R pressed')
         if inputs['start']:
-            print('Start pressed. Rumbling.')
-            controller.rumble(float(1.0), 1000)
+            print('Start pressed.')
         if inputs['ljoy_x']:
             print('Left Joystick X-axis:',inputs['ljoy_x'])
         if inputs['ljoy_y']:
             print('Left Joystick Y-axis:',inputs['ljoy_y'])
+        if rumble and rumble.value == 1:
+            print("Bonk")
+            controller.rumble(float(1.0), 1000)
+            rumble.value = 0
         time.sleep(0.1)
 class Input():
 
@@ -76,6 +79,7 @@ class Input():
                        "l": 0, "r": 0, "start": 0, "back": 0, "ljoy_x":0, "ljoy_y":0}
 
     def rumble(self, intensity, length_ms):
+        print('Made it to the rumble function')
         SDL_HapticRumblePlay(self.haptics, intensity, length_ms)
 
     def update(self, new_events):
@@ -159,10 +163,10 @@ class Input():
 
         return self.inputs
 
-def init_SDL_CONTROLLER():
+def init_SDL_CONTROLLER(rumble):
     global controller
     controller = Input()
-    main()
+    main(rumble)
 
 
 if __name__ == '__main__':
