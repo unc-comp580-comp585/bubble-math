@@ -12,9 +12,9 @@ server launch:
 
 ```bash
 
-sudo rmmod xpad //unloads xpad driver
-sudo xboxdrv --force-feedback //load xboxdrv driver with vibrate option
-sudo python server.py //start server.
+sudo rmmod xpad #unloads xpad driver
+sudo xboxdrv --force-feedback #load xboxdrv driver with vibrate option
+sudo python server.py #start server.
 
 ```
 
