@@ -163,7 +163,7 @@ window.onload = function() {
         let fractions = false;
         let ops = ['+', '-'];
         if(grade >= 3) {
-            ops.push('+');
+            ops.push('*');
             ops.push('/');
         }
         if(grade % 2 == 0)
