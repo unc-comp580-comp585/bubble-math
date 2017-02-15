@@ -17,23 +17,32 @@ window.onload = function() {
 
     //BS1 Defines
     var cursor;
-    var wheel_map = {};
+    var wheel_map;
     // question -> answer
-    var equation_map = {};
+    var equation_map;
     // questions that have been answered
-    var answered_questions = {};
+    var answered_questions;
     // index of current question
-    var question_index = 0;
+    var question_index;
     //var questions
     var questions;
     var answers;
+    
+    //keyboard fallbacks
+    var Q;
+    var E;
+    var Space;
+    var R;
 
     function preload()
     {
-        
+        wheel_map = {};
+        equation_map = {};
+        answered_questions = {};
+        question_index = 0;
         for(var coeff = 0; coeff < 3; coeff ++){
             wheel_map[''+coeff] = [];
-            var addition = Math.PI / (2 * (2 * (coeff + 1)));
+            var addition = Math.PI / ((2 * (coeff + 1)));
             for(var i = 0; i < 2 * Math.PI; i += addition) {
                 var convert = i * (180 / Math.PI);
                 wheel_map[''+coeff].push(convert);
@@ -44,6 +53,7 @@ window.onload = function() {
 
     function create()
     {
+        cursor = 0;
         game.stage.backgroundColor = '#7BAFD4';
         
         game.input.gamepad.start();
@@ -52,21 +62,57 @@ window.onload = function() {
         // console.log(game.input.gamepad.pad1);
         // console.log(game.input.gamepad.pad2);
         // console.log(game.input.gamepad.pad3);
+
+        Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        Q.onDown.add(onQ, this);
+        E = game.input.keyboard.addKey(Phaser.Keyboard.E);
+        E.onDown.add(onE, this);
+        R = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        R.onDown.add(onR, this);
+        Space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        Space.onDown.add(onSpace, this);
+    }
+
+    function onR()
+    {
+        console.log("Question : "  + questions[question_index]);
+        console.log("Current Answer: " + answers[cursor]);
+    }
+
+
+    function onQ()
+    {
+        console.log("Rotating Cursor CCW - (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
+        if(cursor - 1 < 0)
+            cursor = answers.length - 1;
+        else 
+            cursor = cursor - 1;
+        console.log("Rotated Cursor CCW - NEW (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
+    }
+
+    function onE()
+    {
+        console.log("Rotating Cursor CCW - (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
+        cursor = (cursor + 1) % answers.length;    
+        console.log("Rotated Cursor CCW - NEW  (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
+    }
+
+    function onSpace()
+    {
+        lock_in_answer();
     }
 
     function update()
     {
-        if(question_index + 1 === questions.length){
+        if(question_index  === questions.length){
             alert('You Win!');
+            preload();       
             return;
         }
         gamepad_enabled = game.input.gamepad.supported && game.input.gamepad.active && gamepad.connected;
         // console.log(gamepad_enabled);
         if(gamepad_enabled){
             process_gamepad_controls();
-        }
-        else{
-            process_keyboard_controls();
         }
     }
 
@@ -81,15 +127,23 @@ window.onload = function() {
     {
 
         if(gamepad.justPressed(Phaser.Gamepad.XBOX360_A) && cursor != -1){
-            console.log('question: ' + questions[question_index]);
-            console.log('locked in answer: ' + answers[cursor]);
-            if(eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions))
-            {
-                answered_questions[cursor] = true;
-                //cannot use this cursor index for answer again.
-                question_index += 1;
-            }
+            lock_in_answer();
+        }
+    }
 
+    function lock_in_answer() {
+        console.log('question: ' + questions[question_index]);
+        console.log('locked in answer: ' + answers[cursor]);
+        if(eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions))
+        {
+            answered_questions[cursor] = true;
+            //cannot use this cursor index for answer again.
+            question_index += 1
+            console.log("Correct!");;
+        }
+        else if(cursor in answered_questions)
+        {
+            console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
         }
     }
 
@@ -142,11 +196,6 @@ window.onload = function() {
     function process_right_joystick()
     {
 
-    }
-
-    function process_keyboard_controls()
-    {
-             
     }
 
     function init_input()
