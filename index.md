@@ -29,6 +29,6 @@ Link = Done
 
 ## Deliverables
 
-* [Proposal (Concept) : Due 2/15](assets/file/concept.pdf)
+* [Proposal (Concept) : Due 2/15](assets/files/concept.pdf)
 * Detailed Project Plans * See Above  : Due 3/1
 * Project Presentations : Due By 4/28
