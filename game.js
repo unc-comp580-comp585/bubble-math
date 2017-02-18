@@ -6,11 +6,6 @@ window.onload = function() {
         update: update,
     });
 
-    // Global Defines
-    var gamepad;
-    var gamepad_enabled;
-    var leftjs_dead_zone = 0.1;
-
     // Difficulty of Game [0-2]
     var difficulty = 0;
 
@@ -61,7 +56,7 @@ window.onload = function() {
         
         game.input.gamepad.start();
 
-        gamepad = game.input.gamepad.pad1;
+        Globals.gamepad = game.input.gamepad.pad1;
 
         Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
         Q.onDown.add(onQ, this);
@@ -112,8 +107,10 @@ window.onload = function() {
             return;
         }
 
-        gamepad_enabled = game.input.gamepad.supported && game.input.gamepad.active && gamepad.connected;
-        if (gamepad_enabled) {
+        Globals.gamepadEnabled = game.input.gamepad.supported &&
+                                 game.input.gamepad.active &&
+                                 Globals.gamepad.connected;
+        if (Globals.gamepadEnabled) {
             process_gamepad_controls();
         }
     }
@@ -124,7 +121,7 @@ window.onload = function() {
     }
 
     function process_gamepad_buttons() {
-        if (gamepad.justPressed(Phaser.Gamepad.XBOX360_A) && cursor != -1) {
+        if (Globals.gamepad.justPressed(Phaser.Gamepad.XBOX360_A) && cursor != -1) {
             lock_in_answer();
         }
     }
@@ -144,11 +141,11 @@ window.onload = function() {
 
     function process_left_joystick() {
         cursor = -1;
-        var controller_moved_x = Math.abs(gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > leftjs_dead_zone;
-        var controller_moved_y = Math.abs(gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > leftjs_dead_zone;
+        var controller_moved_x = Math.abs(Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.leftJSDeadZone;
+        var controller_moved_y = Math.abs(GLobals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.leftJSDeadZone;
         if (controller_moved_x || controller_moved_y) {
-            var x = gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
-            var y = -gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+            var x =  Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+            var y = -Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
             var tmp  = Math.atan2(y, x);
             if (y < 0) {
                 tmp += 2 * Math.PI;
