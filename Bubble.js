@@ -32,6 +32,8 @@ function Bubble(game, cx, cy, r, num) {
         boundsAlignV: "middle",
     });
     this.numText.anchor.setTo(0.5, 0.5);
+
+    this.popped = false;
 }
 
 Bubble.prototype.drawAt = function(x, y) {

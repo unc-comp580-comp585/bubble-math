@@ -17,4 +17,5 @@ Globals.handles = {
 Globals.colors = {
     selected: "#ffff00",
     unselected: "#ffffff",
+    popped: "000000",
 };

@@ -89,23 +89,13 @@ window.onload = function() {
     // Rotate cursor CW
     function onQ() {
         decrease_cursor();
-
-        // Update bubble text color
-        for (let i = 0; i < bubbles.length; i++) {
-            bubbles[i].numText.fill = Globals.colors.unselected;
-        }
-        bubbles[cursor].numText.fill = Globals.colors.selected;
+        updateBubbleTextColors();
     }
 
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
-
-        // Update bubble text color
-        for (let i = 0; i < bubbles.length; i++) {
-            bubbles[i].numText.fill = Globals.colors.unselected;
-        }
-        bubbles[cursor].numText.fill = Globals.colors.selected;
+        updateBubbleTextColors();
     }
 
     // Submit answer
@@ -140,10 +130,12 @@ window.onload = function() {
         console.log('question: ' + questions[question_index]);
         console.log('locked in answer: ' + answers[cursor]);
         if (eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions)) {
+            bubbles[cursor].popped = true;
+            updateBubbleTextColors();
+
             answered_questions[cursor] = true;
-            //cannot use this cursor index for answer again.
-            question_index += 1
-            console.log("Correct!");;
+            question_index += 1;
+            console.log("Correct!");
         } else if(cursor in answered_questions) {
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
         }
@@ -248,14 +240,33 @@ window.onload = function() {
     }
 
     function increase_cursor() {
-        cursor = (cursor + 1) % answers.length;
+        do {
+            cursor = (cursor + 1) % answers.length;
+        } while (bubbles[cursor].popped);
     }
 
     function decrease_cursor() {
-        if (cursor-1 < 0) {
-            cursor = answers.length - 1;
+        do {
+            if (cursor-1 < 0) {
+                cursor = answers.length - 1;
+            } else {
+                cursor = cursor - 1;
+            }
+        } while (bubbles[cursor].popped);
+    }
+
+    function updateBubbleTextColors() {
+        for (let i = 0; i < bubbles.length; i++) {
+            if (bubbles[i].popped) {
+                bubbles[i].numText.fill = Globals.colors.popped;
+            } else {
+                bubbles[i].numText.fill = Globals.colors.unselected;
+            }
+        }
+        if (bubbles[cursor].popped) {
+            bubbles[cursor].numText.fill = Globals.colors.popped;
         } else {
-            cursor = cursor - 1;
+            bubbles[cursor].numText.fill = Globals.colors.selected;
         }
     }
 };
