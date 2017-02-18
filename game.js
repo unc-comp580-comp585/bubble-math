@@ -120,10 +120,7 @@ window.onload = function() {
             return;
         }
 
-        Globals.gamepadEnabled = game.input.gamepad.supported &&
-                                 game.input.gamepad.active &&
-                                 Globals.gamepad.connected;
-        if (Globals.gamepadEnabled) {
+        if (Globals.gamepadEnabled(game)) {
             process_gamepad_controls();
         }
     }

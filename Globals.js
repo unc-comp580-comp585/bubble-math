@@ -1,8 +1,13 @@
 var Globals = {};
 
 Globals.gamepad = {};
-Globals.gamepadEnabled = false;
 Globals.leftJSDeadZone = 0.1;
+
+Globals.gamepadEnabled = function(game) {
+    return game.input.gamepad.supported &&
+           game.input.gamepad.active &&
+           Globals.gamepad.connected;
+};
 
 Globals.handles = {
     bubble: 'bubble',
