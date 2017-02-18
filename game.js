@@ -56,6 +56,7 @@ window.onload = function() {
         Graphics.drawBackground(game);
 
         bubbles = Graphics.drawWheelMap(game, wheel_map, answers, difficulty);
+        bubbles[cursor].numText.fill = Globals.colors.selected;
 
         game.input.gamepad.start();
 
@@ -72,6 +73,11 @@ window.onload = function() {
 
         Space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         Space.onDown.add(onSpace, this);
+
+        console.log("Questions: " + questions);
+        console.log("Answers:   " + answers);
+        console.debug("Bubbles: %o", bubbles);
+        console.debug("Wheel: %o", wheel_map);
     }
 
     // Display current question/answer
@@ -80,22 +86,30 @@ window.onload = function() {
         console.log("Current Answer: " + answers[cursor]);
     }
 
-    // Rotate cursor CCW
+    // Rotate cursor CW
     function onQ() {
-        console.log("Rotating Cursor CCW - (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
         if (cursor - 1 < 0) {
             cursor = answers.length - 1;
         } else  {
             cursor = cursor - 1;
         }
-        console.log("Rotated Cursor CCW - NEW (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
+
+        // Update bubble text color
+        for (let i = 0; i < bubbles.length; i++) {
+            bubbles[i].numText.fill = Globals.colors.unselected;
+        }
+        bubbles[cursor].numText.fill = Globals.colors.selected;
     }
 
-    // Rotate cursor CW
+    // Rotate cursor CCW
     function onE() {
-        console.log("Rotating Cursor CCW - (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
         cursor = (cursor + 1) % answers.length;    
-        console.log("Rotated Cursor CCW - NEW  (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
+
+        // Update bubble text color
+        for (let i = 0; i < bubbles.length; i++) {
+            bubbles[i].numText.fill = Globals.colors.unselected;
+        }
+        bubbles[cursor].numText.fill = Globals.colors.selected;
     }
 
     // Submit answer

@@ -8,3 +8,8 @@ Globals.handles = {
     bubble: 'bubble',
     background: 'background',
 };
+
+Globals.colors = {
+    selected: "#ffff00",
+    unselected: "#ffffff",
+};

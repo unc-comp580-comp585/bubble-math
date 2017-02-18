@@ -27,7 +27,7 @@ function Bubble(game, cx, cy, r, num) {
     //      TODO: Figure out why it's not vertically aligned
     this.numText = game.add.text(cx, cy, num.toString(), {
         font: "bold 32px Courier",
-        fill: "#ffffff",
+        fill: Globals.colors.unselected,
         boundsAlignH: "center",
         boundsAlignV: "middle",
     });
