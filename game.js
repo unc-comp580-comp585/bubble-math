@@ -36,6 +36,10 @@ window.onload = function() {
 
     var bubbles;
 
+    var question_text;
+
+    var won;
+
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
         game.load.image(Globals.handles.background, 'assets/background.png');
@@ -44,6 +48,7 @@ window.onload = function() {
         equation_map = {};
         answered_questions = {};
         question_index = 0;
+        won = false;
 
         generate_wheel_map();
 
@@ -59,6 +64,15 @@ window.onload = function() {
         bubbles[cursor].numText.fill = Globals.colors.selected;
 
         game.input.gamepad.start();
+
+        question_text = game.add.text(game.world.centerX, 100, "", {
+            font: "bold 32px Courier",
+            fill: "#ffffff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+        });
+        question_text.anchor.setTo(0.5, 0.5);
+        question_text.setText(questions[question_index].trim());
 
         Globals.gamepad = game.input.gamepad.pad1;
 
@@ -105,8 +119,8 @@ window.onload = function() {
 
     function update() {
         if (question_index  === questions.length) {
-            alert('You Win!');
-            preload();       
+            question_text.setText("You win!");
+            won = true;
             return;
         }
 
@@ -135,6 +149,10 @@ window.onload = function() {
 
             answered_questions[cursor] = true;
             question_index += 1;
+            if (question_index < questions.length) {
+                question_text.setText(questions[question_index].trim());
+            }
+
             console.log("Correct!");
         } else if(cursor in answered_questions) {
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
@@ -232,19 +250,24 @@ window.onload = function() {
     }
 
     function increase_cursor() {
-        do {
-            cursor = (cursor + 1) % answers.length;
-        } while (bubbles[cursor].popped);
+        if (!won) {
+            do {
+                cursor = (cursor + 1) % answers.length;
+            } while (bubbles[cursor].popped);
+        }
     }
 
     function decrease_cursor() {
-        do {
-            if (cursor-1 < 0) {
-                cursor = answers.length - 1;
-            } else {
-                cursor = cursor - 1;
-            }
-        } while (bubbles[cursor].popped);
+        if (!won) {
+            do {
+                if (cursor-1 < 0) {
+                    cursor = answers.length - 1;
+                } else {
+                    cursor = cursor - 1;
+                }
+            } while (bubbles[cursor].popped);
+
+        }
     }
 
     function updateBubbleTextColors() {
