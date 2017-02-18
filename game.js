@@ -54,7 +54,7 @@ window.onload = function() {
     function create()
     {
         cursor = 0;
-        game.stage.backgroundColor = '#7BAFD4';
+        Graphics.drawBackground(game);
         
         game.input.gamepad.start();
 
