@@ -76,12 +76,13 @@ window.onload = function() {
         Space.onDown.add(onSpace, this);
     }
 
+    // Display current question/answer
     function onR() {
         console.log("Question : "  + questions[question_index]);
         console.log("Current Answer: " + answers[cursor]);
     }
 
-
+    // Rotate cursor CCW
     function onQ() {
         console.log("Rotating Cursor CCW - (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
         if (cursor - 1 < 0) {
@@ -92,12 +93,14 @@ window.onload = function() {
         console.log("Rotated Cursor CCW - NEW (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
     }
 
+    // Rotate cursor CW
     function onE() {
         console.log("Rotating Cursor CCW - (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
         cursor = (cursor + 1) % answers.length;    
         console.log("Rotated Cursor CCW - NEW  (Cursor, Val): (" + cursor + ", " + answers[cursor] + ")");
     }
 
+    // Submit answer
     function onSpace() {
         lock_in_answer();
     }
@@ -108,6 +111,7 @@ window.onload = function() {
             preload();       
             return;
         }
+
         gamepad_enabled = game.input.gamepad.supported && game.input.gamepad.active && gamepad.connected;
         if (gamepad_enabled) {
             process_gamepad_controls();
