@@ -174,14 +174,6 @@ window.onload = function() {
         return;
     }
 
-    function process_right_joystick() {
-
-    }
-
-    function init_input() {
-
-    }
-
     function generate_wheel_map() {
         for (var coeff = 0; coeff < 3; coeff ++) {
             wheel_map[''+coeff] = [];
