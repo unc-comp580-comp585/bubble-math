@@ -36,7 +36,7 @@ window.onload = function() {
 
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
-        game.load.image(Globals.handles.background, 'assets/background.jpg');
+        game.load.image(Globals.handles.background, 'assets/background.png');
 
         wheel_map = {};
         equation_map = {};
@@ -55,8 +55,9 @@ window.onload = function() {
 
     function create() {
         cursor = 0;
+   
         Graphics.drawBackground(game);
-        
+
         game.input.gamepad.start();
 
         Globals.gamepad = game.input.gamepad.pad1;
