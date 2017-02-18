@@ -35,6 +35,9 @@ window.onload = function() {
     var R;
 
     function preload() {
+        game.load.image(Globals.handles.bubble, 'assets/bubble.png');
+        game.load.image(Globals.handles.background, 'assets/background.jpg');
+
         wheel_map = {};
         equation_map = {};
         answered_questions = {};
