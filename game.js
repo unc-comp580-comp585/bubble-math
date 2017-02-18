@@ -34,6 +34,8 @@ window.onload = function() {
     var Space;
     var R;
 
+    var bubbles;
+
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
         game.load.image(Globals.handles.background, 'assets/background.png');
@@ -53,15 +55,7 @@ window.onload = function() {
    
         Graphics.drawBackground(game);
 
-        var bubbles = [];
-        for (var i = 0; i < 10; i++) {
-            var cx = game.world.randomX;
-            var cy = game.world.randomY;
-
-            var num = game.rnd.integerInRange(0, 12);
-
-            bubbles.push(new Bubble(game, cx, cy, 30, num));
-        }
+        bubbles = Graphics.drawWheelMap(game, wheel_map, answers, difficulty);
 
         game.input.gamepad.start();
 
