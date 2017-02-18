@@ -42,14 +42,9 @@ window.onload = function() {
         equation_map = {};
         answered_questions = {};
         question_index = 0;
-        for (var coeff = 0; coeff < 3; coeff ++) {
-            wheel_map[''+coeff] = [];
-            var addition = Math.PI / ((2 * (coeff + 1)));
-            for (var i = 0; i < 2 * Math.PI; i += addition) {
-                var convert = i * (180 / Math.PI);
-                wheel_map[''+coeff].push(convert);
-            }
-        }
+
+        generate_wheel_map();
+
         generate_equations();
     }
 
@@ -192,6 +187,17 @@ window.onload = function() {
 
     function init_input() {
 
+    }
+
+    function generate_wheel_map() {
+        for (var coeff = 0; coeff < 3; coeff ++) {
+            wheel_map[''+coeff] = [];
+            var addition = Math.PI / ((2 * (coeff + 1)));
+            for (var i = 0; i < 2 * Math.PI; i += addition) {
+                var convert = i * (180 / Math.PI);
+                wheel_map[''+coeff].push(convert);
+            }
+        }
     }
    
     function generate_equations() {
