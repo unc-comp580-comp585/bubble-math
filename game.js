@@ -58,6 +58,16 @@ window.onload = function() {
    
         Graphics.drawBackground(game);
 
+        var bubbles = [];
+        for (var i = 0; i < 10; i++) {
+            var cx = game.world.randomX;
+            var cy = game.world.randomY;
+
+            var num = game.rnd.integerInRange(0, 12);
+
+            bubbles.push(new Bubble(game, cx, cy, 30, num));
+        }
+
         game.input.gamepad.start();
 
         Globals.gamepad = game.input.gamepad.pad1;
