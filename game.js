@@ -88,11 +88,7 @@ window.onload = function() {
 
     // Rotate cursor CW
     function onQ() {
-        if (cursor - 1 < 0) {
-            cursor = answers.length - 1;
-        } else  {
-            cursor = cursor - 1;
-        }
+        decrease_cursor();
 
         // Update bubble text color
         for (let i = 0; i < bubbles.length; i++) {
@@ -103,7 +99,7 @@ window.onload = function() {
 
     // Rotate cursor CCW
     function onE() {
-        cursor = (cursor + 1) % answers.length;    
+        increase_cursor();
 
         // Update bubble text color
         for (let i = 0; i < bubbles.length; i++) {
@@ -251,6 +247,18 @@ window.onload = function() {
                 questions.push(str);
                 answers.push(result);
             }
+        }
+    }
+
+    function increase_cursor() {
+        cursor = (cursor + 1) % answers.length;
+    }
+
+    function decrease_cursor() {
+        if (cursor-1 < 0) {
+            cursor = answers.length - 1;
+        } else {
+            cursor = cursor - 1;
         }
     }
 };
