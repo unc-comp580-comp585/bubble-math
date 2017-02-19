@@ -266,7 +266,6 @@ window.onload = function() {
                     cursor = cursor - 1;
                 }
             } while (bubbles[cursor].popped);
-
         }
     }
 
