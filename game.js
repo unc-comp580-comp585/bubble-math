@@ -40,9 +40,18 @@ window.onload = function() {
 
     var won;
 
+    // Audio contexts
+    var game_sounds = {};
+
+    // Enable/Disable speech or sounds
+    var dictation = false;
+    var soundfx = true;
+
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
         game.load.image(Globals.handles.background, 'assets/background.png');
+
+        Sound.load_sounds(game, game_sounds);
 
         wheel_map = {};
         equation_map = {};
@@ -71,6 +80,9 @@ window.onload = function() {
             boundsAlignH: "center",
             boundsAlignV: "middle",
         });
+
+        Sound.add_sounds(game, game_sounds);
+
         question_text.anchor.setTo(0.5, 0.5);
         question_text.setText(questions[question_index].trim());
 
@@ -92,24 +104,46 @@ window.onload = function() {
         console.log("Answers:   " + answers);
         console.debug("Bubbles: %o", bubbles);
         console.debug("Wheel: %o", wheel_map);
+        console.debug("Sounds: %o", game_sounds);
     }
 
     // Display current question/answer
     function onR() {
         console.log("Question : "  + questions[question_index]);
         console.log("Current Answer: " + answers[cursor]);
+        if(dictation)
+        {
+            Sound.read("The question is: " + questions[question_index]);
+            Sound.read("This bubble is: " + answers[cursor]);
+        }
     }
 
     // Rotate cursor CW
     function onQ() {
         decrease_cursor();
         updateBubbleTextColors();
+        if(dictation)
+        {
+            Sound.read(answers[cursor]);
+        }
+        if(soundfx)
+        {
+            Sound.play(game_sounds,'bubbles');
+        }
     }
 
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
         updateBubbleTextColors();
+        if(dictation && !won)
+        {
+            Sound.read(answers[cursor]);
+        }
+        if(soundfx && !won)
+        {
+            Sound.play(game_sounds,'bubbles');
+        }
     }
 
     // Submit answer
@@ -120,6 +154,14 @@ window.onload = function() {
     function update() {
         if (question_index  === questions.length) {
             question_text.setText("You win!");
+            if(dictation && !won)
+            {
+                Sound.dictate('victory');
+            }
+            if(soundfx && !won)
+            {
+                Sound.play(game_sounds,'win');
+            }
             won = true;
             return;
         }
@@ -152,10 +194,27 @@ window.onload = function() {
             if (question_index < questions.length) {
                 question_text.setText(questions[question_index].trim());
             }
-
+            if(dictation && !won)
+            {
+                Sound.dictate('correct');
+            }
+            if(soundfx && !won)
+            {
+                Sound.play(game_sounds,'pop');
+            }
             console.log("Correct!");
         } else if(cursor in answered_questions) {
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
+            // TODO: Add soundfx for this
+        } else {
+            if(dictation && !won)
+            {
+                Sound.dictate('incorrect');
+            }
+            if(soundfx && !won)
+            {
+                Sound.play(game_sounds, 'wrong');
+            }
         }
     }
 
