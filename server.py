@@ -15,5 +15,7 @@ async def vibrate(request):
 
 
 if __name__ == '__main__':
-    ctrl = XboxCtrl(dead_zone=16000) 
+    ctrl = XboxCtrl(dead_zone=16000)
+    app.static('/', './')
+    app.static('/', 'index.html')
     app.run(host="0.0.0.0", port="8000", debug=True)
