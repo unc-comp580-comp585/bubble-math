@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
+
 from sanic import Sanic
 from sanic.response import json
 from controller import Controller as XboxCtrl
+
+import argparse
 
 app = Sanic("Vibration Server")
 
@@ -15,7 +19,13 @@ async def vibrate(request):
 
 
 if __name__ == '__main__':
-    ctrl = XboxCtrl(dead_zone=16000)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--no-controller", help="launch without controller support", action="store_true")
+
+    args = parser.parse_args()
+    if not args.no_controller:
+        ctrl = XboxCtrl(dead_zone=16000)
+
     app.static('/', './')
     app.static('/', 'index.html')
     app.run(host="0.0.0.0", port="8000", debug=True)
