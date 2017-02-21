@@ -44,14 +44,21 @@ window.onload = function() {
     var game_sounds = {};
 
     // Enable/Disable speech or sounds
-    var dictation = false;
+    var dictation = true;
     var soundfx = true;
+
+    // Speech recognition object
+    var recognition;
 
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
         game.load.image(Globals.handles.background, 'assets/background.png');
 
-        Sound.load_sounds(game, game_sounds);
+        Sound.loadSounds(game, game_sounds);
+
+        if (!('speechSynthesis' in window)){
+            dictation = false;
+        }
 
         wheel_map = {};
         equation_map = {};
@@ -81,21 +88,38 @@ window.onload = function() {
             boundsAlignV: "middle",
         });
 
-        Sound.add_sounds(game, game_sounds);
+        Sound.addSounds(game, game_sounds);
+        recognition = Sound.initRecognition(recognition);
+        console.dir(recognition);
 
         question_text.anchor.setTo(0.5, 0.5);
         question_text.setText(questions[question_index].trim());
 
         Globals.gamepad = game.input.gamepad.pad1;
 
+        // Select bubble clockwise from current
         Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
         Q.onDown.add(onQ, this);
 
+        // Select bubble counterclockwise from current
         E = game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(onE, this);
 
+        // Repeat question and current bubble
         R = game.input.keyboard.addKey(Phaser.Keyboard.R);
         R.onDown.add(onR, this);
+
+        // Increase speech rate
+        A = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(Sound.speechRate, this);
+
+        // Decrease speech rate
+        S = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        S.onDown.add(Sound.speechRate, this);
+
+        // Start a speech recognition event
+        T = game.input.keyboard.addKey(Phaser.Keyboard.T);
+        T.onDown.add(onT, this);
 
         Space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         Space.onDown.add(onSpace, this);
@@ -113,8 +137,8 @@ window.onload = function() {
         console.log("Current Answer: " + answers[cursor]);
         if(dictation)
         {
-            Sound.read("The question is: " + questions[question_index]);
-            Sound.read("This bubble is: " + answers[cursor]);
+            Sound.readEquation("The question is: " + questions[question_index]);
+            Sound.readEquation("Your bubble is: " + answers[cursor]);
         }
     }
 
@@ -124,7 +148,7 @@ window.onload = function() {
         updateBubbleTextColors();
         if(dictation)
         {
-            Sound.read(answers[cursor]);
+            Sound.readEquation(answers[cursor]);
         }
         if(soundfx)
         {
@@ -138,12 +162,39 @@ window.onload = function() {
         updateBubbleTextColors();
         if(dictation && !won)
         {
-            Sound.read(answers[cursor]);
+            Sound.readEquation(answers[cursor]);
         }
         if(soundfx && !won)
         {
             Sound.play(game_sounds,'bubbles');
         }
+    }
+
+    // Starts speech recognition
+    function onT(){
+        console.log(recognition);
+        recognition.onresult = function(event) {
+            var last = event.results.length - 1;
+            var number = event.results[last][0].transcript;
+            console.log('Result received: ' + number + '.');
+            console.log('Confidence: ' + event.results[0][0].confidence);
+            if (Number.isInteger(parseInt(number))){
+                speak_answer(number);
+            } else {
+                speak_answer(Globals.small[number]);
+            }
+        }
+        recognition.onspeechend = function() {
+            console.log('Recognition finished.');
+            recognition.stop();
+        }
+        recognition.onnomatch = function(event) {
+            console.log('I didnt recognise that number.');
+        }
+        recognition.onerror = function(event) {
+           console.log('Error occurred in recognition: ' + event.error);
+        }
+        recognition.start();
     }
 
     // Submit answer
@@ -179,6 +230,43 @@ window.onload = function() {
     function process_gamepad_buttons() {
         if (Globals.gamepad.justPressed(Phaser.Gamepad.XBOX360_A) && cursor != -1) {
             lock_in_answer();
+        }
+    }
+
+    // Evaluate whether a spoken answer is correct
+    function speak_answer(spoken_answer){
+        console.log('question: ' + questions[question_index]);
+        if (eval(questions[question_index]) == spoken_answer) {
+            for(var i = 0; i < bubbles.length; i++){
+                if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false){
+                    bubbles[i].popped = true;
+                    answered_questions[i] = true;
+                    break;
+                }
+            }
+            updateBubbleTextColors();
+            question_index += 1;
+            if (question_index < questions.length) {
+                question_text.setText(questions[question_index].trim());
+            }
+            if(dictation && !won)
+            {
+                Sound.dictate('correct');
+            }
+            if(soundfx && !won)
+            {
+                Sound.play(game_sounds,'pop');
+            }
+            console.log("Correct!");
+        } else {
+            if(dictation && !won)
+            {
+                Sound.dictate('incorrect');
+            }
+            if(soundfx && !won)
+            {
+                Sound.play(game_sounds, 'wrong');
+            }
         }
     }
 

@@ -20,30 +20,26 @@ Globals.colors = {
     popped: "000000",
 };
 
-Globals.voices = {
-    english: "US English Female",
-    spanish: "Spanish Female",
-};
-
 Globals.voice = {
-    pitch: 1.2,
-    rate: 1.1,
+    volume: 1,
+    rate: 2,
+    pitch: 1.1,
+    lang: 'en-US',
 };
 
 // Collection of lines for varied text to speech
 Globals.speech = {
     correct: [
         "correct",
-        "that's right",
-        "good job",
-        "fantastic",
+        // "good job",
+        // "fantastic",
     ],
     incorrect: [
         "incorrect",
-        "try again",
+        // "try again",
     ],
     victory: [
-        "congratulations, you've won",
+        // "congratulations, you finished",
         "great job, you answered everything right"        
     ],
 };
@@ -105,4 +101,28 @@ Globals.sounds = {
             path: 'assets/audio/achievement.mp3',
         },
     },
+};
+
+Globals.small = {
+    'zero': 0,
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+    'ten': 10,
+    'eleven': 11,
+    'twelve': 12,
+    'thirteen': 13,
+    'fourteen': 14,
+    'fifteen': 15,
+    'sixteen': 16,
+    'seventeen': 17,
+    'eighteen': 18,
+    'nineteen': 19,
+    'twenty': 20,
 };
