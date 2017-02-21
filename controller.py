@@ -2,9 +2,9 @@ from sdl2 import *
 class Controller(object):
 
     def __init__(self, dead_zone=8000):
-        SDL_Init(SDL_INIT_GAMECONTROLLER)                                                                                                                                                                   
-        SDL_Init(SDL_INIT_HAPTIC)                                                                                                                                                                           
-        SDL_GameControllerAddMappingsFromFile(b"resources/gamecontrollerdb.txt")                                                                                                                            
+        SDL_Init(SDL_INIT_GAMECONTROLLER)
+        SDL_Init(SDL_INIT_HAPTIC)
+        SDL_GameControllerAddMappingsFromFile(b"resources/gamecontrollerdb.txt")
         self.__funcs = {
                    'a' : None,
                    'b' : None,
@@ -19,23 +19,24 @@ class Controller(object):
                    'start' : None,
                    'leftjoy' : None,
                 }
-        self.__haptic_available = False                                                                                                                                                                       
-        self.__dead_zone = dead_zone                                                                                                                                                                         
-        if SDL_NumJoysticks() > 0:                                                                                                                                                                          
-            if SDL_IsGameController(0) == 1:                                                                                                                                                                
-                self.__controller = SDL_GameControllerOpen(0)                                                                                                                                                 
-                self.__joy = SDL_GameControllerGetJoystick(self.__controller)                                                                                                                                   
-                controllername = SDL_GameControllerName(self.__controller).decode()                                                                                                                          
-                print("Initialized: " + controllername)                                                                                                                                                
-                # Initialize haptics if available.                                                                                                                                                          
-                self.__haptics = SDL_HapticOpenFromJoystick(self.__joy)                                                                                                                                         
-                if SDL_HapticRumbleSupported(self.__haptics):                                                                                                                                                 
-                    SDL_HapticRumbleInit(self.__haptics)                                                                                                                                                      
-                    self.__haptic_available = True                                                                                                                                                            
-                    print('Haptics enabled')                                                                                                                                                                
-        else:                                                                                                                                                                                               
-            print("No game controller found.")                                                                                                                                                              
-            from sys import exit                                                                                                                                                                            
+        self.__haptic_available = False
+        self.__dead_zone = dead_zone
+        if SDL_NumJoysticks() > 0:
+            if SDL_IsGameController(0) == 1:
+                self.__controller = SDL_GameControllerOpen(0)
+                self.__joy = SDL_GameControllerGetJoystick(self.__controller)
+                controllername = SDL_GameControllerName(self.__controller).decode()
+                print("Initialized: " + controllername)
+
+                # Initialize haptics if available.
+                self.__haptics = SDL_HapticOpenFromJoystick(self.__joy)
+                if SDL_HapticRumbleSupported(self.__haptics):
+                    SDL_HapticRumbleInit(self.__haptics)
+                    self.__haptic_available = True
+                    print('Haptics enabled')
+        else:
+            print("No game controller found.")
+            from sys import exit
             exit(-1) 
 
     def start_listening(self):
