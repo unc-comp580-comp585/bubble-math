@@ -7,8 +7,6 @@ layout: default
 
 ## Deliverables
 
-Link = Done
-
 ### Intermediate Deliverables <span id="plan"></span>
 
 * [Concept : Due 2/15](assets/files/concept.pdf)
@@ -19,10 +17,11 @@ Link = Done
 * Levels : Due ?/??
 * Measurements and Statistics : Due ?/??
 
+
 ### Final Deliverables
 
 * Kickstarter Video : Due ?/??
-* Design Documentation : Due ?/??
+* [Design Documentation : Due ?/??](https://docs.google.com/document/d/1DvjAYtIx2S7cB8_TVMJViImqXvgy3fSS3xk-pw5RXO8/edit?usp=sharing)
 * Game : Due ?/??
 
 # Enabling Technology
