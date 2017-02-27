@@ -67,6 +67,10 @@ window.onload = function() {
     // Speech recognition object
     var recognition;
 
+    //ring modifiers
+    var down_level = false;
+    var up_level = false;
+
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
         game.load.image(Globals.handles.background, 'assets/images/background.png');
@@ -144,6 +148,14 @@ window.onload = function() {
         T = game.input.keyboard.addKey(Phaser.Keyboard.T);
         T.onDown.add(onT, this);
 
+        Shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+        Shift.onDown.add(function() { up_level = true; }, this);
+        Shift.onUp.add(function() { up_level = false; } , this);
+        
+        Ctrl = game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
+        Ctrl.onDown.add(function() { down_level = true; }, this);
+        Ctrl.onUp.add(function() { down_level = false; } , this);
+
         Space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         Space.onDown.add(onSpace, this);
 
@@ -158,6 +170,7 @@ window.onload = function() {
     function onR() {
         console.log("Question : "  + questions[question_index]);
         console.log("Current Answer: " + answers[cursor]);
+        console.log("Modifiers: Up Ring["+up_level+"] Down Ring["+down_level+"]");
         if(dictation)
         {
             Sound.readEquation("The question is: " + questions[question_index]);
