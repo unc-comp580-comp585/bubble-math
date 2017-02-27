@@ -33,6 +33,11 @@ window.onload = function() {
     var E;
     var Space;
     var R;
+    //Up Ring Modifier
+    var Shift;
+
+    //Down ring modifier
+    var Ctrl;
 
     var bubbles;
 
@@ -50,7 +55,8 @@ window.onload = function() {
     // Speech recognition object
     var recognition;
 
-    function preload() {
+    function preload() 
+    {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
         game.load.image(Globals.handles.background, 'assets/background.png');
 
@@ -393,6 +399,18 @@ window.onload = function() {
                 questions.push(str);
                 answers.push(result);
             }
+        }
+        shuffle_answers();
+    }
+
+    function shuffle_answers()
+    {
+        for (var i = answers.length - 1; i > 0; i--) 
+        {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = answers[i];
+            answers[i] = answers[j];
+            answers[j] = temp;
         }
     }
 
