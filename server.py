@@ -6,7 +6,7 @@ from controller import Controller as XboxCtrl
 
 import argparse
 
-app = Sanic("Vibration Server")
+app = Sanic("Bubble Math Server")
 
 @app.route("/vibrate")
 async def vibrate(request):
