@@ -6,28 +6,22 @@ window.onload = function() {
         update: update,
     });
 
+
+    /*********************************************/
     // Difficulty Sections
     
     // Difficulty of Game [0-2]
     var difficulty = 1;
 
-    // Distances of bubbles from center (indexed by difficulty)
-    var radii = [70, 100, 130];
-
-    // Wand dimensions (indexed by difficulty)
-    var wand_dims = [
-        { w: 40, h: 70  },
-        { w: 60, h: 120 },
-        { w: 80, h: 160 },
-    ];
-
     // Grade in School [1-4]
-    var grade = 4;
+    var grade = 1;
 
     // Mode [0-1]
-    var game_mode = 0;
+    var game_mode = 1;
 
-    // BS1 Defines
+    
+    /*********************************************/
+    // Game Mechanics Variables
     var cursor;
 
 	//mapping of cursors -> answers
@@ -48,11 +42,31 @@ window.onload = function() {
 	//array of answers
     var answers;
 
+    //operations allowed
+    var ops = [];
+
+    //numbers we generate from
+    const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    //fractions enabled
+    var fractions;
+
+    var selections;
+
+    /*********************************************/
+    //Input Related Things
+
+
     // Keyboard fallbacks
     var Q;
     var E;
     var Space;
     var R;
+    var X;
+
+    var A;
+    var S;
+    var T;
 
     //Up Ring Modifier
     var Shift;
@@ -60,19 +74,16 @@ window.onload = function() {
 	//Down ring modifier
     var Ctrl;
 
-    //I don't know what this is
-	//something related to graphics
-	var bubbles;
-
-    var wand;
-
-	//something related to graphics
-    var question_text;
+    //ring modifiers
+    var down_level = false;
+    var up_level = false;
 
 	//Whether the game is over or not to avoid looping win sound over and over
 	//again
     var won;
 
+
+    /*********************************************/
     //Scorekeeping Information
     
     //global score
@@ -85,6 +96,34 @@ window.onload = function() {
     //before selecting answers
     var score_selections;
 
+
+
+    /*********************************************/
+    //GRAPHICS RELATED VARIABLES
+
+    //I don't know what this is
+	//something related to graphics
+	var bubbles;
+
+    //graphics
+    var wand;
+
+    // Distances of bubbles from center (indexed by difficulty)
+    var radii = [70, 100, 130];
+
+    // Wand dimensions (indexed by difficulty)
+    var wand_dims = [
+        { w: 40, h: 70  },
+        { w: 60, h: 120 },
+        { w: 80, h: 160 },
+    ];
+
+	//something related to graphics
+    var question_text;
+
+    /*********************************************/
+    //Audio / Speech to Text / Text to Speech Stuff
+    
     // Audio contexts
     var game_sounds = {};
 
@@ -95,9 +134,7 @@ window.onload = function() {
     // Speech recognition object
     var recognition;
 
-    //ring modifiers
-    var down_level = false;
-    var up_level = false;
+
 
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
@@ -154,6 +191,9 @@ window.onload = function() {
         T = game.input.keyboard.addKey(Phaser.Keyboard.T);
         T.onDown.add(onT, this);
 
+        X = game.input.keyboard.addKey(Phaser.Keyboard.X);
+        X.onDown.add(onX, this);
+
         Shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         Shift.onDown.add(function() { up_level = true; }, this);
         Shift.onUp.add(function() { up_level = false; } , this);
@@ -166,7 +206,12 @@ window.onload = function() {
         Space.onDown.add(onSpace, this);
 
         console.log("Questions: " + questions);
-        console.log("Answers:   " + answers);
+        if(game_mode === 0)
+            console.log("Answers:   " + answers);
+        else if(game_mode === 1) {
+            console.log("Answers [0]: " + answers[0]);
+            console.log("Answers [1]: " + answers[1]);
+        }
         console.debug("Bubbles: %o", bubbles);
         console.debug("Wheel: %o", wheel_map);
         console.debug("Sounds: %o", game_sounds);
@@ -191,6 +236,16 @@ window.onload = function() {
         question_index = 0;
         won = false;
 
+        ops = ['+', '-'];
+        if (grade >= 3) {
+            ops.push('*');
+            ops.push('/');
+        }
+        if (grade % 2 == 0) {
+            fractions = true;
+        }
+
+
         generate_wheel_map();
 
         generate_equations();
@@ -203,26 +258,49 @@ window.onload = function() {
 
         score_multiplier = 1;
 
-        question_text.setText(questions[question_index].trim());
-         
-        bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
-        bubbles[cursor].numText.fill = Globals.colors.selected;
+        fractions = false;
 
-        let wand_w = wand_dims[difficulty].w;
-        let wand_h = wand_dims[difficulty].h;
-        let angle = wheel_map[''+difficulty][cursor];
-        wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
+        selections = ['', ''];
+        
+
+
+        question_text.setText(questions[question_index].trim());
+        
+        //TODO: Federico write graphics logic for this gamemode
+        // bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
+        // bubbles[cursor].numText.fill = Globals.colors.selected;
+
+        // let wand_w = wand_dims[difficulty].w;
+        // let wand_h = wand_dims[difficulty].h;
+        // let angle = wheel_map[''+difficulty][cursor];
+        // wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
 
     }
 
     // Display current question/answer
     function onR() {
         console.log("Question : "  + questions[question_index]);
-        console.log("Current Answer: " + answers[cursor]);
-        console.log("Modifiers: Up Ring["+up_level+"] Down Ring["+down_level+"]");
+        if(game_mode === 0)
+        {
+            console.log("Answers:   " + answers);
+            console.log("Current Answer: " + answers[cursor]);
+        }
+        else if(game_mode === 1){
+            console.log("Inner Ring: " + answers[0][cursor]);
+            console.log("Outer Ring: " + answers[1][cursor]);
+            console.log("Selection: " + selections);
+            console.log("Answers [0]: " + answers[0]);
+            console.log("Answers [1]: " + answers[1]);
+
+        }
+        console.log("Questions: " + questions);
+        console.debug("Bubbles: %o", bubbles);
+        console.debug("Wheel: %o", wheel_map);
+        console.debug("Sounds: %o", game_sounds);
+        console.log("Modifiers: Up Ring["+up_level+"] Down Ring["+down_level+"]");        
 		console.log("Score: " + score);
 		console.log("Score Multiplier: " + score_multiplier);
-		console.log("Number of Selected Circles: " + score_selections); 
+		console.log("Number of Selected Circles: " + score_selections);
         if(dictation)
         {
             Sound.readEquation("The question is: " + questions[question_index]);
@@ -233,8 +311,10 @@ window.onload = function() {
     // Rotate cursor CW
     function onQ() {
         decrease_cursor();
-        updateBubbleTextColors();
-        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+
+        //TODO: Federico write graphics logic for this gamemode
+        // updateBubbleTextColors();
+        // wand.rotateTo(wheel_map[''+difficulty][cursor]);
         if (dictation) {
             Sound.readEquation(answers[cursor]);
         }
@@ -246,8 +326,11 @@ window.onload = function() {
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
-        updateBubbleTextColors();
-        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+
+
+        //TODO: Federico write graphics logic for this gamemode
+        // updateBubbleTextColors();
+        // wand.rotateTo(wheel_map[''+difficulty][cursor]);
         if (dictation && !won) {
             Sound.readEquation(answers[cursor]);
         }
@@ -326,8 +409,73 @@ window.onload = function() {
         }
     }
 
+    function lock_in_answer(spoken_answer)
+    {
+        if(game_mode === 0)
+            lock_in_answer_gm1(spoken_answer);
+        else if(game_mode === 1)
+            lock_in_answer_gm2(spoken_answer);
+    }
 
-    function lock_in_answer(spoken_answer) 
+
+
+    function lock_in_answer_gm2(spoken_answer)
+    {
+        let first_index = up_level ? 0 : 1;
+        let good = eval("".concat(...selections)) === Number(questions[question_index]) && !(("".concat(...selections)) in answered_questions);
+        if (good) 
+        {
+			
+            score += ((10000) * score_multiplier) * (Math.max(1, 20-score_selections)); 
+            score_multiplier += 1;	
+            score_selections = 0;
+
+            //TODO: Federico write graphics logic for this gamemode
+            // bubbles[cursor].popped = true;
+            answered_questions["".concat(...selections)] = true;
+
+
+            //TODO: Federico write graphics logic for this gamemode
+            //updateBubbleTextColors();
+            question_index += 1;
+
+            if (question_index < questions.length) 
+            {
+                question_text.setText(questions[question_index].trim());
+            }
+            if(dictation && !won)
+            {
+                Sound.dictate('correct');
+            }
+            if(soundfx && !won)
+            {
+                Sound.play(game_sounds,'pop');
+            }
+            console.log("Correct!");
+        } else if(("".concat(...selections)) in answered_questions) {
+			//is this possible now?
+            console.log("answer: " + "".concat(...selections) + " @ cursor: " + cursor + " already used");
+            // TODO: Add soundfx for this
+        } else {
+            if (dictation && !won) 
+            {
+                Sound.dictate('incorrect');
+            }
+            if (soundfx && !won) {
+                Sound.play(game_sounds, 'wrong');
+            }
+        }
+
+    }
+
+
+    function onX()
+    {
+        let first_index = up_level ? 1 : 0;
+        selections[first_index] = answers[first_index][cursor]
+    }
+
+    function lock_in_answer_gm1(spoken_answer) 
     {
         let spoken  = spoken_answer != undefined; 
         let good = spoken && eval(questions[question_index]) == spoken_answer;
@@ -353,10 +501,13 @@ window.onload = function() {
             }
             else 
             {
-                bubbles[cursor].popped = true;
+                //TODO: Federico write graphics logic for this gamemode
+                // bubbles[cursor].popped = true;
                 answered_questions[cursor] = true;
             }
-            updateBubbleTextColors();
+
+            //TODO: Federico write graphics logic for this gamemode
+            //updateBubbleTextColors();
             question_index += 1;
 
             if (question_index < questions.length) 
@@ -431,20 +582,82 @@ window.onload = function() {
         }
     }
 
-    function generate_equations() {
-        let length = wheel_map[''+difficulty].length;
+    function generate_equations() 
+    {
+        if(game_mode === 0)
+            generate_gm1_equations();
+        else if(game_mode === 1)
+            generate_gm2_equations();
+    }
+
+
+    function generate_gm2_equations()
+    {
+       let length = wheel_map[''+difficulty].length;
         let nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         questions = [];
+        answers = [[], []];
+
+
+        let j = 0;
+        while (j < length) 
+        {
+            let str = '';
+            let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+            str += numerator_1 + ' ';
+            let denominator_1 = 1;
+            if (fractions) {
+                denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
+                str +=  '/ ' + denominator_1 + ' ';
+            }
+            let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
+            str += op + ' ';
+            let lower_bound = nums.length - 1;
+            if (op === '-') {
+                lower_bound = numerator_1;
+            }
+            let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
+            str += numerator_2 + ' ';
+            let denominator_2 = 1;            
+            if (fractions) 
+            {
+                denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+                str += '/ ' + denominator_2;
+            }
+            let result = eval(str);
+            
+            if(numerator_2 === 0 && op === '/')
+                continue;
+            if((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/')
+                continue;
+            if(!Number.isInteger(result))
+                continue;
+            if (questions.indexOf(str) !== -1) {
+                continue;
+            } else {
+                j++;
+                questions.push(''+result);
+                if(fractions)
+                {
+                    answers[0].push(''+numerator_1 + ' / ' + denominator_1 + ' ' + op);
+                    answers[1].push(''+numerator_2 + ' / ' + denominator_2);
+                }
+                else
+                {
+                    answers[0].push(numerator_1 + ' ' + op);
+                    answers[1].push(''+numerator_2);
+                }
+            }
+        }
+        shuffle_questions();
+    }
+
+    function generate_gm1_equations()
+    {
+        let length = wheel_map[''+difficulty].length;
+
+        questions = [];
         answers = [];
-        let fractions = false;
-        let ops = ['+', '-'];
-        if (grade >= 3) {
-            ops.push('*');
-            ops.push('/');
-        }
-        if (grade % 2 == 0) {
-            fractions = true;
-        }
 
         let j = 0;
         while (j < length) 
@@ -487,37 +700,46 @@ window.onload = function() {
                 answers.push(result);
             }
         }
-        shuffle_answers();
+        shuffle_questions();
+
     }
 
-    function shuffle_answers() {
-        for (var i = answers.length - 1; i > 0; i--) {
+    function shuffle_questions() 
+    {
+        for (var i = questions.length - 1; i > 0; i--) 
+        {
             var j = Math.floor(Math.random() * (i + 1));
-            var temp = answers[i];
-            answers[i] = answers[j];
-            answers[j] = temp;
+            var temp = questions[i];
+            questions[i] = questions[j];
+            questions[j] = temp;
         }
     }
 
     function increase_cursor() {
         if (!won) {
 			score_selections += 1;
-            do {
-                cursor = (cursor + 1) % answers.length;
-            } while (bubbles[cursor].popped);
+            
+            //TODO: Federico write graphics logic for this gamemode
+            // do {
+            cursor = (cursor + 1) % questions.length;
+
+            // } while (bubbles[cursor].popped);
         }
     }
 
     function decrease_cursor() {
-        if (!won) {
-			score_selections += 1;
-            do {
+        if (!won) 
+        {
+		    score_selections += 1;
+             
+            //TODO: Federico write graphics logic for this gamemode
+            // do {
                 if (cursor-1 < 0) {
-                    cursor = answers.length - 1;
+                    cursor = questions.length - 1;
                 } else {
                     cursor = cursor - 1;
                 }
-            } while (bubbles[cursor].popped);
+            // } while (bubbles[cursor].popped);
         }
     }
 
