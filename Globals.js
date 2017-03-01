@@ -40,7 +40,7 @@ Globals.speech = {
     ],
     victory: [
         // "congratulations, you finished",
-        "great job, you answered everything right"        
+        "great job, you answered everything right"
     ],
 };
 

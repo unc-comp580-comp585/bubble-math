@@ -56,8 +56,8 @@ window.onload = function() {
     var recognition;
 
     function preload() {
-        game.load.image(Globals.handles.bubble, 'assets/bubble.png');
-        game.load.image(Globals.handles.background, 'assets/background.png');
+        game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
+        game.load.image(Globals.handles.background, 'assets/images/background.png');
 
         Sound.loadSounds(game, game_sounds);
 
