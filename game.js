@@ -7,7 +7,7 @@ window.onload = function() {
     });
 
     // Difficulty of Game [0-2]
-    var difficulty = 0;
+    var difficulty = 2;
 
     // Distances of bubbles from center (indexed by difficulty)
     var radii = [70, 100, 130];
@@ -20,7 +20,7 @@ window.onload = function() {
     ];
 
     // Grade in School [1-4]
-    var grade = 1;
+    var grade = 3;
 
     // BS1 Defines
     var cursor;
@@ -394,12 +394,15 @@ window.onload = function() {
         }
 
         let j = 0;
-        while (j < length) {
+        while (j < length) 
+        {
             let str = '';
             let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
             str += numerator_1 + ' ';
+            let denominator_1 = 1;
             if (fractions) {
-                str += + '/' + nums[game.rnd.integerInRange(0, nums.length - 1)] + ' ';
+                denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
+                str += + '/' + denominator_1 + ' ';
             }
             let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
             str += op + ' ';
@@ -409,11 +412,20 @@ window.onload = function() {
             }
             let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
             str += numerator_2 + ' ';
-            if (fractions) {
-                str += '/' + nums[game.rnd.integerInRange(0, nums.length - 1)];
+            let denominator_2 = 1;            
+            if (fractions) 
+            {
+                denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+                str += '/' + denominator_2;
             }
             let result = eval(str);
-
+            
+            if(numerator_2 === 0 && op === '/')
+                continue;
+            if((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/')
+                continue;
+            if(!Number.isInteger(result))
+                continue;
             if (questions.indexOf(str) !== -1) {
                 continue;
             } else {
