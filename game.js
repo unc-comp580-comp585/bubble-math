@@ -9,7 +9,7 @@ window.onload = function() {
     // Difficulty Sections
     
     // Difficulty of Game [0-2]
-    var difficulty = 2;
+    var difficulty = 1;
 
     // Distances of bubbles from center (indexed by difficulty)
     var radii = [70, 100, 130];
@@ -22,7 +22,7 @@ window.onload = function() {
     ];
 
     // Grade in School [1-4]
-    var grade = 3;
+    var grade = 4;
 
     // Mode [0-1]
     var game_mode = 0;
@@ -116,37 +116,13 @@ window.onload = function() {
 
     }
 
-    function create() {
-        cursor = 0;
+    function create() 
+    {
 
-        Graphics.drawBackground(game);
-
-        bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
-        bubbles[cursor].numText.fill = Globals.colors.selected;
-
-        let wand_w = wand_dims[difficulty].w;
-        let wand_h = wand_dims[difficulty].h;
-        let angle = wheel_map[''+difficulty][cursor];
-        wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
-
-        game.input.gamepad.start();
-
-        question_text = game.add.text(game.world.centerX, 100, "", {
-            font: "bold 32px Courier",
-            fill: "#ffffff",
-            boundsAlignH: "center",
-            boundsAlignV: "middle",
-        });
-        question_text.anchor.setTo(0.5, 0.5);
-
+       
         initGame();
 
-        bubbles = Graphics.drawWheelMap(game, wheel_map, answers, difficulty);
-        bubbles[cursor].numText.fill = Globals.colors.selected;
-
         game.input.gamepad.start();
-
-
 
         Sound.addSounds(game, game_sounds);
         recognition = Sound.initRecognition(recognition);
@@ -198,6 +174,17 @@ window.onload = function() {
 
     function initGame()
     {
+        Graphics.drawBackground(game);
+        
+
+        question_text = game.add.text(game.world.centerX, 100, "", {
+            font: "bold 32px Courier",
+            fill: "#ffffff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+        });
+        question_text.anchor.setTo(0.5, 0.5);
+
         wheel_map = {};
         equation_map = {};
         answered_questions = {};
@@ -217,10 +204,14 @@ window.onload = function() {
         score_multiplier = 1;
 
         question_text.setText(questions[question_index].trim());
-        
-        console.log(question_text);
+         
+        bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
+        bubbles[cursor].numText.fill = Globals.colors.selected;
 
-
+        let wand_w = wand_dims[difficulty].w;
+        let wand_h = wand_dims[difficulty].h;
+        let angle = wheel_map[''+difficulty][cursor];
+        wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
 
     }
 
@@ -294,7 +285,14 @@ window.onload = function() {
 
     // Submit answer
     function onSpace() {
-        lock_in_answer();
+        if(!won)
+        {
+            lock_in_answer();
+        }
+        else
+        {
+            initGame();
+        }
     }
 
     function update() {
@@ -338,7 +336,7 @@ window.onload = function() {
         if (good) 
         {
 			
-            score += ((10000) * score_multiplier) * (Math.max(0, 20-score_selections)); 
+            score += ((10000) * score_multiplier) * (Math.max(1, 20-score_selections)); 
             score_multiplier += 1;	
             score_selections = 0;
             if(spoken)
@@ -457,7 +455,7 @@ window.onload = function() {
             let denominator_1 = 1;
             if (fractions) {
                 denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
-                str += + '/' + denominator_1 + ' ';
+                str +=  '/ ' + (''+denominator_1) + ' ';
             }
             let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
             str += op + ' ';
@@ -471,7 +469,7 @@ window.onload = function() {
             if (fractions) 
             {
                 denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
-                str += '/' + denominator_2;
+                str += '/ ' + denominator_2;
             }
             let result = eval(str);
             
