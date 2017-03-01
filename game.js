@@ -6,6 +6,8 @@ window.onload = function() {
         update: update,
     });
 
+    // Difficulty Sections
+    
     // Difficulty of Game [0-2]
     var difficulty = 2;
 
@@ -21,6 +23,9 @@ window.onload = function() {
 
     // Grade in School [1-4]
     var grade = 3;
+
+    // Mode [0-1]
+    var game_mode = 0;
 
     // BS1 Defines
     var cursor;
@@ -57,6 +62,18 @@ window.onload = function() {
 
     var won;
 
+    //Scorekeeping Information
+    
+    //global score
+    var score;
+
+    //'streak' multiplier
+    var score_multiplier = 0;
+
+    //how many bubbles were considered
+    //before selecting answers
+    var selections = 0;
+
     // Audio contexts
     var game_sounds = {};
 
@@ -75,6 +92,8 @@ window.onload = function() {
         game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
         game.load.image(Globals.handles.background, 'assets/images/background.png');
         game.load.image(Globals.handles.wand, 'assets/images/wand.png');
+
+        score = 0;
 
         Sound.loadSounds(game, game_sounds);
 
@@ -213,9 +232,9 @@ window.onload = function() {
             console.log('Result received: ' + number + '.');
             console.log('Confidence: ' + event.results[0][0].confidence);
             if (Number.isInteger(parseInt(number))){
-                speak_answer(number);
+                lock_in_answer(number);
             } else {
-                speak_answer(Globals.small[number]);
+                lock_in_answer(Globals.small[number]);
             }
         }
         recognition.onspeechend = function() {
@@ -267,49 +286,37 @@ window.onload = function() {
         }
     }
 
-    // Evaluate whether a spoken answer is correct
-    function speak_answer(spoken_answer){
-        console.log('question: ' + questions[question_index]);
-        if (eval(questions[question_index]) == spoken_answer) {
-            for (var i = 0; i < bubbles.length; i++) {
-                if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false) {
-                    bubbles[i].popped = true;
-                    answered_questions[i] = true;
-                    break;
+
+    function lock_in_answer(spoken_answer) 
+    {
+        let spoken  = spoken_answer != undefined; 
+        let good = spoken && eval(questions[question_index]) == spoken_answer;
+        good = good || (!spoken && eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions));
+        
+        if (good) 
+        {
+            if(spoken)
+            {
+                for(var i = 0; i < bubbles.length; i++)
+                {
+                    if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false)
+                    {
+                        bubbles[i].popped = true;
+                        answered_questions[i] = true;
+                        break;
+                    }
                 }
             }
+            else 
+            {
+                bubbles[cursor].popped = true;
+                answered_questions[cursor] = true;
+            }
             updateBubbleTextColors();
             question_index += 1;
-            if (question_index < questions.length) {
-                question_text.setText(questions[question_index].trim());
-            }
-            if (dictation && !won) {
-                Sound.dictate('correct');
-            }
-            if (soundfx && !won) {
-                Sound.play(game_sounds,'pop');
-            }
-            console.log("Correct!");
-        } else {
-            if (dictation && !won) {
-                Sound.dictate('incorrect');
-            }
-            if (soundfx && !won) {
-                Sound.play(game_sounds, 'wrong');
-            }
-        }
-    }
 
-    function lock_in_answer() {
-        console.log('question: ' + questions[question_index]);
-        console.log('locked in answer: ' + answers[cursor]);
-        if (eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions)) {
-            bubbles[cursor].popped = true;
-            updateBubbleTextColors();
-
-            answered_questions[cursor] = true;
-            question_index += 1;
-            if (question_index < questions.length) {
+            if (question_index < questions.length) 
+            {
                 question_text.setText(questions[question_index].trim());
             }
             if(dictation && !won)
