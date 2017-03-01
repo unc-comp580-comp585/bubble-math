@@ -1,5 +1,5 @@
 window.onload = function() {
-    
+
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
         preload: preload,
         create: create,
@@ -27,7 +27,7 @@ window.onload = function() {
 
     var questions;
     var answers;
-    
+
     // Keyboard fallbacks
     var Q;
     var E;
@@ -55,14 +55,13 @@ window.onload = function() {
     // Speech recognition object
     var recognition;
 
-    function preload() 
-    {
+    function preload() {
         game.load.image(Globals.handles.bubble, 'assets/bubble.png');
         game.load.image(Globals.handles.background, 'assets/background.png');
 
         Sound.loadSounds(game, game_sounds);
 
-        if (!('speechSynthesis' in window)){
+        if (!('speechSynthesis' in window)) {
             dictation = false;
         }
 
@@ -79,7 +78,7 @@ window.onload = function() {
 
     function create() {
         cursor = 0;
-   
+
         Graphics.drawBackground(game);
 
         bubbles = Graphics.drawWheelMap(game, wheel_map, answers, difficulty);
@@ -243,8 +242,8 @@ window.onload = function() {
     function speak_answer(spoken_answer){
         console.log('question: ' + questions[question_index]);
         if (eval(questions[question_index]) == spoken_answer) {
-            for(var i = 0; i < bubbles.length; i++){
-                if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false){
+            for (var i = 0; i < bubbles.length; i++) {
+                if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false) {
                     bubbles[i].popped = true;
                     answered_questions[i] = true;
                     break;
@@ -255,22 +254,18 @@ window.onload = function() {
             if (question_index < questions.length) {
                 question_text.setText(questions[question_index].trim());
             }
-            if(dictation && !won)
-            {
+            if (dictation && !won) {
                 Sound.dictate('correct');
             }
-            if(soundfx && !won)
-            {
+            if (soundfx && !won) {
                 Sound.play(game_sounds,'pop');
             }
             console.log("Correct!");
         } else {
-            if(dictation && !won)
-            {
+            if (dictation && !won) {
                 Sound.dictate('incorrect');
             }
-            if(soundfx && !won)
-            {
+            if (soundfx && !won) {
                 Sound.play(game_sounds, 'wrong');
             }
         }
@@ -301,12 +296,10 @@ window.onload = function() {
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
             // TODO: Add soundfx for this
         } else {
-            if(dictation && !won)
-            {
+            if (dictation && !won) {
                 Sound.dictate('incorrect');
             }
-            if(soundfx && !won)
-            {
+            if (soundfx && !won) {
                 Sound.play(game_sounds, 'wrong');
             }
         }
@@ -355,7 +348,7 @@ window.onload = function() {
             }
         }
     }
-   
+
     function generate_equations() {
         let length = wheel_map[''+difficulty].length;
         let nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -370,7 +363,7 @@ window.onload = function() {
         if (grade % 2 == 0) {
             fractions = true;
         }
-        
+
         let j = 0;
         while (j < length) {
             let str = '';
@@ -391,7 +384,7 @@ window.onload = function() {
                 str += '/' + nums[game.rnd.integerInRange(0, nums.length - 1)];
             }
             let result = eval(str);
-            
+
             if (questions.indexOf(str) !== -1) {
                 continue;
             } else {
@@ -403,10 +396,8 @@ window.onload = function() {
         shuffle_answers();
     }
 
-    function shuffle_answers()
-    {
-        for (var i = answers.length - 1; i > 0; i--) 
-        {
+    function shuffle_answers() {
+        for (var i = answers.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
             var temp = answers[i];
             answers[i] = answers[j];
