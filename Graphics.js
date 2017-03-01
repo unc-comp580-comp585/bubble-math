@@ -8,16 +8,13 @@ Graphics.drawBackground = function(game) {
 // Draw bubbles in wheel pattern. Since sprites that are created
 // are also automatically rendered, this function both creates
 // the Bubble objects and renders them.
-Graphics.drawWheelMap = function(game, wheel_map, answers, difficulty) {
+Graphics.drawWheelMap = function(game, angles, answers, radius) {
     let bubbles = [];
-    let angles = wheel_map[''+difficulty];
     for (let i = 0; i < angles.length; i++) {
         let angle = angles[i] * Math.PI/180.0;
 
-        let dist = (difficulty+1) * 50;
-
-        let cx = game.world.centerX + dist*Math.sin(angle);
-        let cy = game.world.centerY + dist*Math.cos(angle);
+        let cx = game.world.centerX + radius*Math.sin(angle);
+        let cy = game.world.centerY + radius*Math.cos(angle);
 
         let num = answers[i];
 

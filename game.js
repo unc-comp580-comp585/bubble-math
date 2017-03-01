@@ -9,6 +9,9 @@ window.onload = function() {
     // Difficulty of Game [0-2]
     var difficulty = 0;
 
+    // Distances of bubbles from center (by difficulty)
+    var radii = [70, 100, 130];
+
     // Grade in School [1-4]
     var grade = 1;
 
@@ -81,7 +84,7 @@ window.onload = function() {
 
         Graphics.drawBackground(game);
 
-        bubbles = Graphics.drawWheelMap(game, wheel_map, answers, difficulty);
+        bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
         bubbles[cursor].numText.fill = Globals.colors.selected;
 
         game.input.gamepad.start();
