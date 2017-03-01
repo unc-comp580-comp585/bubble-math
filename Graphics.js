@@ -14,7 +14,7 @@ Graphics.drawWheelMap = function(game, angles, answers, radius) {
         let angle = angles[i] * Math.PI/180.0;
 
         let cx = game.world.centerX + radius*Math.sin(angle);
-        let cy = game.world.centerY + radius*Math.cos(angle);
+        let cy = game.world.centerY - radius*Math.cos(angle);
 
         let num = answers[i];
 
