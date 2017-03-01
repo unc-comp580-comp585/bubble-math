@@ -12,6 +12,7 @@ Globals.gamepadEnabled = function(game) {
 Globals.handles = {
     bubble: 'bubble',
     background: 'background',
+    wand: 'wand',
 };
 
 Globals.colors = {

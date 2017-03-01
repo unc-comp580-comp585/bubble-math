@@ -9,8 +9,15 @@ window.onload = function() {
     // Difficulty of Game [0-2]
     var difficulty = 0;
 
-    // Distances of bubbles from center (by difficulty)
+    // Distances of bubbles from center (indexed by difficulty)
     var radii = [70, 100, 130];
+
+    // Wand dimensions (indexed by difficulty)
+    var wand_dims = [
+        { w: 40, h: 70  },
+        { w: 60, h: 120 },
+        { w: 80, h: 160 },
+    ];
 
     // Grade in School [1-4]
     var grade = 1;
@@ -44,6 +51,8 @@ window.onload = function() {
 
     var bubbles;
 
+    var wand;
+
     var question_text;
 
     var won;
@@ -61,6 +70,7 @@ window.onload = function() {
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
         game.load.image(Globals.handles.background, 'assets/images/background.png');
+        game.load.image(Globals.handles.wand, 'assets/images/wand.png');
 
         Sound.loadSounds(game, game_sounds);
 
@@ -86,6 +96,11 @@ window.onload = function() {
 
         bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
         bubbles[cursor].numText.fill = Globals.colors.selected;
+
+        let wand_w = wand_dims[difficulty].w;
+        let wand_h = wand_dims[difficulty].h;
+        let angle = wheel_map[''+difficulty][cursor];
+        wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
 
         game.input.gamepad.start();
 
@@ -154,12 +169,11 @@ window.onload = function() {
     function onQ() {
         decrease_cursor();
         updateBubbleTextColors();
-        if(dictation)
-        {
+        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+        if (dictation) {
             Sound.readEquation(answers[cursor]);
         }
-        if(soundfx)
-        {
+        if (soundfx) {
             Sound.play(game_sounds,'bubbles');
         }
     }
@@ -168,12 +182,11 @@ window.onload = function() {
     function onE() {
         increase_cursor();
         updateBubbleTextColors();
-        if(dictation && !won)
-        {
+        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+        if (dictation && !won) {
             Sound.readEquation(answers[cursor]);
         }
-        if(soundfx && !won)
-        {
+        if (soundfx && !won) {
             Sound.play(game_sounds,'bubbles');
         }
     }
