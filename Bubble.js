@@ -8,19 +8,9 @@ function Bubble(game, cx, cy, r, num) {
 
     this.num = num;
 
-    // Get image dimensions
-    var imgprops = game.cache.getImage(Globals.handles.bubble);
-    var w = imgprops.width;
-    var h = imgprops.height;
-
-    // Scale to desired radius
-    var sx = 2*r / w;
-    var sy = 2*r / h;
-
-    // Apply sprite scaling
     this.sprite = game.add.sprite(cx, cy, Globals.handles.bubble);
     this.sprite.anchor.setTo(0.5, 0.5);
-    this.sprite.scale.setTo(sx, sy);
+    Graphics.scaleSprite(game, Globals.handles.bubble, this.sprite, 2*r, 2*r);
 
     // Set font settings
     //      TODO: Set size based on radius
