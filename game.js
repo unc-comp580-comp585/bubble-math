@@ -7,7 +7,7 @@ window.onload = function() {
     });
 
     // Difficulty Sections
-    
+
     // Difficulty of Game [0-2]
     var difficulty = 1;
 
@@ -30,7 +30,7 @@ window.onload = function() {
     // BS1 Defines
     var cursor;
 
-	//mapping of cursors -> answers
+    //mapping of cursors -> answers
     var wheel_map;
 
     // question -> answer
@@ -42,10 +42,10 @@ window.onload = function() {
     // Index of current question
     var question_index;
 
-	//array of questions
+    //array of questions
     var questions;
 
-	//array of answers
+    //array of answers
     var answers;
 
     // Keyboard fallbacks
@@ -56,25 +56,25 @@ window.onload = function() {
 
     //Up Ring Modifier
     var Shift;
-    
-	//Down ring modifier
+
+    //Down ring modifier
     var Ctrl;
 
     //I don't know what this is
-	//something related to graphics
-	var bubbles;
+    //something related to graphics
+    var bubbles;
 
     var wand;
 
-	//something related to graphics
+    //something related to graphics
     var question_text;
 
-	//Whether the game is over or not to avoid looping win sound over and over
-	//again
+    //Whether the game is over or not to avoid looping win sound over and over
+    //again
     var won;
 
     //Scorekeeping Information
-    
+
     //global score
     var score;
 
@@ -116,10 +116,7 @@ window.onload = function() {
 
     }
 
-    function create() 
-    {
-
-       
+    function create() {
         initGame();
 
         game.input.gamepad.start();
@@ -157,7 +154,7 @@ window.onload = function() {
         Shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         Shift.onDown.add(function() { up_level = true; }, this);
         Shift.onUp.add(function() { up_level = false; } , this);
-        
+
         Ctrl = game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         Ctrl.onDown.add(function() { down_level = true; }, this);
         Ctrl.onUp.add(function() { down_level = false; } , this);
@@ -172,10 +169,8 @@ window.onload = function() {
         console.debug("Sounds: %o", game_sounds);
     }
 
-    function initGame()
-    {
+    function initGame() {
         Graphics.drawBackground(game);
-        
 
         question_text = game.add.text(game.world.centerX, 100, "", {
             font: "bold 32px Courier",
@@ -204,7 +199,7 @@ window.onload = function() {
         score_multiplier = 1;
 
         question_text.setText(questions[question_index].trim());
-         
+
         bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
         bubbles[cursor].numText.fill = Globals.colors.selected;
 
@@ -212,7 +207,6 @@ window.onload = function() {
         let wand_h = wand_dims[difficulty].h;
         let angle = wheel_map[''+difficulty][cursor];
         wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
-
     }
 
     // Display current question/answer
@@ -220,11 +214,10 @@ window.onload = function() {
         console.log("Question : "  + questions[question_index]);
         console.log("Current Answer: " + answers[cursor]);
         console.log("Modifiers: Up Ring["+up_level+"] Down Ring["+down_level+"]");
-		console.log("Score: " + score);
-		console.log("Score Multiplier: " + score_multiplier);
-		console.log("Number of Selected Circles: " + score_selections); 
-        if(dictation)
-        {
+        console.log("Score: " + score);
+        console.log("Score Multiplier: " + score_multiplier);
+        console.log("Number of Selected Circles: " + score_selections);
+        if (dictation) {
             Sound.readEquation("The question is: " + questions[question_index]);
             Sound.readEquation("Your bubble is: " + answers[cursor]);
         }
@@ -327,58 +320,45 @@ window.onload = function() {
     }
 
 
-    function lock_in_answer(spoken_answer) 
-    {
-        let spoken  = spoken_answer != undefined; 
+    function lock_in_answer(spoken_answer) {
+        let spoken = (spoken_answer != undefined);
         let good = spoken && eval(questions[question_index]) == spoken_answer;
         good = good || (!spoken && eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions));
-        
-        if (good) 
-        {
-			
-            score += ((10000) * score_multiplier) * (Math.max(1, 20-score_selections)); 
-            score_multiplier += 1;	
+        if (good) {
+            score += ((10000) * score_multiplier) * (Math.max(1, 20-score_selections));
+            score_multiplier += 1;
             score_selections = 0;
-            if(spoken)
-            {
-                for(var i = 0; i < bubbles.length; i++)
-                {
-                    if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false)
-                    {
+            if (spoken) {
+                for (var i = 0; i < bubbles.length; i++) {
+                    if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false) {
                         bubbles[i].popped = true;
                         answered_questions[i] = true;
                         break;
                     }
                 }
-            }
-            else 
-            {
+            } else {
                 bubbles[cursor].popped = true;
                 answered_questions[cursor] = true;
             }
             updateBubbleTextColors();
             question_index += 1;
 
-            if (question_index < questions.length) 
-            {
+            if (question_index < questions.length) {
                 question_text.setText(questions[question_index].trim());
             }
-            if(dictation && !won)
-            {
+            if (dictation && !won) {
                 Sound.dictate('correct');
             }
-            if(soundfx && !won)
-            {
+            if (soundfx && !won) {
                 Sound.play(game_sounds,'pop');
             }
             console.log("Correct!");
-        } else if(cursor in answered_questions) {
-			//is this possible now?
+        } else if (cursor in answered_questions) {
+            //is this possible now?
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
             // TODO: Add soundfx for this
         } else {
-            if (dictation && !won) 
-            {
+            if (dictation && !won) {
                 Sound.dictate('incorrect');
             }
             if (soundfx && !won) {
@@ -447,8 +427,7 @@ window.onload = function() {
         }
 
         let j = 0;
-        while (j < length) 
-        {
+        while (j < length) {
             let str = '';
             let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
             str += numerator_1 + ' ';
@@ -465,20 +444,21 @@ window.onload = function() {
             }
             let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
             str += numerator_2 + ' ';
-            let denominator_2 = 1;            
-            if (fractions) 
-            {
+            let denominator_2 = 1;
+            if (fractions) {
                 denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
                 str += '/ ' + denominator_2;
             }
             let result = eval(str);
-            
-            if(numerator_2 === 0 && op === '/')
+
+            if (numerator_2 === 0 && op === '/') {
                 continue;
-            if((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/')
+            }
+            if ((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/')
                 continue;
-            if(!Number.isInteger(result))
+            if (!Number.isInteger(result)) {
                 continue;
+            }
             if (questions.indexOf(str) !== -1) {
                 continue;
             } else {
@@ -501,7 +481,7 @@ window.onload = function() {
 
     function increase_cursor() {
         if (!won) {
-			score_selections += 1;
+            score_selections += 1;
             do {
                 cursor = (cursor + 1) % answers.length;
             } while (bubbles[cursor].popped);
@@ -510,7 +490,7 @@ window.onload = function() {
 
     function decrease_cursor() {
         if (!won) {
-			score_selections += 1;
+            score_selections += 1;
             do {
                 if (cursor-1 < 0) {
                     cursor = answers.length - 1;
