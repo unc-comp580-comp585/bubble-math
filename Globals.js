@@ -9,6 +9,20 @@ Globals.gamepadEnabled = function(game) {
            Globals.gamepad.connected;
 };
 
+/*
+ * User controlled game options
+ */
+
+// Difficulty of game [0-2]
+Globals.difficulty = 0;
+
+// Grade in school [1-4]
+Globals.grade = 1;
+
+/*
+ * Graphical options 
+ */
+
 Globals.handles = {
     bubble: 'bubble',
     background: 'background',
@@ -27,6 +41,50 @@ Globals.colors = {
     popped: "000000",
 };
 
+/*
+ * Sound effect, speech synthesis, and voice recognition options
+ */
+
+// Enable/Disable speech synthesis
+Globals.dictation = true;
+
+// Enable/Disable all sound effects
+Globals.soundfx = true;
+
+// Speech recognition options and locales
+Globals.recognition = {
+    lang: 'it',
+    locales: ['en', 'es', 'it', 'zh', 'de'],
+};
+
+// Spoken numbers less then 4 in all supported languages
+Globals.numbers = {
+    "zero":0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "cero": 0,
+    "uno": 1,
+    "dos": 2,
+    "tres": 3,
+    "un": 1,
+    "deux": 2,
+    "trois": 3,
+    "due": 2,
+    "tre": 3,
+    "null": 0,
+    "eins": 1,
+    "zwei": 2,
+    "zwo" : 2,
+    "drei": 3,
+    "ling": 0,
+    "yi": 1,
+    "er": 2,
+    "liang": 2,
+    "san": 3,
+};
+
+// Speech synthesis (tts) options
 Globals.voice = {
     volume: 1,
     rate: 2,
@@ -34,7 +92,7 @@ Globals.voice = {
     lang: 'en-US',
 };
 
-// Collection of lines for varied text to speech
+// Collection of strings for speech synthesis
 Globals.speech = {
     correct: [
         "correct",
@@ -51,6 +109,7 @@ Globals.speech = {
     ],
 };
 
+// Sound effects
 Globals.sounds = {
     pop: {
         pop_1: {
@@ -108,28 +167,4 @@ Globals.sounds = {
             path: 'assets/audio/achievement.mp3',
         },
     },
-};
-
-Globals.small = {
-    'zero': 0,
-    'one': 1,
-    'two': 2,
-    'three': 3,
-    'four': 4,
-    'five': 5,
-    'six': 6,
-    'seven': 7,
-    'eight': 8,
-    'nine': 9,
-    'ten': 10,
-    'eleven': 11,
-    'twelve': 12,
-    'thirteen': 13,
-    'fourteen': 14,
-    'fifteen': 15,
-    'sixteen': 16,
-    'seventeen': 17,
-    'eighteen': 18,
-    'nineteen': 19,
-    'twenty': 20,
 };

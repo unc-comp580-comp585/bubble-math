@@ -34,26 +34,32 @@ Sound.addSounds = function(game, game_sounds){
 
 // plays randomly selected sound from input category
 Sound.play = function(game_sounds, input){
-    if (input == 'pop' || input == 'bubbles' || input == 'wrong' || input == 'win')
-    {
-        (game_sounds[input][
-            Math.floor(Math.random() * game_sounds[input].length)
-        ]).play();
+    if (Globals.soundfx){
+        if (input == 'pop' || input == 'bubbles' || input == 'wrong' || input == 'win')
+        {
+            (game_sounds[input][
+                Math.floor(Math.random() * game_sounds[input].length)
+            ]).play();
+        }
+        else{
+            return;
+        }
     }
-    else{
-        return;
-    }
+    return;
 };
 
 // Dictates input string aloud with voice settings defined in Globals
 Sound.read = function(input){
     // Web speech api
-    var msg = new SpeechSynthesisUtterance(input);
-    msg.volume = Globals.voice.volume;
-    msg.rate = Globals.voice.rate;
-    msg.pitch = Globals.voice.pitch;
-    msg.lang = Globals.voice.lang;
-    window.speechSynthesis.speak(msg);
+    if (Globals.dictation){
+        window.speechSynthesis.cancel();
+        var msg = new SpeechSynthesisUtterance(input);
+        msg.volume = Globals.voice.volume;
+        msg.rate = Globals.voice.rate;
+        msg.pitch = Globals.voice.pitch;
+        msg.lang = Globals.voice.lang;
+        window.speechSynthesis.speak(msg);
+    }
 };
 
 // Dictates an equation, replacing '-' with 'minus', etc.
@@ -118,7 +124,7 @@ Sound.initRecognition = function(recognition){
     speechRecognitionList.addFromString(grammar, 1);
     recognition.grammars = speechRecognitionList;
     //recognition.continuous = false;
-    recognition.lang = 'en-US';
+    recognition.lang = Globals.recognition.lang;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     return recognition;
