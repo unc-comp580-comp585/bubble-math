@@ -9,6 +9,20 @@ Globals.gamepadEnabled = function(game) {
            Globals.gamepad.connected;
 };
 
+/*
+ * User controlled game options
+ */
+
+// Difficulty of game [0-2]
+Globals.difficulty = 1;
+
+// Grade in school [1-4]
+Globals.grade = 4;
+
+/*
+ * Graphical options 
+ */
+
 Globals.handles = {
     bubble: 'bubble',
     background: 'background',
@@ -27,6 +41,17 @@ Globals.colors = {
     popped: "000000",
 };
 
+/*
+ * Sound effect, speech synthesis, and voice recognition options
+ */
+
+// Enable/Disable speech synthesis
+Globals.dictation = true;
+
+// Enable/Disable all sound effects
+Globals.soundfx = true;
+
+// Speech synthesis (tts) options
 Globals.voice = {
     volume: 1,
     rate: 2,
@@ -34,7 +59,7 @@ Globals.voice = {
     lang: 'en-US',
 };
 
-// Collection of lines for varied text to speech
+// Collection of strings for speech synthesis
 Globals.speech = {
     correct: [
         "correct",
@@ -51,6 +76,7 @@ Globals.speech = {
     ],
 };
 
+// Sound effects
 Globals.sounds = {
     pop: {
         pop_1: {
@@ -110,7 +136,7 @@ Globals.sounds = {
     },
 };
 
-Globals.small = {
+Globals.numbers = {
     'zero': 0,
     'one': 1,
     'two': 2,

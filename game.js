@@ -6,11 +6,6 @@ window.onload = function() {
         update: update,
     });
 
-    // Difficulty Sections
-
-    // Difficulty of Game [0-2]
-    var difficulty = 1;
-
     // Distances of bubbles from center (indexed by difficulty)
     var radii = [70, 100, 130];
 
@@ -20,9 +15,6 @@ window.onload = function() {
         { w: 60, h: 120 },
         { w: 80, h: 160 },
     ];
-
-    // Grade in School [1-4]
-    var grade = 4;
 
     // Mode [0-1]
     var game_mode = 0;
@@ -88,10 +80,6 @@ window.onload = function() {
     // Audio contexts
     var game_sounds = {};
 
-    // Enable/Disable speech or sounds
-    var dictation = true;
-    var soundfx = true;
-
     // Speech recognition object
     var recognition;
 
@@ -113,7 +101,7 @@ window.onload = function() {
         Sound.loadSounds(game, game_sounds);
 
         if (!('speechSynthesis' in window)) {
-            dictation = false;
+            Globals.dictation = false;
         }
 
     }
@@ -125,7 +113,6 @@ window.onload = function() {
 
         Sound.addSounds(game, game_sounds);
         recognition = Sound.initRecognition(recognition);
-        console.dir(recognition);
 
         Globals.gamepad = game.input.gamepad.pad1;
 
@@ -202,12 +189,12 @@ window.onload = function() {
 
         question_text.setText(questions[question_index].trim());
 
-        bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
+        bubbles = Graphics.drawWheelMap(game, wheel_map[''+Globals.difficulty], answers, radii[Globals.difficulty]);
         bubbles[cursor].numText.fill = Globals.colors.selected;
 
-        let wand_w = wand_dims[difficulty].w;
-        let wand_h = wand_dims[difficulty].h;
-        let angle = wheel_map[''+difficulty][cursor];
+        let wand_w = wand_dims[Globals.difficulty].w;
+        let wand_h = wand_dims[Globals.difficulty].h;
+        let angle = wheel_map[''+Globals.difficulty][cursor];
         wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
     }
 
@@ -219,7 +206,7 @@ window.onload = function() {
         console.log("Score: " + score);
         console.log("Score Multiplier: " + score_multiplier);
         console.log("Number of Selected Circles: " + score_selections);
-        if (dictation) {
+        if (Globals.dictation) {
             Sound.readEquation("The question is: " + questions[question_index]);
             Sound.readEquation("Your bubble is: " + answers[cursor]);
         }
@@ -229,26 +216,18 @@ window.onload = function() {
     function onQ() {
         decrease_cursor();
         updateBubbleText();
-        wand.rotateTo(wheel_map[''+difficulty][cursor]);
-        if (dictation) {
-            Sound.readEquation(answers[cursor]);
-        }
-        if (soundfx) {
-            Sound.play(game_sounds,'bubbles');
-        }
+        wand.rotateTo(wheel_map[''+Globals.difficulty][cursor]);
+        Sound.readEquation(answers[cursor]);
+        Sound.play(game_sounds,'bubbles');
     }
 
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
         updateBubbleText();
-        wand.rotateTo(wheel_map[''+difficulty][cursor]);
-        if (dictation && !won) {
-            Sound.readEquation(answers[cursor]);
-        }
-        if (soundfx && !won) {
-            Sound.play(game_sounds,'bubbles');
-        }
+        wand.rotateTo(wheel_map[''+Globals.difficulty][cursor]);
+        Sound.readEquation(answers[cursor]);
+        Sound.play(game_sounds,'bubbles');
     }
 
     // Starts speech recognition
@@ -262,7 +241,7 @@ window.onload = function() {
             if (Number.isInteger(parseInt(number))){
                 lock_in_answer(number);
             } else {
-                lock_in_answer(Globals.small[number]);
+                lock_in_answer(Globals.numbers[number]);
             }
         }
         recognition.onspeechend = function() {
@@ -275,7 +254,7 @@ window.onload = function() {
         recognition.onerror = function(event) {
            console.log('Error occurred in recognition: ' + event.error);
         }
-        recognition.start();
+        Sound.startRecognition(recognition);
     }
 
     // Submit answer
@@ -290,13 +269,11 @@ window.onload = function() {
     function update() {
         if (question_index  === questions.length) {
             question_text.setText("You win!");
-            if(dictation && !won) {
+            if(!won) {
                 Sound.dictate('victory');
-            }
-            if(soundfx && !won) {
                 Sound.play(game_sounds,'win');
-            }
-            won = true;
+                won = true;
+            } 
             return;
         }
 
@@ -345,10 +322,10 @@ window.onload = function() {
             if (question_index < questions.length) {
                 question_text.setText(questions[question_index].trim());
             }
-            if (dictation && !won) {
+            if (Globals.dictation && !won) {
                 Sound.dictate('correct');
             }
-            if (soundfx && !won) {
+            if (Globals.soundfx && !won) {
                 Sound.play(game_sounds,'pop');
             }
             console.log("Correct!");
@@ -357,10 +334,10 @@ window.onload = function() {
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
             // TODO: Add soundfx for this
         } else {
-            if (dictation && !won) {
+            if (Globals.dictation && !won) {
                 Sound.dictate('incorrect');
             }
-            if (soundfx && !won) {
+            if (Globals.soundfx && !won) {
                 Sound.play(game_sounds, 'wrong');
             }
         }
@@ -388,7 +365,7 @@ window.onload = function() {
     }
 
     function map_cursor_to_wheel(cursor_val) {
-        var wheel = wheel_map[''+difficulty]
+        var wheel = wheel_map[''+Globals.difficulty]
         for (var i = 0; i < wheel.length; i++) {
             if (cursor_val <= wheel[i]) {
                 cursor = i;
@@ -411,17 +388,17 @@ window.onload = function() {
     }
 
     function generate_equations() {
-        let length = wheel_map[''+difficulty].length;
+        let length = wheel_map[''+Globals.difficulty].length;
         let nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         questions = [];
         answers = [];
         let fractions = false;
         let ops = ['+', '-'];
-        if (grade >= 3) {
+        if (Globals.grade >= 3) {
             ops.push('*');
             ops.push('/');
         }
-        if (grade % 2 == 0) {
+        if (Globals.grade % 2 == 0) {
             fractions = true;
         }
 
