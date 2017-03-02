@@ -8,7 +8,8 @@ function Bubble(game, cx, cy, r, num) {
 
     this.num = num;
 
-    this.sprite = game.add.sprite(cx, cy, Globals.handles.bubble);
+    this.sprite = game.add.sprite(cx, cy, Globals.handles.bubble_popping);
+    this.sprite.frame = 0;
     this.sprite.anchor.setTo(0.5, 0.5);
     Graphics.scaleSprite(game, Globals.handles.bubble, this.sprite, 2*r, 2*r);
 
@@ -24,6 +25,9 @@ function Bubble(game, cx, cy, r, num) {
     this.numText.anchor.setTo(0.5, 0.5);
 
     this.popped = false;
+
+    // Add popping animation
+    this.sprite.animations.add(Globals.animations.pop);
 }
 
 Bubble.prototype.drawAt = function(x, y) {

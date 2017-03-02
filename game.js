@@ -104,6 +104,8 @@ window.onload = function() {
         game.load.image(Globals.handles.background, 'assets/images/background.png');
         game.load.image(Globals.handles.wand, 'assets/images/wand.png');
 
+        game.load.spritesheet(Globals.handles.bubble_popping, 'assets/sheets/bubble-popping.png', 256, 256);
+
         score = 0;
 
         game_sounds = {};
@@ -226,7 +228,7 @@ window.onload = function() {
     // Rotate cursor CW
     function onQ() {
         decrease_cursor();
-        updateBubbleTextColors();
+        updateBubbleTextVisibility();
         wand.rotateTo(wheel_map[''+difficulty][cursor]);
         if (dictation) {
             Sound.readEquation(answers[cursor]);
@@ -239,7 +241,7 @@ window.onload = function() {
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
-        updateBubbleTextColors();
+        updateBubbleTextVisibility();
         wand.rotateTo(wheel_map[''+difficulty][cursor]);
         if (dictation && !won) {
             Sound.readEquation(answers[cursor]);
@@ -278,12 +280,9 @@ window.onload = function() {
 
     // Submit answer
     function onSpace() {
-        if(!won)
-        {
+        if (!won) {
             lock_in_answer();
-        }
-        else
-        {
+        } else {
             initGame();
         }
     }
@@ -291,12 +290,10 @@ window.onload = function() {
     function update() {
         if (question_index  === questions.length) {
             question_text.setText("You win!");
-            if(dictation && !won)
-            {
+            if(dictation && !won) {
                 Sound.dictate('victory');
             }
-            if(soundfx && !won)
-            {
+            if(soundfx && !won) {
                 Sound.play(game_sounds,'win');
             }
             won = true;
@@ -331,16 +328,18 @@ window.onload = function() {
             if (spoken) {
                 for (var i = 0; i < bubbles.length; i++) {
                     if (bubbles[i].num == eval(questions[question_index]) && bubbles[i].popped == false) {
+                        bubbles[i].sprite.animations.play(Globals.animations.pop);
                         bubbles[i].popped = true;
                         answered_questions[i] = true;
                         break;
                     }
                 }
             } else {
+                bubbles[cursor].sprite.animations.play(Globals.animations.pop);
                 bubbles[cursor].popped = true;
                 answered_questions[cursor] = true;
             }
-            updateBubbleTextColors();
+            updateBubbleTextVisibility();
             question_index += 1;
 
             if (question_index < questions.length) {
@@ -501,18 +500,13 @@ window.onload = function() {
         }
     }
 
-    function updateBubbleTextColors() {
+    function updateBubbleTextVisibility() {
         for (let i = 0; i < bubbles.length; i++) {
             if (bubbles[i].popped) {
-                bubbles[i].numText.fill = Globals.colors.popped;
+                bubbles[i].numText.visible = false;
             } else {
-                bubbles[i].numText.fill = Globals.colors.unselected;
+                bubbles[i].numText.visible = true;
             }
-        }
-        if (bubbles[cursor].popped) {
-            bubbles[cursor].numText.fill = Globals.colors.popped;
-        } else {
-            bubbles[cursor].numText.fill = Globals.colors.selected;
         }
     }
 };

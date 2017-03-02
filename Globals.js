@@ -13,6 +13,12 @@ Globals.handles = {
     bubble: 'bubble',
     background: 'background',
     wand: 'wand',
+
+    bubble_popping: 'bubble_popping',
+};
+
+Globals.animations = {
+    pop: 'pop',
 };
 
 Globals.colors = {
