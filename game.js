@@ -27,6 +27,12 @@ window.onload = function() {
     // Mode [0-1]
     var game_mode = 0;
 
+    //Fractions Enabled
+    var fractions;
+
+    //operations
+    var ops;
+
     // BS1 Defines
     var cursor;
 
@@ -188,6 +194,16 @@ window.onload = function() {
         question_index = 0;
         won = false;
 
+
+        fractions = false;
+        ops = ['+', '-'];
+        if (grade >= 3) {
+            ops.push('*');
+            ops.push('/');
+        }
+        if (grade % 2 == 0) {
+            fractions = true;
+        }
         generate_wheel_map();
 
         generate_equations();
@@ -415,44 +431,45 @@ window.onload = function() {
         let nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         questions = [];
         answers = [];
-        let fractions = false;
-        let ops = ['+', '-'];
-        if (grade >= 3) {
-            ops.push('*');
-            ops.push('/');
-        }
-        if (grade % 2 == 0) {
-            fractions = true;
-        }
 
         let j = 0;
+        let gen_fraction = false;
         while (j < length) {
+
+            if(fractions)
+                gen_fraction = game.rnd.integerInRange(0, 1) == 0;
             let str = '';
             let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
-            str += numerator_1 + ' ';
+            str += numerator_1;
             let denominator_1 = 1;
-            if (fractions) {
+            if (gen_fraction) {
                 denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
-                str +=  '/ ' + (''+denominator_1) + ' ';
+                str = '(' + numerator_1 + ' / ' + denominator_1 + ')';
             }
             let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
-            str += op + ' ';
+            str += ' '+ op + ' ';
             let lower_bound = nums.length - 1;
             if (op === '-') {
                 lower_bound = numerator_1;
             }
             let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
-            str += numerator_2 + ' ';
+            // str += numerator_2 + ' ';
             let denominator_2 = 1;
-            if (fractions) {
+            if (gen_fraction) {
                 denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
-                str += '/ ' + denominator_2;
+                str += '(' + numerator_2 + ' / ' + denominator_2 + ')';
+            }
+            else 
+            {
+                str += numerator_2 + ' ';
             }
             let result = eval(str);
 
             if (numerator_2 === 0 && op === '/') {
                 continue;
             }
+            if(result < 0)
+                continue;
             if ((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/')
                 continue;
             if (!Number.isInteger(result)) {
