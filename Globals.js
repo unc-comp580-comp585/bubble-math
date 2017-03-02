@@ -53,7 +53,7 @@ Globals.soundfx = true;
 
 // Speech recognition options and locales
 Globals.recognition = {
-    lang: 'it',
+    lang: 'en',
     locales: ['en', 'es', 'it', 'zh', 'de'],
 };
 
