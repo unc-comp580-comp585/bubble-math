@@ -9,3 +9,4 @@ Gemfile.lock
 _site/*
 tags
 node_modules/
+temp.js

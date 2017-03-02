@@ -52,6 +52,7 @@ Sound.play = function(game_sounds, input){
 Sound.read = function(input){
     // Web speech api
     if (Globals.dictation){
+        window.speechSynthesis.cancel();
         var msg = new SpeechSynthesisUtterance(input);
         msg.volume = Globals.voice.volume;
         msg.rate = Globals.voice.rate;

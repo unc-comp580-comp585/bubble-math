@@ -54,7 +54,34 @@ Globals.soundfx = true;
 // Speech recognition options and locales
 Globals.recognition = {
     lang: 'it',
-    locales: ['en', 'es', 'it', 'zh'],
+    locales: ['en', 'es', 'it', 'zh', 'de'],
+};
+
+// Spoken numbers less then 4 in all supported languages
+Globals.numbers = {
+    "zero":0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "cero": 0,
+    "uno": 1,
+    "dos": 2,
+    "tres": 3,
+    "un": 1,
+    "deux": 2,
+    "trois": 3,
+    "due": 2,
+    "tre": 3,
+    "null": 0,
+    "eins": 1,
+    "zwei": 2,
+    "zwo" : 2,
+    "drei": 3,
+    "ling": 0,
+    "yi": 1,
+    "er": 2,
+    "liang": 2,
+    "san": 3,
 };
 
 // Speech synthesis (tts) options
