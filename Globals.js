@@ -14,10 +14,10 @@ Globals.gamepadEnabled = function(game) {
  */
 
 // Difficulty of game [0-2]
-Globals.difficulty = 1;
+Globals.difficulty = 0;
 
 // Grade in school [1-4]
-Globals.grade = 4;
+Globals.grade = 1;
 
 /*
  * Graphical options 
@@ -50,6 +50,12 @@ Globals.dictation = true;
 
 // Enable/Disable all sound effects
 Globals.soundfx = true;
+
+// Speech recognition options and locales
+Globals.recognition = {
+    lang: 'it',
+    locales: ['en', 'es', 'it', 'zh'],
+};
 
 // Speech synthesis (tts) options
 Globals.voice = {
@@ -134,28 +140,4 @@ Globals.sounds = {
             path: 'assets/audio/achievement.mp3',
         },
     },
-};
-
-Globals.numbers = {
-    'zero': 0,
-    'one': 1,
-    'two': 2,
-    'three': 3,
-    'four': 4,
-    'five': 5,
-    'six': 6,
-    'seven': 7,
-    'eight': 8,
-    'nine': 9,
-    'ten': 10,
-    'eleven': 11,
-    'twelve': 12,
-    'thirteen': 13,
-    'fourteen': 14,
-    'fifteen': 15,
-    'sixteen': 16,
-    'seventeen': 17,
-    'eighteen': 18,
-    'nineteen': 19,
-    'twenty': 20,
 };

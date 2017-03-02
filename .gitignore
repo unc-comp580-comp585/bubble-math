@@ -8,5 +8,4 @@ bs-config.json
 Gemfile.lock
 _site/*
 tags
-temp.js
 node_modules/

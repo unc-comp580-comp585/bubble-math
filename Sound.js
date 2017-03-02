@@ -123,7 +123,7 @@ Sound.initRecognition = function(recognition){
     speechRecognitionList.addFromString(grammar, 1);
     recognition.grammars = speechRecognitionList;
     //recognition.continuous = false;
-    recognition.lang = 'en-US';
+    recognition.lang = Globals.recognition.lang;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     return recognition;
