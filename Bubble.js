@@ -11,7 +11,9 @@ function Bubble(game, cx, cy, r, num) {
     this.sprite = game.add.sprite(cx, cy, Globals.handles.bubble_popping);
     this.sprite.frame = 0;
     this.sprite.anchor.setTo(0.5, 0.5);
-    Graphics.scaleSprite(game, Globals.handles.bubble, this.sprite, 2*r, 2*r);
+
+    let scale = 2*r + 80;
+    Graphics.scaleSprite(game, Globals.handles.bubble, this.sprite, scale, scale);
 
     // Set font settings
     //      TODO: Set size based on radius

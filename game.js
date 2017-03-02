@@ -228,7 +228,7 @@ window.onload = function() {
     // Rotate cursor CW
     function onQ() {
         decrease_cursor();
-        updateBubbleTextVisibility();
+        updateBubbleText();
         wand.rotateTo(wheel_map[''+difficulty][cursor]);
         if (dictation) {
             Sound.readEquation(answers[cursor]);
@@ -241,7 +241,7 @@ window.onload = function() {
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
-        updateBubbleTextVisibility();
+        updateBubbleText();
         wand.rotateTo(wheel_map[''+difficulty][cursor]);
         if (dictation && !won) {
             Sound.readEquation(answers[cursor]);
@@ -339,7 +339,7 @@ window.onload = function() {
                 bubbles[cursor].popped = true;
                 answered_questions[cursor] = true;
             }
-            updateBubbleTextVisibility();
+            updateBubbleText();
             question_index += 1;
 
             if (question_index < questions.length) {
@@ -500,12 +500,18 @@ window.onload = function() {
         }
     }
 
-    function updateBubbleTextVisibility() {
+    function updateBubbleText() {
         for (let i = 0; i < bubbles.length; i++) {
             if (bubbles[i].popped) {
                 bubbles[i].numText.visible = false;
             } else {
                 bubbles[i].numText.visible = true;
+            }
+
+            if (cursor == i) {
+                bubbles[i].numText.fill = Globals.colors.selected;
+            } else {
+                bubbles[i].numText.fill = Globals.colors.unselected;
             }
         }
     }
