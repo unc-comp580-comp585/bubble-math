@@ -16,6 +16,9 @@ window.onload = function() {
         { w: 80, h: 160 },
     ];
 
+    //did the gamepad state change?
+    var state_changed = false;
+
     // Mode [0-1]
     var game_mode = 0;
 
@@ -290,12 +293,15 @@ window.onload = function() {
                 Sound.play(game_sounds,'win');
                 won = true;
             } 
+            process_gamepad_buttons();
             return;
         }
 
         if (Globals.gamepadEnabled(game)) {
             process_gamepad_controls();
         }
+        else
+            state_changed = true;
     }
 
     function process_gamepad_controls() {
@@ -304,13 +310,17 @@ window.onload = function() {
     }
 
     function process_gamepad_buttons() {
-        if (Globals.gamepad.justPressed(Phaser.Gamepad.XBOX360_A) && cursor != -1) {
-            lock_in_answer();
+        if (Globals.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20) && cursor != -1 && !won) {
+                lock_in_answer();
+        }
+        if(Globals.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && won) {
+                initGame();
         }
     }
 
 
-    function lock_in_answer(spoken_answer) {
+    function lock_in_answer(spoken_answer) 
+    {
         let spoken = (spoken_answer != undefined);
         let good = spoken && eval(questions[question_index]) == spoken_answer;
         good = good || (!spoken && eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions));
@@ -338,10 +348,11 @@ window.onload = function() {
             if (question_index < questions.length) {
                 question_text.setText(questions[question_index].trim());
             }
-            if (Globals.dictation && !won) {
+            if (Globals.dictation && !won && state_changed) 
+            {
                 Sound.dictate('correct');
             }
-            if (Globals.soundfx && !won) {
+            if (Globals.soundfx && !won && state_changed) {
                 Sound.play(game_sounds,'pop');
             }
             console.log("Correct!");
@@ -350,32 +361,36 @@ window.onload = function() {
             console.log("answer: " + answers[cursor] + " @ cursor: " + cursor + " already used");
             // TODO: Add soundfx for this
         } else {
-            if (Globals.dictation && !won) {
+            if (Globals.dictation && !won && state_changed) {
                 Sound.dictate('incorrect');
             }
-            if (Globals.soundfx && !won) {
+            if (Globals.soundfx && !won && state_changed) {
                 Sound.play(game_sounds, 'wrong');
             }
         }
     }
 
     function process_left_joystick() {
+        let last_cursor = cursor;
         cursor = -1;
-        var controller_moved_x = Math.abs(Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.leftJSDeadZone;
-        var controller_moved_y = Math.abs(GLobals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.leftJSDeadZone;
+        let controller_moved_x = Math.abs(Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.leftJSDeadZone;
+        let controller_moved_y = Math.abs(Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.leftJSDeadZone;
         if (controller_moved_x || controller_moved_y) {
-            var x =  Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
-            var y = -Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
-            var tmp  = Math.atan2(y, x);
+            let x =  Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+            let y = -Globals.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+            let tmp  = Math.atan2(y, x);
             if (y < 0) {
                 tmp += 2 * Math.PI;
                 cursor = tmp;
                 cursor *= 360 / (2 * Math.PI)
+                cursor -= 90;
             } else {
                 cursor = tmp;
                 cursor *= 360 / (2 * Math.PI)
+                cursor -= 90;
             }
             cursor = Math.abs(cursor);
+            state_changed = last_cursor != cursor;
             map_cursor_to_wheel(cursor);
         }
     }
