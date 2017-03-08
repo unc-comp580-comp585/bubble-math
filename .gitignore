@@ -1,0 +1,12 @@
+*.pyc
+__pycache__/
+*.wav
+*.kv
+*.swp
+bs-config.json
+.sass-cache/*
+Gemfile.lock
+_site/*
+tags
+node_modules/
+temp.js
