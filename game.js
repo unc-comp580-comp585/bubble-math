@@ -226,8 +226,8 @@ window.onload = function() {
         console.log("Score Multiplier: " + score_multiplier);
         console.log("Number of Selected Circles: " + score_selections);
         if (Globals.dictation) {
-            Sound.readEquation("The question is: " + questions[question_index]);
-            Sound.readEquation("Your bubble is: " + answers[cursor]);
+            Sound.readEquation("The question is: " + questions[question_index] + 
+            '. Your bubble is: ' + answers[cursor]);
         }
     }
 
