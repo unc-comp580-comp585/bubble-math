@@ -100,12 +100,12 @@ Sound.dictate = function(input){
 
 // Increases/decreases speech rate
 Sound.speechRate = function(input){
-    if (input.event.key == "a" && Globals.voice.rate < 3.0){
-        Globals.voice.rate += 0.2;
+    if (input.event.key == "a"){
+        Globals.voice.rate = Math.min(Globals.voice.rate+0.2, 2.0);
         console.log("Speech rate increased");
     } 
-    else if (input.event.key == "s" && Globals.voice.rate >= 0.4){
-        Globals.voice.rate -= 0.2;
+    else if (input.event.key == "s"){
+        Globals.voice.rate = Math.max(Globals.voice.rate-0.2, 0.4);
         console.log("Speech rate decreased");
     }
 };
