@@ -15,16 +15,16 @@ window.onload = function() {
     var grade = 1;
 
     // Mode [0-1]
-    var game_mode = 1;
+    var game_mode = 0;
 
     /*********************************************/
     // Game Mechanics Variables
     var cursor;
 
-    //mapping of cursors -> answers
+    // Mapping of cursors -> answers
     var wheel_map;
 
-    // question -> answer
+    // Question -> answer
     var equation_map;
 
     // Questions that have been answered
@@ -33,19 +33,19 @@ window.onload = function() {
     // Index of current question
     var question_index;
 
-    //array of questions
+    // Array of questions
     var questions;
 
-    //array of answers
+    // Array of answers
     var answers;
 
-    //operations allowed
+    // Operations allowed
     var ops = [];
 
-    //numbers we generate from
+    // Numbers we generate from
     const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-    //fractions enabled
+    // Fractions enabled
     var fractions;
 
     var selections;
@@ -64,41 +64,38 @@ window.onload = function() {
     var S;
     var T;
 
-    //Up Ring Modifier
+    // Up Ring Modifier
     var Shift;
 
-    //Down ring modifier
+    // Down ring modifier
     var Ctrl;
 
-    //ring modifiers
+    // Ring modifiers
     var down_level = false;
     var up_level = false;
 
-    //Whether the game is over or not to avoid looping win sound over and over
-    //again
+    // Whether the game is over or not to avoid looping win sound over and over again
     var won;
 
     /*********************************************/
-    //Scorekeeping Information
+    // Scorekeeping Information
 
-    //global score
+    // Global score
     var score;
 
-    //'streak' multiplier
+    // 'Streak' multiplier
     var score_multiplier;
 
-    //how many bubbles were considered
-    //before selecting answers
+    // How many bubbles were considered before selecting answers
     var score_selections;
 
     /*********************************************/
-    //GRAPHICS RELATED VARIABLES
+    // GRAPHICS RELATED VARIABLES
 
-    //I don't know what this is
-    //something related to graphics
+    // Array of bubble objects
     var bubbles;
 
-    //graphics
+    // Wand object
     var wand;
 
     // Distances of bubbles from center (indexed by difficulty)
@@ -111,11 +108,11 @@ window.onload = function() {
         { w: 80, h: 160 },
     ];
 
-    //something related to graphics
+    // Text to display current question
     var question_text;
 
     /*********************************************/
-    //Audio / Speech to Text / Text to Speech Stuff
+    // Audio / Speech to Text / Text to Speech Stuff
 
     // Audio contexts
     var game_sounds = {};
