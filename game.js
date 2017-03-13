@@ -9,13 +9,13 @@ window.onload = function() {
     // Difficulty Sections
 
     // Difficulty of Game [0-2]
-    var difficulty = 1;
+    var difficulty = 0;
 
     // Grade in School [1-4]
     var grade = 1;
 
     // Mode [0-1]
-    var game_mode = 0;
+    var game_mode = 1;
 
     /*********************************************/
     // Game Mechanics Variables
@@ -98,8 +98,12 @@ window.onload = function() {
     // Wand object
     var wand;
 
-    // Distances of bubbles from center (indexed by difficulty)
-    var radii = [70, 100, 130];
+    // Distances of bubbles from center (indexed first by game
+    // mode then by difficulty)
+    var radii = [
+        [ 70, 100, 130],
+        [140, 170, 200],
+    ];
 
     // Wand dimensions (indexed by difficulty)
     var wand_dims = [
@@ -204,7 +208,7 @@ window.onload = function() {
     function initGame() {
         Graphics.drawBackground(game);
 
-        question_text = game.add.text(game.world.centerX, 100, "", {
+        question_text = game.add.text(game.world.centerX, 50, "", {
             font: "bold 32px Courier",
             fill: "#ffffff",
             boundsAlignH: "center",
@@ -247,10 +251,10 @@ window.onload = function() {
 
         //TODO: Federico write graphics logic for this gamemode
         if (game_mode === 0) {
-            bubbles = Graphics.drawWheelMap(game, wheel_map[difficulty], answers, radii[difficulty]);
+            bubbles = Graphics.drawWheelMap(game, wheel_map[difficulty], answers, [radii[0][difficulty], radii[1][difficulty]], game_mode);
             bubbles[cursor].numText.fill = Globals.colors.selected;
         } else if (game_mode === 1) {
-
+            bubbles = Graphics.drawWheelMap(game, wheel_map[difficulty], answers, [radii[0][difficulty], radii[1][difficulty]], game_mode);
         }
 
         let wand_w = wand_dims[difficulty].w;
@@ -597,7 +601,7 @@ window.onload = function() {
                     answers[0].push(''+numerator_1 + ' / ' + denominator_1 + ' ' + op);
                     answers[1].push(''+numerator_2 + ' / ' + denominator_2);
                 } else {
-                    answers[0].push(numerator_1 + ' ' + op);
+                    answers[0].push(numerator_1 + op);
                     answers[1].push(''+numerator_2);
                 }
             }
