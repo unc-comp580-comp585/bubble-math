@@ -249,13 +249,17 @@ window.onload = function() {
         question_text.setText(questions[question_index].trim());
 
         //TODO: Federico write graphics logic for this gamemode
-        // bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
-        // bubbles[cursor].numText.fill = Globals.colors.selected;
+        if (game_mode === 0) {
+            bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
+            bubbles[cursor].numText.fill = Globals.colors.selected;
+        } else if (game_mode === 1) {
 
-        // let wand_w = wand_dims[difficulty].w;
-        // let wand_h = wand_dims[difficulty].h;
-        // let angle = wheel_map[''+difficulty][cursor];
-        // wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
+        }
+
+        let wand_w = wand_dims[difficulty].w;
+        let wand_h = wand_dims[difficulty].h;
+        let angle = wheel_map[''+difficulty][cursor];
+        wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
     }
 
     // Display current question/answer
@@ -290,8 +294,13 @@ window.onload = function() {
         decrease_cursor();
 
         //TODO: Federico write graphics logic for this gamemode
-        // updateBubbleTextColors();
-        // wand.rotateTo(wheel_map[''+difficulty][cursor]);
+        if (game_mode === 0) {
+            updateBubbleTextColors();
+        } else if (game_mode === 1) {
+
+        }
+        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+
         if (dictation) {
             Sound.readEquation(answers[cursor]);
         }
@@ -305,8 +314,13 @@ window.onload = function() {
         increase_cursor();
 
         //TODO: Federico write graphics logic for this gamemode
-        // updateBubbleTextColors();
-        // wand.rotateTo(wheel_map[''+difficulty][cursor]);
+        if (game_mode === 0) {
+            updateBubbleTextColors();
+        } else if (game_mode === 1) {
+
+        }
+        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+
         if (dictation && !won) {
             Sound.readEquation(answers[cursor]);
         }
@@ -453,12 +467,12 @@ window.onload = function() {
                 }
             } else {
                 //TODO: Federico write graphics logic for this gamemode
-                // bubbles[cursor].popped = true;
+                bubbles[cursor].popped = true;
                 answered_questions[cursor] = true;
             }
 
             //TODO: Federico write graphics logic for this gamemode
-            //updateBubbleTextColors();
+            updateBubbleTextColors();
             question_index += 1;
 
             if (question_index < questions.length) {
@@ -660,10 +674,14 @@ window.onload = function() {
             score_selections += 1;
 
             //TODO: Federico write graphics logic for this gamemode
-            // do {
-            cursor = (cursor + 1) % questions.length;
+            if (game_mode === 0) {
+                do {
+                    cursor = (cursor + 1) % questions.length;
+                } while (bubbles[cursor].popped);
 
-            // } while (bubbles[cursor].popped);
+            } else if (game_mode === 1) {
+
+            }
         }
     }
 
@@ -672,28 +690,35 @@ window.onload = function() {
             score_selections += 1;
 
             //TODO: Federico write graphics logic for this gamemode
-            // do {
-                if (cursor-1 < 0) {
-                    cursor = questions.length - 1;
-                } else {
-                    cursor = cursor - 1;
-                }
-            // } while (bubbles[cursor].popped);
+            if (game_mode === 0) {
+                do {
+                    if (cursor-1 < 0) {
+                        cursor = questions.length - 1;
+                    } else {
+                        cursor = cursor - 1;
+                    }
+                } while (bubbles[cursor].popped);
+
+            } else if (game_mode === 1) {
+
+            }
         }
     }
 
     function updateBubbleTextColors() {
-        for (let i = 0; i < bubbles.length; i++) {
-            if (bubbles[i].popped) {
-                bubbles[i].numText.fill = Globals.colors.popped;
-            } else {
-                bubbles[i].numText.fill = Globals.colors.unselected;
+        if (game_mode == 0) {
+            for (let i = 0; i < bubbles.length; i++) {
+                if (bubbles[i].popped) {
+                    bubbles[i].numText.fill = Globals.colors.popped;
+                } else {
+                    bubbles[i].numText.fill = Globals.colors.unselected;
+                }
             }
-        }
-        if (bubbles[cursor].popped) {
-            bubbles[cursor].numText.fill = Globals.colors.popped;
-        } else {
-            bubbles[cursor].numText.fill = Globals.colors.selected;
+            if (bubbles[cursor].popped) {
+                bubbles[cursor].numText.fill = Globals.colors.popped;
+            } else {
+                bubbles[cursor].numText.fill = Globals.colors.selected;
+            }
         }
     }
 };
