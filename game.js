@@ -247,7 +247,7 @@ window.onload = function() {
 
         //TODO: Federico write graphics logic for this gamemode
         if (game_mode === 0) {
-            bubbles = Graphics.drawWheelMap(game, wheel_map[''+difficulty], answers, radii[difficulty]);
+            bubbles = Graphics.drawWheelMap(game, wheel_map[difficulty], answers, radii[difficulty]);
             bubbles[cursor].numText.fill = Globals.colors.selected;
         } else if (game_mode === 1) {
 
@@ -255,7 +255,7 @@ window.onload = function() {
 
         let wand_w = wand_dims[difficulty].w;
         let wand_h = wand_dims[difficulty].h;
-        let angle = wheel_map[''+difficulty][cursor];
+        let angle = wheel_map[difficulty][cursor];
         wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
     }
 
@@ -296,7 +296,7 @@ window.onload = function() {
         } else if (game_mode === 1) {
 
         }
-        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+        wand.rotateTo(wheel_map[difficulty][cursor]);
 
         if (dictation) {
             Sound.readEquation(answers[cursor]);
@@ -316,7 +316,7 @@ window.onload = function() {
         } else if (game_mode === 1) {
 
         }
-        wand.rotateTo(wheel_map[''+difficulty][cursor]);
+        wand.rotateTo(wheel_map[difficulty][cursor]);
 
         if (dictation && !won) {
             Sound.readEquation(answers[cursor]);
@@ -518,7 +518,7 @@ window.onload = function() {
     }
 
     function map_cursor_to_wheel(cursor_val) {
-        var wheel = wheel_map[''+difficulty]
+        var wheel = wheel_map[difficulty]
         for (var i = 0; i < wheel.length; i++) {
             if (cursor_val <= wheel[i]) {
                 cursor = i;
@@ -531,11 +531,11 @@ window.onload = function() {
 
     function generate_wheel_map() {
         for (var coeff = 0; coeff < 3; coeff ++) {
-            wheel_map[''+coeff] = [];
+            wheel_map[coeff] = [];
             var addition = Math.PI / ((2 * (coeff + 1)));
             for (var i = 0; i < 2 * Math.PI; i += addition) {
                 var convert = i * (180 / Math.PI);
-                wheel_map[''+coeff].push(convert);
+                wheel_map[coeff].push(convert);
             }
         }
     }
@@ -549,7 +549,7 @@ window.onload = function() {
     }
 
     function generate_gm2_equations() {
-        let length = wheel_map[''+difficulty].length;
+        let length = wheel_map[difficulty].length;
         let nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         questions = [];
         answers = [[], []];
@@ -606,7 +606,7 @@ window.onload = function() {
     }
 
     function generate_gm1_equations() {
-        let length = wheel_map[''+difficulty].length;
+        let length = wheel_map[difficulty].length;
 
         questions = [];
         answers = [];
