@@ -16,9 +16,10 @@ Globals.handles = {
 };
 
 Globals.colors = {
-    selected: "#ffff00",
-    unselected: "#ffffff",
-    popped: "000000",
+    selected: "#ffff00",    // Yellow
+    unselected: "#ffffff",  // White
+    popped: "#000000",      // Black
+    chosen: "#00ff00",      // Green
 };
 
 Globals.voice = {

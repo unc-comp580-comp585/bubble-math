@@ -24,6 +24,8 @@ function Bubble(game, cx, cy, r, num) {
     this.numText.anchor.setTo(0.5, 0.5);
 
     this.popped = false;
+
+    this.chosen = false;
 }
 
 Bubble.prototype.drawAt = function(x, y) {
