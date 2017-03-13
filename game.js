@@ -89,6 +89,12 @@ window.onload = function() {
     // How many bubbles were considered before selecting answers
     var score_selections;
 
+    var score_base_text = "Score: ";
+    var score_multiplier_base_text = "Multiplier: ";
+
+    var score_text;
+    var score_multiplier_text;
+
     /*********************************************/
     // GRAPHICS RELATED VARIABLES
 
@@ -251,6 +257,24 @@ window.onload = function() {
 
         score_multiplier = 1;
 
+        score_text = game.add.text(20, 50, "", {
+            font: "bold 32px Courier",
+            fill: "#ffffff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+        });
+        score_text.anchor.setTo(0.0, 1.0);
+        score_text.setText(score_base_text + ""+score);
+
+        score_multiplier_text = game.add.text(20, 100, "", {
+            font: "bold 32px Courier",
+            fill: "#ffffff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+        });
+        score_multiplier_text.anchor.setTo(0.0, 1.0);
+        score_multiplier_text.setText(score_multiplier_base_text + ""+score_multiplier);
+
         fractions = false;
 
         selections = ['', ''];
@@ -406,6 +430,9 @@ window.onload = function() {
             score += ((10000) * score_multiplier) * (Math.max(1, 20-score_selections));
             score_multiplier += 1;
             score_selections = 0;
+
+            score_text.setText(score_base_text + ""+score);
+            score_multiplier_text.setText(score_multiplier_base_text + ""+score_multiplier);
 
             answered_questions["".concat(...selections)] = true;
 
