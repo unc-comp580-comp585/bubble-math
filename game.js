@@ -1,26 +1,18 @@
 window.onload = function() {
-
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
         preload: preload,
         create: create,
         update: update,
     });
 
-    // Distances of bubbles from center (indexed by difficulty)
-    var radii = [70, 100, 130];
-
-    // Wand dimensions (indexed by difficulty)
-    var wand_dims = [
-        { w: 40, h: 70  },
-        { w: 60, h: 120 },
-        { w: 80, h: 160 },
-    ];
 
     //did the gamepad state change?
     var state_changed = false;
+    /*********************************************/
+    // Difficulty Sections
 
     // Mode [0-1]
-    var game_mode = 0;
+    var game_mode = 1;
 
     //Fractions Enabled
     var fractions;
@@ -28,13 +20,14 @@ window.onload = function() {
     //operations
     var ops;
 
-    // BS1 Defines
+    /*********************************************/
+    // Game Mechanics Variables
     var cursor;
 
-    //mapping of cursors -> answers
+    // Mapping of cursors -> answers
     var wheel_map;
 
-    // question -> answer
+    // Question -> answer
     var equation_map;
 
     // Questions that have been answered
@@ -43,29 +36,44 @@ window.onload = function() {
     // Index of current question
     var question_index;
 
-    //array of questions
+    // Array of questions
     var questions;
 
-    //array of answers
+    // Array of answers
     var answers;
+
+    // Operations allowed
+    var ops = [];
+
+    // Numbers we generate from
+    const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    // Fractions enabled
+    var fractions;
+
+    var selections;
+
+    var generated_questions;
+
+    /*********************************************/
+    //Input Related Things
 
     // Keyboard fallbacks
     var Q;
     var E;
     var Space;
     var R;
+    var X;
 
-    //Up Ring Modifier
+    var A;
+    var S;
+    var T;
+
+    // Up Ring Modifier
     var Shift;
 
-    //Down ring modifier
+    // Down ring modifier
     var Ctrl;
-
-    //I don't know what this is
-    //something related to graphics
-    var bubbles;
-
-    var wand;
 
     //something related to graphics
     var question_text;
@@ -77,24 +85,65 @@ window.onload = function() {
     //Scorekeeping Information
 
     //global score
+    // Ring modifiers
+    var down_level = false;
+    var up_level = false;
+
+    // Whether the game is over or not to avoid looping win sound over and over again
+    var won;
+
+    /*********************************************/
+    // Scorekeeping Information
+
+    // Global score
     var score;
 
-    //'streak' multiplier
+    // 'Streak' multiplier
     var score_multiplier;
 
-    //how many bubbles were considered
-    //before selecting answers
+    // How many bubbles were considered before selecting answers
     var score_selections;
+
+    var score_base_text = "Score: ";
+    var score_multiplier_base_text = "Multiplier: ";
+
+    var score_text;
+    var score_multiplier_text;
+
+    /*********************************************/
+    // GRAPHICS RELATED VARIABLES
+
+    // Array of bubble objects
+    var bubbles;
+
+    // Wand object
+    var wand;
+
+    // Distances of bubbles from center (indexed first by game
+    // mode then by difficulty)
+    var radii = [
+        [ 70, 100, 130],
+        [140, 170, 200],
+    ];
+
+    // Wand dimensions (indexed by difficulty)
+    var wand_dims = [
+        { w: 40, h: 70  },
+        { w: 60, h: 120 },
+        { w: 80, h: 160 },
+    ];
+
+    // Text to display current question
+    var question_text;
+
+    /*********************************************/
+    // Audio / Speech to Text / Text to Speech Stuff
 
     // Audio contexts
     var game_sounds = {};
 
     // Speech recognition object
     var recognition;
-
-    //ring modifiers
-    var down_level = false;
-    var up_level = false;
 
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
@@ -113,6 +162,11 @@ window.onload = function() {
             Globals.dictation = false;
         }
 
+        score = 0;
+
+        score_selections = 0;
+
+        score_multiplier = 1;
     }
 
     function create() {
@@ -149,9 +203,22 @@ window.onload = function() {
         T = game.input.keyboard.addKey(Phaser.Keyboard.T);
         T.onDown.add(onT, this);
 
+        X = game.input.keyboard.addKey(Phaser.Keyboard.X);
+        X.onDown.add(onX, this);
+
         Shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
-        Shift.onDown.add(function() { up_level = true; }, this);
-        Shift.onUp.add(function() { up_level = false; } , this);
+        Shift.onDown.add(function() {
+            up_level = true;
+            updateBubbleTextColors();
+            updateBubbleAlphas();
+            Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
+        }, this);
+        Shift.onUp.add(function() {
+            up_level = false;
+            updateBubbleTextColors();
+            updateBubbleAlphas();
+            Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
+        }, this);
 
         Ctrl = game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         Ctrl.onDown.add(function() { down_level = true; }, this);
@@ -161,7 +228,12 @@ window.onload = function() {
         Space.onDown.add(onSpace, this);
 
         console.log("Questions: " + questions);
-        console.log("Answers:   " + answers);
+        if (game_mode === 0)
+            console.log("Answers:   " + answers);
+        else if (game_mode === 1) {
+            console.log("Answers [0]: " + answers[0]);
+            console.log("Answers [1]: " + answers[1]);
+        }
         console.debug("Bubbles: %o", bubbles);
         console.debug("Wheel: %o", wheel_map);
         console.debug("Sounds: %o", game_sounds);
@@ -170,7 +242,7 @@ window.onload = function() {
     function initGame() {
         Graphics.drawBackground(game);
 
-        question_text = game.add.text(game.world.centerX, 100, "", {
+        question_text = game.add.text(game.world.centerX, 50, "", {
             font: "bold 32px Courier",
             fill: "#ffffff",
             boundsAlignH: "center",
@@ -200,64 +272,123 @@ window.onload = function() {
 
         cursor = 0;
 
-        score = 0;
+        score_text = game.add.text(20, 50, "", {
+            font: "bold 32px Courier",
+            fill: "#ffffff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+        });
+        score_text.anchor.setTo(0.0, 1.0);
+        score_text.setText(score_base_text + ""+score);
 
-        score_selections = 0;
+        score_multiplier_text = game.add.text(20, 100, "", {
+            font: "bold 32px Courier",
+            fill: "#ffffff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+        });
+        score_multiplier_text.anchor.setTo(0.0, 1.0);
+        score_multiplier_text.setText(score_multiplier_base_text + ""+score_multiplier);
 
-        score_multiplier = 1;
+        fractions = false;
+
+        selections = ['', ''];
 
         question_text.setText(questions[question_index].trim());
 
-        bubbles = Graphics.drawWheelMap(game, wheel_map[''+Globals.difficulty], answers, radii[Globals.difficulty]);
-        bubbles[cursor].numText.fill = Globals.colors.selected;
+
+        bubbles = Graphics.drawWheelMap(game, wheel_map[''+Globals.difficulty], answers, [radii[0][''+Globals.difficulty], radii[1][''+Globals.difficulty]], game_mode);
+        
+        updateBubbleTextColors();
+        updateBubbleAlphas();
+
+        //bubbles[cursor].numText.fill = Globals.colors.selected;
 
         let wand_w = wand_dims[Globals.difficulty].w;
         let wand_h = wand_dims[Globals.difficulty].h;
         let angle = wheel_map[''+Globals.difficulty][cursor];
+
         wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
     }
 
     // Display current question/answer
     function onR() {
         console.log("Question : "  + questions[question_index]);
-        console.log("Current Answer: " + answers[cursor]);
+        if (game_mode === 0) {
+            console.log("Answers:   " + answers);
+            console.log("Current Answer: " + answers[cursor]);
+        } else if (game_mode === 1) {
+            console.log("Inner Ring: " + answers[0][cursor]);
+            console.log("Outer Ring: " + answers[1][cursor]);
+            console.log("Selection: " + selections);
+            console.log("Answers [0]: " + answers[0]);
+            console.log("Answers [1]: " + answers[1]);
+        }
+        console.log("Questions: " + questions);
+        console.debug("Bubbles: %o", bubbles);
+        console.debug("Wheel: %o", wheel_map);
+        console.debug("Sounds: %o", game_sounds);
         console.log("Modifiers: Up Ring["+up_level+"] Down Ring["+down_level+"]");
         console.log("Score: " + score);
         console.log("Score Multiplier: " + score_multiplier);
         console.log("Number of Selected Circles: " + score_selections);
         if (Globals.dictation) {
-            Sound.readEquation("The question is: " + questions[question_index] + 
+            if(game_mode === 0)
+                Sound.readEquation("The question is: " + questions[question_index] + 
             '. Your bubble is: ' + answers[cursor]);
+            else if(game_mode === 1)
+                    Sound.readEquation("The question is: " + questions[question_index] + 
+            '. Your answer is: ' + selections[0] + ' ' + selections[1]);
         }
     }
 
     // Rotate cursor CW
     function onQ() {
         decrease_cursor();
-        updateBubbleText();
+
+        updateBubbleTextColors();
         wand.rotateTo(wheel_map[''+Globals.difficulty][cursor]);
-        Sound.readEquation(answers[cursor]);
-        Sound.play(game_sounds,'bubbles');
+
+        if (Globals.dictation) {
+            if(game_mode === 0)
+                Sound.readEquation(answers[cursor]);
+        }
+        if (Globals.soundfx) {
+            if(game_mode === 0)
+                Sound.play(game_sounds,'bubbles');
+        }
+
     }
 
     // Rotate cursor CCW
     function onE() {
         increase_cursor();
-        updateBubbleText();
+        updateBubbleTextColors();
         wand.rotateTo(wheel_map[''+Globals.difficulty][cursor]);
-        Sound.readEquation(answers[cursor]);
-        Sound.play(game_sounds,'bubbles');
+
+        if (Globals.dictation && !won) {
+            if(game_mode === 0)
+                Sound.readEquation(answers[cursor]);
+            else if(game_mode === 1)
+                Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
+        }
+        if (Globals.soundfx && !won) {
+            if(game_mode === 0)
+                Sound.play(game_sounds,'bubbles');
+            else if(game_mode === 1)
+                Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
+        }
     }
 
     // Starts speech recognition
-    function onT(){
+    function onT() {
         console.log(recognition);
         recognition.onresult = function(event) {
             var last = event.results.length - 1;
             var number = event.results[last][0].transcript;
             console.log('Result received: ' + number + '.');
             console.log('Confidence: ' + event.results[0][0].confidence);
-            if (Number.isInteger(parseInt(number))){
+            if (Number.isInteger(parseInt(number))) {
                 lock_in_answer(number);
             } else {
                 lock_in_answer(Globals.numbers[number]);
@@ -288,8 +419,10 @@ window.onload = function() {
     function update() {
         if (question_index  === questions.length) {
             question_text.setText("You win!");
-            if(!won) {
+            if (Globals.dictation && !won) {
                 Sound.dictate('victory');
+            }
+            if (Globals.soundfx && !won) {
                 Sound.play(game_sounds,'win');
                 won = true;
             } 
@@ -318,10 +451,75 @@ window.onload = function() {
         }
     }
 
+    function lock_in_answer(spoken_answer) {
+        if (game_mode === 0) {
+            lock_in_answer_gm1(spoken_answer);
+        } else if (game_mode === 1) {
+            lock_in_answer_gm2(spoken_answer);
+        }
+    }
 
-    function lock_in_answer(spoken_answer) 
-    {
-        let spoken = (spoken_answer != undefined);
+    function lock_in_answer_gm2(spoken_answer) {
+        let first_index = up_level ? 1 : 0;
+        let good = eval("".concat(...selections)) === Number(questions[question_index]) && !(("".concat(...selections)) in answered_questions);
+        if (good) {
+            score += ((10000) * score_multiplier) * (Math.max(1, 20-score_selections));
+            score_multiplier += 1;
+            score_selections = 0;
+
+            score_text.setText(score_base_text + ""+score);
+            score_multiplier_text.setText(score_multiplier_base_text + ""+score_multiplier);
+            answered_questions["".concat(...selections)] = true;
+
+            clearChosenBubbles(true);
+            updateBubbleTextColors();
+            question_index += 1;
+
+            if (question_index < questions.length) {
+                question_text.setText(questions[question_index].trim());
+            }
+            if (Globals.dictation && !won) {
+                Sound.dictate('correct');
+            }
+            if (Globals.soundfx && !won) {
+                Sound.play(game_sounds,'pop');
+            }
+            console.log("Correct!");
+        } else if (("".concat(...selections)) in answered_questions) {
+            //is this possible now?
+            console.log("answer: " + "".concat(...selections) + " @ cursor: " + cursor + " already used");
+            // TODO: Add soundfx for this
+        } else {
+            clearChosenBubbles(false);
+            updateBubbleTextColors();
+
+            if (Globals.dictation && !won) {
+                Sound.dictate('incorrect');
+            }
+            if (Globals.soundfx && !won) {
+                Sound.play(game_sounds, 'wrong');
+            }
+        }
+    }
+
+    function onX() {
+        let first_index = up_level ? 1 : 0;
+        selections[first_index] = answers[first_index][cursor];
+
+        if (game_mode === 1) {
+            for(let bubble of bubbles[first_index]){
+                if(bubble.chosen){
+                    bubble.chosen = false;
+                }
+            }
+            bubbles[first_index][cursor].chosen = true;
+            updateBubbleTextColors();
+            updateBubbleAlphas();
+        }
+    }
+
+    function lock_in_answer_gm1(spoken_answer) {
+        let spoken  = spoken_answer != undefined;
         let good = spoken && eval(questions[question_index]) == spoken_answer;
         good = good || (!spoken && eval(questions[question_index]) === answers[cursor] && !(cursor in answered_questions));
         if (good) {
@@ -342,7 +540,7 @@ window.onload = function() {
                 bubbles[cursor].popped = true;
                 answered_questions[cursor] = true;
             }
-            updateBubbleText();
+            updateBubbleTextColors();
             question_index += 1;
 
             if (question_index < questions.length) {
@@ -350,6 +548,7 @@ window.onload = function() {
             }
             if (Globals.dictation && !won && state_changed) 
             {
+                bubbles[cursor].numText.visible = false;
                 Sound.dictate('correct');
             }
             if (Globals.soundfx && !won && state_changed) {
@@ -409,30 +608,86 @@ window.onload = function() {
 
     function generate_wheel_map() {
         for (var coeff = 0; coeff < 3; coeff ++) {
-            wheel_map[''+coeff] = [];
+            wheel_map[coeff] = [];
             var addition = Math.PI / ((2 * (coeff + 1)));
             for (var i = 0; i < 2 * Math.PI; i += addition) {
                 var convert = i * (180 / Math.PI);
-                wheel_map[''+coeff].push(convert);
+                wheel_map[coeff].push(convert);
             }
         }
     }
 
     function generate_equations() {
+        if (game_mode === 0) {
+            generate_gm1_equations();
+        } else if (game_mode === 1) {
+            generate_gm2_equations();
+        }
+    }
+
+    function generate_gm2_equations() {
+        generated_questions = [];
         let length = wheel_map[''+Globals.difficulty].length;
-        let nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        questions = [];
+        answers = [[], []];
+
+        let j = 0;
+        while (j < length) {
+            let str = '';
+            let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+            str += numerator_1 + ' ';
+            let denominator_1 = 1;
+            if (fractions) {
+                denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
+                str +=  '/ ' + denominator_1 + ' ';
+            }
+            let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
+            str += op + ' ';
+            let lower_bound = nums.length - 1;
+            if (op === '-') {
+                lower_bound = numerator_1;
+            }
+            let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
+            str += numerator_2 + ' ';
+            let denominator_2 = 1;
+            if (fractions) {
+                denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+                str += '/ ' + denominator_2;
+            }
+            let result = eval(str);
+
+            if (numerator_2 === 0 && op === '/') {
+                continue;
+            }
+            if ((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/') {
+                continue;
+            }
+            if (!Number.isInteger(result)) {
+                continue;
+            }
+            if (generated_questions.indexOf(str) !== -1 || questions.indexOf(str) !== -1) {
+                continue;
+            } else {
+                j++;
+                questions.push(''+result);
+                generated_questions.push(str);
+                if (fractions) {
+                    answers[0].push(''+numerator_1 + ' / ' + denominator_1 + ' ' + op);
+                    answers[1].push(''+numerator_2 + ' / ' + denominator_2);
+                } else {
+                    answers[0].push(numerator_1 + op);
+                    answers[1].push(''+numerator_2);
+                }
+            }
+        }
+        shuffle_questions();
+    }
+
+    function generate_gm1_equations() {
+        let length = wheel_map[''+Globals.difficulty].length;
+
         questions = [];
         answers = [];
-
-        let fractions = false;
-        let ops = ['+', '-'];
-        if (Globals.grade >= 3) {
-            ops.push('*');
-            ops.push('/');
-        }
-        if (Globals.grade % 2 == 0) {
-            fractions = true;
-        }
 
         let j = 0;
         let gen_fraction = false;
@@ -466,14 +721,12 @@ window.onload = function() {
                 str += numerator_2 + ' ';
             }
             let result = eval(str);
-
-            if (numerator_2 === 0 && op === '/') {
+            if(result < 0) {
                 continue;
             }
-            if(result < 0)
+            if ((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/') {
                 continue;
-            if ((numerator_2 / denominator_2) > (numerator_1 / denominator_2) && op === '/')
-                continue;
+            }
             if (!Number.isInteger(result)) {
                 continue;
             }
@@ -485,54 +738,138 @@ window.onload = function() {
                 answers.push(result);
             }
         }
-        shuffle_answers();
+        shuffle_questions();
+
     }
 
-    function shuffle_answers() {
-        for (var i = answers.length - 1; i > 0; i--) {
+    function shuffle_questions() {
+        for (var i = questions.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
-            var temp = answers[i];
-            answers[i] = answers[j];
-            answers[j] = temp;
+            var temp = questions[i];
+            questions[i] = questions[j];
+            questions[j] = temp;
+        }
+        if(game_mode === 1)
+        {
+            for (var i = answers[0].length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = answers[0][i];
+                answers[0][i] = answers[0][j];
+                answers[0][j] = temp;
+            }
         }
     }
 
     function increase_cursor() {
         if (!won) {
             score_selections += 1;
-            do {
-                cursor = (cursor + 1) % answers.length;
-            } while (bubbles[cursor].popped);
+
+            if (game_mode === 0) {
+                do {
+                    cursor = (cursor + 1) % questions.length;
+                } while (bubbles[cursor].popped);
+            } else if (game_mode === 1) {
+                do {
+                    cursor = (cursor + 1) % questions.length;
+                } while (bubbles[up_level ? 1 : 0][cursor].popped);
+            }
         }
     }
 
     function decrease_cursor() {
         if (!won) {
             score_selections += 1;
-            do {
-                if (cursor-1 < 0) {
-                    cursor = answers.length - 1;
+
+            if (game_mode === 0) {
+                do {
+                    if (cursor-1 < 0) {
+                        cursor = questions.length - 1;
+                    } else {
+                        cursor = cursor - 1;
+                    }
+                } while (bubbles[cursor].popped);
+            } else if (game_mode === 1) {
+                do {
+                    if (cursor-1 < 0) {
+                        cursor = questions.length - 1;
+                    } else {
+                        cursor = cursor - 1;
+                    }
+                } while (bubbles[up_level ? 1 : 0][cursor].popped);
+            }
+        }
+    }
+
+    function updateBubbleTextColors() {
+        if (game_mode === 0) {
+            for (let i = 0; i < bubbles.length; i++) {
+                if (bubbles[i].popped) {
+                    bubbles[i].numText.fill = Globals.colors.popped;
                 } else {
-                    cursor = cursor - 1;
+                    bubbles[i].numText.fill = Globals.colors.unselected;
                 }
-            } while (bubbles[cursor].popped);
+            }
+
+            if (bubbles[cursor].popped) {
+                bubbles[cursor].numText.fill = Globals.colors.popped;
+            } else {
+                bubbles[cursor].numText.fill = Globals.colors.selected;
+            }
+        } else if (game_mode === 1) {
+            for (let i = 0; i < bubbles[0].length; i++) {
+                for (let j = 0; j <= 1; j++) {
+                    if (bubbles[j][i].popped) {
+                        bubbles[j][i].numText.fill = Globals.colors.popped;
+                    } else if (bubbles[j][i].chosen) {
+                        bubbles[j][i].numText.fill = Globals.colors.chosen;
+                    } else {
+                        bubbles[j][i].numText.fill = Globals.colors.unselected;
+                    }
+                }
+            }
+
+            if (bubbles[up_level ? 1 : 0][cursor].popped) {
+                bubbles[up_level ? 1 : 0][cursor].numText.fill = Globals.colors.popped;
+            } else if (bubbles[up_level ? 1 : 0][cursor].chosen) {
+                bubbles[up_level ? 1 : 0][cursor].numText.fill = Globals.colors.chosen;
+            } else {
+                bubbles[up_level ? 1 : 0][cursor].numText.fill = Globals.colors.selected;
+            }
         }
     }
 
-    function updateBubbleText() {
-        for (let i = 0; i < bubbles.length; i++) {
-            if (bubbles[i].popped) {
-                bubbles[i].numText.visible = false;
-            } else {
-                bubbles[i].numText.visible = true;
-            }
+    function updateBubbleAlphas() {
+        if (game_mode === 1) {
+            let selected_ring = (up_level ? 1 : 0);
+            let unselected_ring = (up_level ? 0 : 1);
 
-            if (cursor == i) {
-                bubbles[i].numText.fill = Globals.colors.selected;
-            } else {
-                bubbles[i].numText.fill = Globals.colors.unselected;
+            let selected_alpha = 1.0;
+            let unselected_alpha = 0.4;
+
+            for (let i = 0; i < bubbles[0].length; i++) {
+                bubbles[unselected_ring][i].sprite.alpha = unselected_alpha;
+                bubbles[unselected_ring][i].numText.alpha = unselected_alpha;
+
+                bubbles[selected_ring][i].sprite.alpha = selected_alpha;
+                bubbles[selected_ring][i].numText.alpha = selected_alpha;
             }
         }
     }
-};
 
+    function clearChosenBubbles(andPopThem) {
+        if (game_mode === 1) {
+            for (let i = 0; i < bubbles[0].length; i++) {
+                for (let j = 0; j <= 1; j++) {
+                    if (bubbles[j][i].chosen) {
+                        bubbles[j][i].chosen = false;
+                        if (andPopThem) {
+                            bubbles[j][i].popped = true;
+                            bubbles[j][i].sprite.animations.play(Globals.animations.pop);
+                            bubbles[j][i].numText.visible = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

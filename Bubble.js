@@ -30,6 +30,7 @@ function Bubble(game, cx, cy, r, num) {
 
     // Add popping animation
     this.sprite.animations.add(Globals.animations.pop);
+    this.chosen = false;
 }
 
 Bubble.prototype.drawAt = function(x, y) {
