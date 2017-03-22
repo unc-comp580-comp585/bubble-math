@@ -352,10 +352,16 @@ window.onload = function() {
         if (Globals.dictation) {
             if(game_mode === 0)
                 Sound.readEquation(answers[cursor]);
+            else if(game_mode === 1)
+                Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
+
         }
         if (Globals.soundfx) {
             if(game_mode === 0)
                 Sound.play(game_sounds,'bubbles');
+            else if(game_mode === 1)
+                Sound.play(game_sounds,'bubbles');
+                
         }
 
     }
@@ -376,7 +382,7 @@ window.onload = function() {
             if(game_mode === 0)
                 Sound.play(game_sounds,'bubbles');
             else if(game_mode === 1)
-                Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
+                Sound.play(game_sounds,'bubbles');
         }
     }
 
