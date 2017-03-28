@@ -2,7 +2,13 @@ var Graphics = {};
 
 // Render background image
 Graphics.drawBackground = function(game) {
-    game.add.tileSprite(0, 0, game.world.width, game.world.height, Globals.handles.background);
+    w = game.world.width;
+    h = game.world.height;
+
+    background_sprite = game.add.sprite(w/2, h/2, Globals.handles.background);
+    background_sprite.anchor.setTo(0.5, 0.5);
+    background_sprite.width = w;
+    background_sprite.height = h;
 };
 
 // Draw bubbles in wheel pattern. Since sprites that are created
