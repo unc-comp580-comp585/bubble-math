@@ -272,7 +272,7 @@ window.onload = function() {
 
         cursor = 0;
 
-        score_text = game.add.text(20, 50, "", {
+        score_text = game.add.text(game.world.width - 300, 50, "", {
             font: "bold 32px Courier",
             fill: "#ffffff",
             boundsAlignH: "center",
@@ -281,7 +281,7 @@ window.onload = function() {
         score_text.anchor.setTo(0.0, 1.0);
         score_text.setText(score_base_text + ""+score);
 
-        score_multiplier_text = game.add.text(20, 100, "", {
+        score_multiplier_text = game.add.text(game.world.width - 300, 100, "", {
             font: "bold 32px Courier",
             fill: "#ffffff",
             boundsAlignH: "center",
