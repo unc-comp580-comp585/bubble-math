@@ -482,7 +482,34 @@ window.onload = function() {
             question_index += 1;
 
             if (question_index < questions.length) {
-                question_text.setText(questions[question_index].trim());
+                if(valid_question())
+                {
+                    question_text.setText(questions[question_index].trim());
+                }
+                else {
+                    console.log("Not what i was thinking of...");
+                    let inner_arr = [];
+                    let outer_arr = [];
+                    for(let i = 0; i < bubbles[0].length; i ++){
+                        if(!bubbles[0][i].popped)
+                            inner_arr.push(bubbles[0][i]);
+                    }
+
+                    for(let j = 0; j < bubbles[1].length; j++) {
+                        if(!bubbles[1][j].popped)
+                            outer_arr.push(bubbles[1][j])
+                    }
+
+                    let bubble_1 = inner_arr[game.rnd.integerInRange(0, inner_arr.length - 1)];
+                    let bubble_2 = outer_arr[game.rnd.integerInRange(0, outer_arr.length - 1)];
+                
+                    console.info("bubble_1: " + bubble_1.num);
+                    console.info("bubble_2: " + bubble_2.num);
+                    questions[question_index] = ""+eval(bubble_1.num + " " + bubble_2.num);
+
+                    question_text.setText(questions[question_index].trim());
+                    
+                }
             }
             if (Globals.dictation && !won) {
                 Sound.dictate('correct');
@@ -621,6 +648,23 @@ window.onload = function() {
                 wheel_map[coeff].push(convert);
             }
         }
+    }
+
+    function valid_question() {
+        let question = Number(questions[question_index]);
+        for(let i = 0; i < bubbles[0].length; i++) {
+            for(let j = 0; j < bubbles[1].length; j++)
+            {
+                if(bubbles[0][i].popped || bubbles[1][j].popped){
+                    continue;
+                }
+                let builder = eval(bubbles[0][i].num + "" + bubbles[1][j].num);
+                if(builder == question)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     function generate_equations() {
