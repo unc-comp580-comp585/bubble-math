@@ -3,6 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         <title>Bubble Math!</title>
+        <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+        <script src="semantic/semantic.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
         <script src="phaser.min.js"></script>
         <script src="Globals.js"></script>
         <script src="Graphics.js"></script>
@@ -10,8 +16,15 @@
         <script src="Sound.js"></script>
         <script src="Wand.js"></script>
         <script src="game.js"></script>
+        <script src="index.js"></script>
     </head>
     <body>
-
+      <div class="ui modal">
+        <div class="header">
+          Options
+        </div>
+        <div class="ui toggle button green soundfx">SoundFx</div>
+        <div class="ui toggle button green dictation">Dictation</div>
+      </div>
     </body>
 </html>

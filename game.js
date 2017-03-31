@@ -69,6 +69,8 @@ window.onload = function() {
     var S;
     var T;
 
+    var P;
+
     // Up Ring Modifier
     var Shift;
 
@@ -205,6 +207,11 @@ window.onload = function() {
 
         X = game.input.keyboard.addKey(Phaser.Keyboard.X);
         X.onDown.add(onX, this);
+
+        P = game.input.keyboard.addKey(Phaser.Keyboard.P);
+        P.onDown.add(function() {
+            $('.ui.modal').modal('toggle');
+        }, this);
 
         Shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         Shift.onDown.add(function() {
