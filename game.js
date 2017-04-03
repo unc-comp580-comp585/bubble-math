@@ -12,7 +12,7 @@ window.onload = function() {
     // Difficulty Sections
 
     // Mode [0-1]
-    var game_mode = 0;
+    var game_mode = 1;
 
     //Fractions Enabled
     var fractions;
@@ -125,7 +125,7 @@ window.onload = function() {
     // mode then by difficulty)
     var radii = [
         [ 70, 100, 130],
-        [140, 170, 190],
+        [130, 160, 190],
     ];
 
     // Wand dimensions (indexed by difficulty)

@@ -14,7 +14,7 @@ Globals.gamepadEnabled = function(game) {
  */
 
 // Difficulty of game [0-2]
-Globals.difficulty = 2;
+Globals.difficulty = 0;
 
 // Grade in school [1-4]
 Globals.grade = 1;
