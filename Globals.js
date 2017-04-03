@@ -20,11 +20,12 @@ Globals.difficulty = 2;
 Globals.grade = 1;
 
 /*
- * Graphical options 
+ * Graphical options
  */
 
 Globals.handles = {
     bubble: 'bubble',
+    bunny: 'usagi-chan',
     background: 'background',
     wand: 'wand',
 

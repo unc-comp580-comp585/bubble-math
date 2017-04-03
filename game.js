@@ -152,6 +152,7 @@ window.onload = function() {
 
     function preload() {
         game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
+        game.load.image(Globals.handles.bunny, 'assets/images/bunny.png');
         game.load.image(Globals.handles.background, 'assets/images/background.png');
         game.load.image(Globals.handles.wand, 'assets/images/wand.png');
 
@@ -321,9 +322,10 @@ window.onload = function() {
         wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
 
         // Bunny!
-        bunny = game.add.sprite(120, 435, Globals.handles.bunny_jumping);
+        bunny = game.add.sprite(110, 460, Globals.handles.bunny_jumping);
         bunny.frame = 0;
         bunny.anchor.setTo(0.5, 0.5);
+        Graphics.scaleSprite(game, Globals.handles.bunny, bunny, 200, 200);
         bunny.animations.add(Globals.animations.jump, [0,1,2], 2, true);
         bunny.animations.play(Globals.animations.jump);
     }
