@@ -12,7 +12,7 @@ window.onload = function() {
     // Difficulty Sections
 
     // Mode [0-1]
-    var game_mode = 1;
+    var game_mode = 0;
 
     //Fractions Enabled
     var fractions;
@@ -125,7 +125,7 @@ window.onload = function() {
     // mode then by difficulty)
     var radii = [
         [ 70, 100, 130],
-        [140, 170, 200],
+        [140, 170, 190],
     ];
 
     // Wand dimensions (indexed by difficulty)
@@ -250,7 +250,7 @@ window.onload = function() {
         Graphics.drawBackground(game);
 
         question_text = game.add.text(game.world.centerX, 50, "", {
-            font: "bold 32px Courier",
+            font: "bold 36px Comic Sans MS",
             fill: "#ffffff",
             boundsAlignH: "center",
             boundsAlignV: "middle",
@@ -279,8 +279,8 @@ window.onload = function() {
 
         cursor = 0;
 
-        score_text = game.add.text(game.world.width - 300, 50, "", {
-            font: "bold 32px Courier",
+        score_text = game.add.text(game.world.width - 220, 50, "", {
+            font: "bold 26px Comic Sans MS",
             fill: "#ffffff",
             boundsAlignH: "center",
             boundsAlignV: "middle",
@@ -288,8 +288,8 @@ window.onload = function() {
         score_text.anchor.setTo(0.0, 1.0);
         score_text.setText(score_base_text + ""+score);
 
-        score_multiplier_text = game.add.text(game.world.width - 300, 100, "", {
-            font: "bold 32px Courier",
+        score_multiplier_text = game.add.text(game.world.width - 220, 100, "", {
+            font: "bold 26px Comic Sans MS",
             fill: "#ffffff",
             boundsAlignH: "center",
             boundsAlignV: "middle",

@@ -22,13 +22,15 @@ Graphics.drawWheelMap = function(game, angles, answers, radii, game_mode) {
     for (let i = 0; i < angles.length; i++) {
         let angle = angles[i] * Math.PI/180.0;
 
+        let radius = 15;
+
         if (game_mode === 0) {
             let cx = game.world.centerX + radii[0]*Math.sin(angle);
             let cy = game.world.centerY - radii[0]*Math.cos(angle);
 
             let num = answers[i];
 
-            bubbles.push(new Bubble(game, cx, cy, 30, num));
+            bubbles.push(new Bubble(game, cx, cy, radius, num));
         } else if (game_mode === 1) {
             let cx_inner = game.world.centerX + radii[0]*Math.sin(angle);
             let cy_inner = game.world.centerY - radii[0]*Math.cos(angle);
@@ -39,8 +41,8 @@ Graphics.drawWheelMap = function(game, angles, answers, radii, game_mode) {
             let inner_answer = answers[0][i];
             let outer_answer = answers[1][i];
 
-            bubbles[0].push(new Bubble(game, cx_inner, cy_inner, 30, inner_answer));
-            bubbles[1].push(new Bubble(game, cx_outer, cy_outer, 30, outer_answer));
+            bubbles[0].push(new Bubble(game, cx_inner, cy_inner, radius, inner_answer));
+            bubbles[1].push(new Bubble(game, cx_outer, cy_outer, radius, outer_answer));
         }
     }
 

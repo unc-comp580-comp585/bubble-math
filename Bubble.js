@@ -19,7 +19,7 @@ function Bubble(game, cx, cy, r, num) {
     //      TODO: Set size based on radius
     //      TODO: Figure out why it's not vertically aligned
     this.numText = game.add.text(cx, cy, num.toString(), {
-        font: "bold 32px Courier",
+        font: "bold 26px Comic Sans MS",
         fill: Globals.colors.unselected,
         boundsAlignH: "center",
         boundsAlignV: "middle",
