@@ -14,7 +14,7 @@ Globals.gamepadEnabled = function(game) {
  */
 
 // Difficulty of game [0-2]
-Globals.difficulty = 0;
+Globals.difficulty = 2;
 
 // Grade in school [1-4]
 Globals.grade = 1;
@@ -29,10 +29,12 @@ Globals.handles = {
     wand: 'wand',
 
     bubble_popping: 'bubble_popping',
+    bunny_jumping: 'usagi-chan_jumping',
 };
 
 Globals.animations = {
     pop: 'pop',
+    jump: 'jump',
 };
 
 Globals.colors = {

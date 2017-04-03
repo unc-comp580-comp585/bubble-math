@@ -121,6 +121,9 @@ window.onload = function() {
     // Wand object
     var wand;
 
+    // Bunny!
+    var bunny;
+
     // Distances of bubbles from center (indexed first by game
     // mode then by difficulty)
     var radii = [
@@ -153,6 +156,7 @@ window.onload = function() {
         game.load.image(Globals.handles.wand, 'assets/images/wand.png');
 
         game.load.spritesheet(Globals.handles.bubble_popping, 'assets/sheets/bubble-popping.png', 256, 256);
+        game.load.spritesheet(Globals.handles.bunny_jumping, 'assets/sheets/bunny-jump.png', 256, 256);
 
         score = 0;
 
@@ -263,7 +267,6 @@ window.onload = function() {
         question_index = 0;
         won = false;
 
-
         fractions = false;
         ops = ['+', '-'];
         if (Globals.grade >= 3) {
@@ -316,6 +319,13 @@ window.onload = function() {
         let angle = wheel_map[''+Globals.difficulty][cursor];
 
         wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
+
+        // Bunny!
+        bunny = game.add.sprite(120, 435, Globals.handles.bunny_jumping);
+        bunny.frame = 0;
+        bunny.anchor.setTo(0.5, 0.5);
+        bunny.animations.add(Globals.animations.jump, [0,1,2], 2, true);
+        bunny.animations.play(Globals.animations.jump);
     }
 
     // Display current question/answer
