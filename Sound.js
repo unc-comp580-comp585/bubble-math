@@ -27,8 +27,20 @@ Sound.addSounds = function(game, game_sounds){
                 game_sounds[sound][len-1].volume = 0.3;
             } else if (sound == 'win'){
                 game_sounds[sound][len-1].volume = 0.3;
+            } else if (sound == 'music'){
+                game_sounds[sound][len-1].loop = true;
+                game_sounds[sound][len-1].volume = 0.25;
             }
         }
+    }
+};
+
+Sound.toggleBackground = function(){
+    Globals.music = !Globals.music;
+    if (!Globals.music){
+        (Globals.game_sounds["music"][0]).pause();
+    } else {
+        (Globals.game_sounds["music"][0]).resume();
     }
 };
 
@@ -40,10 +52,11 @@ Sound.play = function(game_sounds, input){
             (game_sounds[input][
                 Math.floor(Math.random() * game_sounds[input].length)
             ]).play();
-        }
-        else{
+        } else{
             return;
         }
+    } else if(input == 'music'){
+        (game_sounds[input][0]).play();
     }
     return;
 };

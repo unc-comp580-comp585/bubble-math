@@ -1,5 +1,7 @@
 var Globals = {};
 
+Globals.game = {};
+
 Globals.gamepad = {};
 Globals.leftJSDeadZone = 0.1;
 
@@ -12,6 +14,9 @@ Globals.gamepadEnabled = function(game) {
 /*
  * User controlled game options
  */
+
+// Game mode [0-1]
+Globals.game_mode = 0;
 
 // Difficulty of game [0-2]
 Globals.difficulty = 2;
@@ -48,6 +53,9 @@ Globals.colors = {
 /*
  * Sound effect, speech synthesis, and voice recognition options
  */
+
+// Enable/Disable background music
+Globals.music = true;
 
 // Enable/Disable speech synthesis
 Globals.dictation = true;
@@ -113,8 +121,16 @@ Globals.speech = {
     ],
 };
 
+Globals.game_sounds = {};
+
 // Sound effects
 Globals.sounds = {
+    music: {
+        bgm: {
+            handle: 'bgm',
+            path: 'assets/audio/8bit_bg.wav',
+        },
+    },
     pop: {
         pop_1: {
             handle: 'pop_1',

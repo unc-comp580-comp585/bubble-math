@@ -1,5 +1,5 @@
 window.onload = function() {
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+    Globals.game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
         preload: preload,
         create: create,
         update: update,
@@ -10,9 +10,6 @@ window.onload = function() {
     var state_changed = false;
     /*********************************************/
     // Difficulty Sections
-
-    // Mode [0-1]
-    var game_mode = 1;
 
     //Fractions Enabled
     var fractions;
@@ -144,26 +141,21 @@ window.onload = function() {
     /*********************************************/
     // Audio / Speech to Text / Text to Speech Stuff
 
-    // Audio contexts
-    var game_sounds = {};
-
     // Speech recognition object
     var recognition;
 
     function preload() {
-        game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
-        game.load.image(Globals.handles.bunny, 'assets/images/bunny.png');
-        game.load.image(Globals.handles.background, 'assets/images/background.png');
-        game.load.image(Globals.handles.wand, 'assets/images/wand.png');
+        Globals.game.load.image(Globals.handles.bubble, 'assets/images/bubble.png');
+        Globals.game.load.image(Globals.handles.bunny, 'assets/images/bunny.png');
+        Globals.game.load.image(Globals.handles.background, 'assets/images/background.png');
+        Globals.game.load.image(Globals.handles.wand, 'assets/images/wand.png');
 
-        game.load.spritesheet(Globals.handles.bubble_popping, 'assets/sheets/bubble-popping.png', 256, 256);
-        game.load.spritesheet(Globals.handles.bunny_jumping, 'assets/sheets/bunny-jump.png', 256, 256);
+        Globals.game.load.spritesheet(Globals.handles.bubble_popping, 'assets/sheets/bubble-popping.png', 256, 256);
+        Globals.game.load.spritesheet(Globals.handles.bunny_jumping, 'assets/sheets/bunny-jump.png', 256, 256);
 
         score = 0;
 
-        game_sounds = {};
-
-        Sound.loadSounds(game, game_sounds);
+        Sound.loadSounds(Globals.game, Globals.game_sounds);
 
         if (!('speechSynthesis' in window)) {
             Globals.dictation = false;
@@ -179,46 +171,49 @@ window.onload = function() {
     function create() {
         initGame();
 
-        game.input.gamepad.start();
 
-        Sound.addSounds(game, game_sounds);
+        Globals.game.input.gamepad.start();
+
+        Sound.addSounds(Globals.game, Globals.game_sounds);
         recognition = Sound.initRecognition(recognition);
+        Globals.game_sounds["music"][0].play();
+        console.dir(Globals.game_sounds);
 
-        Globals.gamepad = game.input.gamepad.pad1;
+        Globals.gamepad = Globals.game.input.gamepad.pad1;
 
         // Select bubble clockwise from current
-        Q = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        Q = Globals.game.input.keyboard.addKey(Phaser.Keyboard.Q);
         Q.onDown.add(onQ, this);
 
         // Select bubble counterclockwise from current
-        E = game.input.keyboard.addKey(Phaser.Keyboard.E);
+        E = Globals.game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(onE, this);
 
         // Repeat question and current bubble
-        R = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        R = Globals.game.input.keyboard.addKey(Phaser.Keyboard.R);
         R.onDown.add(onR, this);
 
         // Increase speech rate
-        A = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A = Globals.game.input.keyboard.addKey(Phaser.Keyboard.A);
         A.onDown.add(Sound.speechRate, this);
 
         // Decrease speech rate
-        S = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        S = Globals.game.input.keyboard.addKey(Phaser.Keyboard.S);
         S.onDown.add(Sound.speechRate, this);
 
         // Start a speech recognition event
-        T = game.input.keyboard.addKey(Phaser.Keyboard.T);
+        T = Globals.game.input.keyboard.addKey(Phaser.Keyboard.T);
         T.onDown.add(onT, this);
 
-        X = game.input.keyboard.addKey(Phaser.Keyboard.X);
+        X = Globals.game.input.keyboard.addKey(Phaser.Keyboard.X);
         X.onDown.add(onX, this);
 
-        P = game.input.keyboard.addKey(Phaser.Keyboard.P);
+        P = Globals.game.input.keyboard.addKey(Phaser.Keyboard.P);
         P.onDown.add(function() {
             $('.ui.modal').modal('toggle');
         }, this);
 
-        Shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+        Shift = Globals.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         Shift.onDown.add(function() {
             up_level = true;
             updateBubbleTextColors();
@@ -232,29 +227,29 @@ window.onload = function() {
             Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
         }, this);
 
-        Ctrl = game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
+        Ctrl = Globals.game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         Ctrl.onDown.add(function() { down_level = true; }, this);
         Ctrl.onUp.add(function() { down_level = false; } , this);
 
-        Space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        Space = Globals.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         Space.onDown.add(onSpace, this);
 
         console.log("Questions: " + questions);
-        if (game_mode === 0)
+        if (Globals.game_mode === 0)
             console.log("Answers:   " + answers);
-        else if (game_mode === 1) {
+        else if (Globals.game_mode === 1) {
             console.log("Answers [0]: " + answers[0]);
             console.log("Answers [1]: " + answers[1]);
         }
         console.debug("Bubbles: %o", bubbles);
         console.debug("Wheel: %o", wheel_map);
-        console.debug("Sounds: %o", game_sounds);
+        console.debug("Sounds: %o", Globals.game_sounds);
     }
 
     function initGame() {
-        Graphics.drawBackground(game);
+        Graphics.drawBackground(Globals.game);
 
-        question_text = game.add.text(game.world.centerX, 50, "", {
+        question_text = Globals.game.add.text(Globals.game.world.centerX, 50, "", {
             font: "bold 36px Comic Sans MS",
             fill: "#ffffff",
             boundsAlignH: "center",
@@ -283,7 +278,7 @@ window.onload = function() {
 
         cursor = 0;
 
-        score_text = game.add.text(game.world.width - 220, 50, "", {
+        score_text = Globals.game.add.text(Globals.game.world.width - 220, 50, "", {
             font: "bold 26px Comic Sans MS",
             fill: "#ffffff",
             boundsAlignH: "center",
@@ -292,7 +287,7 @@ window.onload = function() {
         score_text.anchor.setTo(0.0, 1.0);
         score_text.setText(score_base_text + ""+score);
 
-        score_multiplier_text = game.add.text(game.world.width - 220, 100, "", {
+        score_multiplier_text = Globals.game.add.text(Globals.game.world.width - 220, 100, "", {
             font: "bold 26px Comic Sans MS",
             fill: "#ffffff",
             boundsAlignH: "center",
@@ -308,7 +303,7 @@ window.onload = function() {
         question_text.setText(questions[question_index].trim());
 
 
-        bubbles = Graphics.drawWheelMap(game, wheel_map[''+Globals.difficulty], answers, [radii[0][''+Globals.difficulty], radii[1][''+Globals.difficulty]], game_mode);
+        bubbles = Graphics.drawWheelMap(Globals.game, wheel_map[''+Globals.difficulty], answers, [radii[0][''+Globals.difficulty], radii[1][''+Globals.difficulty]], Globals.game_mode);
         
         updateBubbleTextColors();
         updateBubbleAlphas();
@@ -319,13 +314,13 @@ window.onload = function() {
         let wand_h = wand_dims[Globals.difficulty].h;
         let angle = wheel_map[''+Globals.difficulty][cursor];
 
-        wand = new Wand(game, game.world.centerX, game.world.centerY, wand_w, wand_h, angle);
+        wand = new Wand(Globals.game, Globals.game.world.centerX, Globals.game.world.centerY, wand_w, wand_h, angle);
 
         // Bunny!
-        bunny = game.add.sprite(110, 460, Globals.handles.bunny_jumping);
+        bunny = Globals.game.add.sprite(110, 460, Globals.handles.bunny_jumping);
         bunny.frame = 0;
         bunny.anchor.setTo(0.5, 0.5);
-        Graphics.scaleSprite(game, Globals.handles.bunny, bunny, 200, 200);
+        Graphics.scaleSprite(Globals.game, Globals.handles.bunny, bunny, 200, 200);
         bunny.animations.add(Globals.animations.jump, [0,1,2], 2, true);
         bunny.animations.play(Globals.animations.jump);
     }
@@ -333,10 +328,10 @@ window.onload = function() {
     // Display current question/answer
     function onR() {
         console.log("Question : "  + questions[question_index]);
-        if (game_mode === 0) {
+        if (Globals.game_mode === 0) {
             console.log("Answers:   " + answers);
             console.log("Current Answer: " + answers[cursor]);
-        } else if (game_mode === 1) {
+        } else if (Globals.game_mode === 1) {
             console.log("Inner Ring: " + answers[0][cursor]);
             console.log("Outer Ring: " + answers[1][cursor]);
             console.log("Selection: " + selections);
@@ -346,16 +341,16 @@ window.onload = function() {
         console.log("Questions: " + questions);
         console.debug("Bubbles: %o", bubbles);
         console.debug("Wheel: %o", wheel_map);
-        console.debug("Sounds: %o", game_sounds);
+        console.debug("Sounds: %o", Globals.game_sounds);
         console.log("Modifiers: Up Ring["+up_level+"] Down Ring["+down_level+"]");
         console.log("Score: " + score);
         console.log("Score Multiplier: " + score_multiplier);
         console.log("Number of Selected Circles: " + score_selections);
         if (Globals.dictation) {
-            if(game_mode === 0)
+            if(Globals.game_mode === 0)
                 Sound.readEquation("The question is: " + questions[question_index] + 
             '. Your bubble is: ' + answers[cursor]);
-            else if(game_mode === 1)
+            else if(Globals.game_mode === 1)
                     Sound.readEquation("The question is: " + questions[question_index] + 
             '. Your answer is: ' + selections[0] + ' ' + selections[1]);
         }
@@ -369,17 +364,17 @@ window.onload = function() {
         wand.rotateTo(wheel_map[''+Globals.difficulty][cursor]);
 
         if (Globals.dictation) {
-            if(game_mode === 0)
+            if(Globals.game_mode === 0)
                 Sound.readEquation(answers[cursor]);
-            else if(game_mode === 1)
+            else if(Globals.game_mode === 1)
                 Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
 
         }
         if (Globals.soundfx) {
-            if(game_mode === 0)
-                Sound.play(game_sounds,'bubbles');
-            else if(game_mode === 1)
-                Sound.play(game_sounds,'bubbles');
+            if(Globals.game_mode === 0)
+                Sound.play(Globals.game_sounds,'bubbles');
+            else if(Globals.game_mode === 1)
+                Sound.play(Globals.game_sounds,'bubbles');
                 
         }
 
@@ -392,16 +387,16 @@ window.onload = function() {
         wand.rotateTo(wheel_map[''+Globals.difficulty][cursor]);
 
         if (Globals.dictation && !won) {
-            if(game_mode === 0)
+            if(Globals.game_mode === 0)
                 Sound.readEquation(answers[cursor]);
-            else if(game_mode === 1)
+            else if(Globals.game_mode === 1)
                 Sound.readEquation(answers[up_level ? 1 : 0][cursor]);
         }
         if (Globals.soundfx && !won) {
-            if(game_mode === 0)
-                Sound.play(game_sounds,'bubbles');
-            else if(game_mode === 1)
-                Sound.play(game_sounds,'bubbles');
+            if(Globals.game_mode === 0)
+                Sound.play(Globals.game_sounds,'bubbles');
+            else if(Globals.game_mode === 1)
+                Sound.play(Globals.game_sounds,'bubbles');
         }
     }
 
@@ -448,14 +443,14 @@ window.onload = function() {
                 Sound.dictate('victory');
             }
             if (Globals.soundfx && !won) {
-                Sound.play(game_sounds,'win');
+                Sound.play(Globals.game_sounds,'win');
                 won = true;
             } 
             process_gamepad_buttons();
             return;
         }
 
-        if (Globals.gamepadEnabled(game)) {
+        if (Globals.gamepadEnabled(Globals.game)) {
             process_gamepad_controls();
         }
         else
@@ -477,9 +472,9 @@ window.onload = function() {
     }
 
     function lock_in_answer(spoken_answer) {
-        if (game_mode === 0) {
+        if (Globals.game_mode === 0) {
             lock_in_answer_gm1(spoken_answer);
-        } else if (game_mode === 1) {
+        } else if (Globals.game_mode === 1) {
             lock_in_answer_gm2(spoken_answer);
         }
     }
@@ -519,8 +514,8 @@ window.onload = function() {
                             outer_arr.push(bubbles[1][j])
                     }
 
-                    let bubble_1 = inner_arr[game.rnd.integerInRange(0, inner_arr.length - 1)];
-                    let bubble_2 = outer_arr[game.rnd.integerInRange(0, outer_arr.length - 1)];
+                    let bubble_1 = inner_arr[Globals.game.rnd.integerInRange(0, inner_arr.length - 1)];
+                    let bubble_2 = outer_arr[Globals.game.rnd.integerInRange(0, outer_arr.length - 1)];
                 
                     console.info("bubble_1: " + bubble_1.num);
                     console.info("bubble_2: " + bubble_2.num);
@@ -534,7 +529,7 @@ window.onload = function() {
                 Sound.dictate('correct');
             }
             if (Globals.soundfx && !won) {
-                Sound.play(game_sounds,'pop');
+                Sound.play(Globals.game_sounds,'pop');
             }
             console.log("Correct!");
         } else if (("".concat(...selections)) in answered_questions) {
@@ -549,7 +544,7 @@ window.onload = function() {
                 Sound.dictate('incorrect');
             }
             if (Globals.soundfx && !won) {
-                Sound.play(game_sounds, 'wrong');
+                Sound.play(Globals.game_sounds, 'wrong');
             }
         }
     }
@@ -558,7 +553,7 @@ window.onload = function() {
         let first_index = up_level ? 1 : 0;
         selections[first_index] = answers[first_index][cursor];
 
-        if (game_mode === 1) {
+        if (Globals.game_mode === 1) {
             for(let bubble of bubbles[first_index]){
                 if(bubble.chosen){
                     bubble.chosen = false;
@@ -604,7 +599,7 @@ window.onload = function() {
                 Sound.dictate('correct');
             }
             if (Globals.soundfx && !won && state_changed) {
-                Sound.play(game_sounds,'pop');
+                Sound.play(Globals.game_sounds,'pop');
             }
             console.log("Correct!");
         } else if (cursor in answered_questions) {
@@ -616,7 +611,7 @@ window.onload = function() {
                 Sound.dictate('incorrect');
             }
             if (Globals.soundfx && !won && state_changed) {
-                Sound.play(game_sounds, 'wrong');
+                Sound.play(Globals.game_sounds, 'wrong');
             }
         }
     }
@@ -687,9 +682,9 @@ window.onload = function() {
     }
 
     function generate_equations() {
-        if (game_mode === 0) {
+        if (Globals.game_mode === 0) {
             generate_gm1_equations();
-        } else if (game_mode === 1) {
+        } else if (Globals.game_mode === 1) {
             generate_gm2_equations();
         }
     }
@@ -703,24 +698,24 @@ window.onload = function() {
         let j = 0;
         while (j < length) {
             let str = '';
-            let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+            let numerator_1 = nums[Globals.game.rnd.integerInRange(0, nums.length - 1)];
             str += numerator_1 + ' ';
             let denominator_1 = 1;
             if (fractions) {
-                denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
+                denominator_1 =  nums[Globals.game.rnd.integerInRange(0, nums.length - 1)];
                 str +=  '/ ' + denominator_1 + ' ';
             }
-            let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
+            let op = ops[Globals.game.rnd.integerInRange(0, ops.length - 1)];
             str += op + ' ';
             let lower_bound = nums.length - 1;
             if (op === '-') {
                 lower_bound = numerator_1;
             }
-            let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
+            let numerator_2 = nums[Globals.game.rnd.integerInRange(0, lower_bound)];
             str += numerator_2 + ' ';
             let denominator_2 = 1;
             if (fractions) {
-                denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+                denominator_2 = nums[Globals.game.rnd.integerInRange(0, nums.length - 1)];
                 str += '/ ' + denominator_2;
             }
             let result = eval(str);
@@ -763,26 +758,26 @@ window.onload = function() {
         while (j < length) {
 
             if(fractions)
-                gen_fraction = game.rnd.integerInRange(0, 1) == 0;
+                gen_fraction = Globals.game.rnd.integerInRange(0, 1) == 0;
             let str = '';
-            let numerator_1 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+            let numerator_1 = nums[Globals.game.rnd.integerInRange(0, nums.length - 1)];
             str += numerator_1;
             let denominator_1 = 1;
             if (gen_fraction) {
-                denominator_1 =  nums[game.rnd.integerInRange(0, nums.length - 1)];
+                denominator_1 =  nums[Globals.game.rnd.integerInRange(0, nums.length - 1)];
                 str = '(' + numerator_1 + ' / ' + denominator_1 + ')';
             }
-            let op = ops[game.rnd.integerInRange(0, ops.length - 1)];
+            let op = ops[Globals.game.rnd.integerInRange(0, ops.length - 1)];
             str += ' '+ op + ' ';
             let lower_bound = nums.length - 1;
             if (op === '-') {
                 lower_bound = numerator_1;
             }
-            let numerator_2 = nums[game.rnd.integerInRange(0, lower_bound)];
+            let numerator_2 = nums[Globals.game.rnd.integerInRange(0, lower_bound)];
             // str += numerator_2 + ' ';
             let denominator_2 = 1;
             if (gen_fraction) {
-                denominator_2 = nums[game.rnd.integerInRange(0, nums.length - 1)];
+                denominator_2 = nums[Globals.game.rnd.integerInRange(0, nums.length - 1)];
                 str += '(' + numerator_2 + ' / ' + denominator_2 + ')';
             }
             else 
@@ -818,7 +813,7 @@ window.onload = function() {
             questions[i] = questions[j];
             questions[j] = temp;
         }
-        if(game_mode === 1)
+        if(Globals.game_mode === 1)
         {
             for (var i = answers[0].length - 1; i > 0; i--) {
                 var j = Math.floor(Math.random() * (i + 1));
@@ -833,11 +828,11 @@ window.onload = function() {
         if (!won) {
             score_selections += 1;
 
-            if (game_mode === 0) {
+            if (Globals.game_mode === 0) {
                 do {
                     cursor = (cursor + 1) % questions.length;
                 } while (bubbles[cursor].popped);
-            } else if (game_mode === 1) {
+            } else if (Globals.game_mode === 1) {
                 do {
                     cursor = (cursor + 1) % questions.length;
                 } while (bubbles[up_level ? 1 : 0][cursor].popped);
@@ -849,7 +844,7 @@ window.onload = function() {
         if (!won) {
             score_selections += 1;
 
-            if (game_mode === 0) {
+            if (Globals.game_mode === 0) {
                 do {
                     if (cursor-1 < 0) {
                         cursor = questions.length - 1;
@@ -857,7 +852,7 @@ window.onload = function() {
                         cursor = cursor - 1;
                     }
                 } while (bubbles[cursor].popped);
-            } else if (game_mode === 1) {
+            } else if (Globals.game_mode === 1) {
                 do {
                     if (cursor-1 < 0) {
                         cursor = questions.length - 1;
@@ -870,7 +865,7 @@ window.onload = function() {
     }
 
     function updateBubbleTextColors() {
-        if (game_mode === 0) {
+        if (Globals.game_mode === 0) {
             for (let i = 0; i < bubbles.length; i++) {
                 if (bubbles[i].popped) {
                     bubbles[i].numText.fill = Globals.colors.popped;
@@ -884,7 +879,7 @@ window.onload = function() {
             } else {
                 bubbles[cursor].numText.fill = Globals.colors.selected;
             }
-        } else if (game_mode === 1) {
+        } else if (Globals.game_mode === 1) {
             for (let i = 0; i < bubbles[0].length; i++) {
                 for (let j = 0; j <= 1; j++) {
                     if (bubbles[j][i].popped) {
@@ -908,7 +903,7 @@ window.onload = function() {
     }
 
     function updateBubbleAlphas() {
-        if (game_mode === 1) {
+        if (Globals.game_mode === 1) {
             let selected_ring = (up_level ? 1 : 0);
             let unselected_ring = (up_level ? 0 : 1);
 
@@ -926,7 +921,7 @@ window.onload = function() {
     }
 
     function clearChosenBubbles(andPopThem) {
-        if (game_mode === 1) {
+        if (Globals.game_mode === 1) {
             for (let i = 0; i < bubbles[0].length; i++) {
                 for (let j = 0; j <= 1; j++) {
                     if (bubbles[j][i].chosen) {
