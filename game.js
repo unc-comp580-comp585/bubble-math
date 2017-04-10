@@ -1,5 +1,5 @@
 window.onload = function() {
-    Globals.game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+    Globals.game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-game', {
         preload: preload,
         create: create,
         update: update,
@@ -26,6 +26,8 @@ window.onload = function() {
 
     // Question -> answer
     var equation_map;
+
+    var incorrect_counter;
 
     // Questions that have been answered
     var answered_questions;
@@ -260,6 +262,7 @@ window.onload = function() {
         wheel_map = {};
         equation_map = {};
         answered_questions = {};
+        incorrect_counter = 0;
         question_index = 0;
         won = false;
 
@@ -601,6 +604,7 @@ window.onload = function() {
             if (Globals.soundfx && !won && state_changed) {
                 Sound.play(Globals.game_sounds,'pop');
             }
+            incorrect_counter = 0;
             console.log("Correct!");
         } else if (cursor in answered_questions) {
             //is this possible now?
@@ -608,11 +612,35 @@ window.onload = function() {
             // TODO: Add soundfx for this
         } else {
             if (Globals.dictation && !won && state_changed) {
-                Sound.dictate('incorrect');
+                // TODO: Refactor into Sound function that takes given answer, correct answer, and counter
+                if(spoken){
+                    if (incorrect_counter < 2){
+                        if (spoken_answer < eval(questions[question_index])){
+                            Sound.read("Too small");
+                        } else {
+                            Sound.read("Too big");
+                        }
+                    } else {
+                        let s = "The answer I'm looking for is: " + String(eval(questions[question_index]));
+                        Sound.read(s);
+                    }
+                }else{
+                    if (incorrect_counter < 2){
+                        if(answers[cursor] < eval(questions[question_index])){
+                            Sound.read("Too small");
+                        } else {
+                            Sound.read("Too big");
+                        }
+                    } else {
+                        let s = "The answer I'm looking for is: " + String(eval(questions[question_index]));
+                        Sound.read(s);
+                    }
+                }
             }
             if (Globals.soundfx && !won && state_changed) {
                 Sound.play(Globals.game_sounds, 'wrong');
             }
+            incorrect_counter += 1;
         }
     }
 
