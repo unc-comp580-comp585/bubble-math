@@ -155,13 +155,17 @@ window.onload = function() {
         Globals.game.load.spritesheet(Globals.handles.bubble_popping, 'assets/sheets/bubble-popping.png', 256, 256);
         Globals.game.load.spritesheet(Globals.handles.bunny_jumping, 'assets/sheets/bunny-jump.png', 256, 256);
 
-        score = 0;
-
         Sound.loadSounds(Globals.game, Globals.game_sounds);
 
         if (!('speechSynthesis' in window)) {
             Globals.dictation = false;
         }
+        
+        score = 0;
+
+        
+
+
 
         score = 0;
 

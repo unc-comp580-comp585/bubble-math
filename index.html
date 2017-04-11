@@ -3,31 +3,39 @@
     <head>
         <meta charset="UTF-8" />
         <title>Bubble Math!</title>
-        <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-        <script src="semantic/semantic.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
-        <script src="phaser.min.js"></script>
-        <script src="Globals.js"></script>
-        <script src="Graphics.js"></script>
-        <script src="Bubble.js"></script>
-        <script src="Sound.js"></script>
-        <script src="Wand.js"></script>
-        <script src="game.js"></script>
-        <script src="index.js"></script>
+
+        <!-- Deps -->
+        <script type="text/javascript" src="phaser.min.js"></script>
+
+        <!-- Options -->
+        <script type="text/javascript" src="game/options/Globals.js"></script>
+
+        <!-- Graphics -->
+        <script type="text/javascript" src="game/gfx/Graphics.js"></script>
+        <script type="text/javascript" src="game/gfx/Bubble.js"></script>
+
+        <!-- Sound -->
+        <script type="text/javascript" src="game/sound/Sound.js"></script>
+        <script type="text/javascript" src="game/gfx/Wand.js"></script>
+
+        <!-- Gamemode 1 -->
+        <script type="text/javascript" src="game/game1/game.js"></script>
+
+        <!-- Gamemode 2 -->
+        <script type="text/javascript" src="game/game2/game.js"></script>
+
+        <!-- Options -->
+        <script type="text/javascript" src="game/options/menu.js"></script>
+
+        <!-- Main Menu -->
+        <script type="text/javascript" src="game/menu/boot.js"></script>
+        <script type="text/javascript" src="game/menu/load.js"></script>
+        <script type="text/javascript" src="game/menu/menu.js"></script>
+
+        <!-- Start Script -->
+        <script type="text/javascript" src="game/index.js"></script>
     </head>
     <body>
-      <div id="phaser-game"></div>
-      <div class="ui modal" style="width:800px;">
-        <div class="header">
-          Options
-        </div>
-        <div class="ui toggle button green soundfx" style="margin:3px;">SoundFx</div>
-        <div class="ui toggle button green dictation" style="margin:3px;">Dictation</div>
-        <div class="ui toggle button green bgm" style="margin:3px;">BG Music</div>
-        <div class="ui toggle button blue mode" style="margin:3px;">Game Mode</div>
-      </div>
+      <div id="game"></div>
     </body>
 </html>
