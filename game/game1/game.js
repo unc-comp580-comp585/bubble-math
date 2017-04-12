@@ -27,8 +27,8 @@ gamemode1.prototype = {
 
     angles: [
             [0, 90, 180, 270], 
-            [0, 45, 90, 135, 180, 225, 270, 315]
-            [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+            [0, 45, 90, 135, 180, 225, 270, 315],
+            [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
         ],
 
 
@@ -140,10 +140,6 @@ gamemode1.prototype = {
             this.bindKeys();
             if(Globals.DictationEnabled) 
                 this.bindSpeechKeys();
-        } else if(Globals.ControlSel === 1) {
-            this.bindSwitch();
-            if(Globals.DictationEnabled) 
-                this.bindSpeechKeys();
         }
 
 
@@ -173,6 +169,12 @@ gamemode1.prototype = {
         
         if(Globals.DictationEnabled)
             Speech.readEq(this.questions[this.questionIndex]);
+
+        if(Globals.ControlSel === 1) {
+            this.bindSwitch();
+            if(Globals.DictationEnabled) 
+                this.bindSpeechKeys();
+        }
     },
 
     updateGFX: function() {
@@ -218,7 +220,6 @@ gamemode1.prototype = {
         let bunny = new Bunny(this.game, 110, 460, 200, 200);
         
         this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY);
-
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
     },
@@ -366,6 +367,7 @@ gamemode1.prototype = {
     Select: function() {
         if(this.won) {
             this.initializeNewGame();
+            this.wand.rotateTo(0);
             return;
         }
 
@@ -410,7 +412,7 @@ gamemode1.prototype = {
     },
 
     bindSwitch: function() {
-        this.interval = setInterval(this.rotateCW, 1000);
+        this.interval = setInterval(() => this.rotateCW(), 1000);
 
         let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         S.onDown.add(this.Select, this);
@@ -430,6 +432,10 @@ gamemode1.prototype = {
             this.updateBubbleColors();
             this.updateGFX();
         }
+
+        if(this.questionIndex == this.questions.length)
+            if(this.interval !== null)
+                clearInterval(this.interval);
 
 
         if(Globals.ControlSel === 2)

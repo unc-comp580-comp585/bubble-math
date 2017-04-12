@@ -35,8 +35,8 @@ gamemode2.prototype = {
 
     angles: [
             [0, 90, 180, 270], 
-            [0, 45, 90, 135, 180, 225, 270, 315]
-            [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+            [0, 45, 90, 135, 180, 225, 270, 315],
+            [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
         ],
 
 
@@ -148,10 +148,6 @@ gamemode2.prototype = {
             this.bindKeys();
             if(Globals.DictationEnabled) 
                 this.bindSpeechKeys();
-        } else if(Globals.ControlSel === 1) {
-            this.bindSwitch();
-            if(Globals.DictationEnabled) 
-                this.bindSpeechKeys();
         }
 
 
@@ -188,6 +184,12 @@ gamemode2.prototype = {
         
         if(Globals.DictationEnabled)
             Speech.readEq(this.question);
+
+        if(Globals.ControlSel === 1) {
+            this.bindSwitch();
+            if(Globals.DictationEnabled) 
+                this.bindSpeechKeys();
+        }
     },
 
     updateGFX: function() {
@@ -423,6 +425,7 @@ gamemode2.prototype = {
         //TODO
         if(this.answerIndex === this.answers[0].length) {
             this.initializeNewGame();
+            this.wand.rotateTo(0);
             return;
         }
         if(this.selectedBubbles.length == 1) {
@@ -431,7 +434,7 @@ gamemode2.prototype = {
             if(result === eval(this.question)){
                 //score stuff
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-                this.score_multiplier += 1;
+                this.score_multiplier ++;
                 this.score_selectors = 0;
 
                 //animation stuff
@@ -513,7 +516,7 @@ gamemode2.prototype = {
     },
 
     bindSwitch: function() {
-        this.interval = setInterval(this.rotateCW, 1000);
+        this.interval = setInterval(() => this.rotateCW(), 1000);
 
         let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         S.onDown.add(this.Select, this);
@@ -534,6 +537,10 @@ gamemode2.prototype = {
             this.updateBubbleAlphas();
             this.updateGFX();
         }
+
+        if(this.answerIndex == this.answers[0].length)
+            if(this.interval !== null)
+                clearInterval(this.interval);
 
 
         if(Globals.ControlSel === 2)
