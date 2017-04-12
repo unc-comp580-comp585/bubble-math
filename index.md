@@ -22,7 +22,7 @@ layout: default
 
 * Kickstarter Video : Due ?/??
 * [Design Documentation : Due ?/??](https://docs.google.com/document/d/1DvjAYtIx2S7cB8_TVMJViImqXvgy3fSS3xk-pw5RXO8/edit?usp=sharing)
-* [Game](game/index.html) : Due ?/??
+* [Game : Due ?/??](game/index.html)
 
 # Enabling Technology
 
