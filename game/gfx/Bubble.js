@@ -8,7 +8,7 @@ function Bubble(game, cx, cy, r, num) {
 
     this.num = num;
 
-    this.sprite = game.add.sprite(cx, cy, Globals.handles.bubble_popping);
+    this.sprite = game.add.sprite(cx, cy, 'bubble-pop');
     this.sprite.frame = 0;
     this.sprite.anchor.setTo(0.5, 0.5);
 
@@ -29,7 +29,7 @@ function Bubble(game, cx, cy, r, num) {
     this.popped = false;
 
     // Add popping animation
-    this.sprite.animations.add(Globals.animations.pop);
+    this.sprite.animations.add('bubble-pop');
     this.chosen = false;
 }
 

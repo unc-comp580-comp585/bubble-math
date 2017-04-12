@@ -3,17 +3,23 @@ var mainMenu = function(game) {
 };
 
 mainMenu.prototype = {
+    titleText: null,
+    tutorialText: null,
+    game1Text: null,
+    game2Text: null,
+    optionsText: null,
+
     preload: function() {
 
 
     },
 
     drawMenu: function() {
-        this.game.add.text(300, 80, 'Bubble Math!', {font : '30px Arial', fill: '#ffffff'});
-        this.game.add.text(300, 350, 'Tutorial', {font : '30px Arial', fill: '#ffffff'});
-        this.game.add.text(300, 400, 'Play Gamemode 1', {font : '30px Arial', fill: '#ffffff'});
-        this.game.add.text(300, 450, 'Play Gamemode 2', {font : '30px Arial', fill: '#ffffff'});
-        this.game.add.text(300, 500, 'Options', {font : '30px Arial', fill: '#ffffff'});
+        this.titleText = this.game.add.text(300, 80, 'Bubble Math!', {font : '30px Arial', fill: '#ffffff'});
+        this.tutorialText = this.game.add.text(300, 350, 'Tutorial', {font : '30px Arial', fill: '#ffffff'});
+        this.game1Text = this.game.add.text(300, 400, 'Play Gamemode 1', {font : '30px Arial', fill: '#ffffff'});
+        this.game2Text = this.game.add.text(300, 450, 'Play Gamemode 2', {font : '30px Arial', fill: '#ffffff'});
+        this.optionsText = this.game.add.text(300, 500, 'Options', {font : '30px Arial', fill: '#ffffff'});
     },
 
     create: function() {
@@ -46,7 +52,6 @@ mainMenu.prototype = {
     },
 
     nextState: function() {
-        console.log("next state sel - ", this.selection);
         switch(this.selection) {
             case 0: this.game.state.start("Tutorial"); break;
             case 1: this.game.state.start("Game1"); break;
@@ -55,14 +60,21 @@ mainMenu.prototype = {
         }
     },
 
+    resetMenu: function() {
+            this.tutorialText.addColor("#ffffff", 0);
+            this.game1Text.addColor("#ffffff", 0);
+            this.game2Text.addColor("#ffffff", 0); 
+            this.optionsText.addColor("#ffffff", 0);
+    },
+
 
     update: function() {
-        this.drawMenu();
+        this.resetMenu();
         switch(this.selection) {
-            case 0: this.game.add.text(300, 350, 'Tutorial', {font : '30px Arial', fill: '#00ff00'}); break;
-            case 1: this.game.add.text(300, 400, 'Play Gamemode 1', {font : '30px Arial', fill: '#00ff00'}); break;
-            case 2: this.game.add.text(300, 450, 'Play Gamemode 2', {font : '30px Arial', fill: '#00ff00'}); break;
-            case 3: this.game.add.text(300, 500, 'Options', {font : '30px Arial', fill: '#00ff00'}); break;
+            case 0: this.tutorialText.addColor("#00ff00", 0); break;
+            case 1: this.game1Text.addColor("#00ff00", 0); break;
+            case 2: this.game2Text.addColor("#00ff00", 0); break;
+            case 3: this.optionsText.addColor("#00ff00", 0); break;
         }
 
 

@@ -26,6 +26,6 @@ if __name__ == '__main__':
     if not args.no_controller:
         ctrl = XboxCtrl(dead_zone=16000)
 
-    app.static('/', './')
-    app.static('/', 'index.html')
+    app.static('/', '../')
+    app.static('/', '../index.html')
     app.run(host="0.0.0.0", port="8000", debug=True)

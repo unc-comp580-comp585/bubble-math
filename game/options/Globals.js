@@ -9,23 +9,6 @@ var Globals = {
 };
 
 
-/*
- * User controlled game options
- */
-
-// Game mode [0-1]
-Globals.game_mode = 0;
-
-// Difficulty of game [0-2]
-Globals.difficulty = 2;
-
-// Grade in school [1-4]
-Globals.grade = 1;
-
-/*
- * Graphical options
- */
-
 Globals.handles = {
     bubble: 'bubble',
     bunny: 'usagi-chan',
@@ -47,19 +30,6 @@ Globals.colors = {
     popped: "#000000",      // Black
     chosen: "#00ff00",      // Green
 };
-
-/*
- * Sound effect, speech synthesis, and voice recognition options
- */
-
-// Enable/Disable background music
-Globals.music = true;
-
-// Enable/Disable speech synthesis
-Globals.dictation = true;
-
-// Enable/Disable all sound effects
-Globals.soundfx = true;
 
 // Speech recognition options and locales
 Globals.recognition = {
