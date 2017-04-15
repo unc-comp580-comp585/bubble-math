@@ -374,39 +374,43 @@ gamemode2.prototype = {
     },
 
     rotateCW: function() {
-        this.score_selectors++;
-        
-        if(Globals.SoundEnabled)
-            this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+        if (!this.won) {
+            this.score_selectors++;
 
-        do {
-            this.bubbleSelection = (this.bubbleSelection + 1) % this.answers[0].length;
-        } while (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].popped);
+            if(Globals.SoundEnabled)
+                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
 
-        if(Globals.DictationEnabled)
-            Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
+            do {
+                this.bubbleSelection = (this.bubbleSelection + 1) % this.answers[0].length;
+            } while (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].popped);
 
-        this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+            if(Globals.DictationEnabled)
+                Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
+
+            this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+        }
     },
 
     rotateCCW: function() {
-        this.score_selectors++;
+        if (!this.won) {
+            this.score_selectors++;
 
-        if(Globals.SoundEnabled)
-            this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+            if(Globals.SoundEnabled)
+                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
 
-        do {
-            if (this.bubbleSelection-1 < 0) {
-                this.bubbleSelection = this.answers[0].length - 1;
-            } else {
-                this.bubbleSelection = this.bubbleSelection - 1;
-            }
-        } while (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].popped);
+            do {
+                if (this.bubbleSelection-1 < 0) {
+                    this.bubbleSelection = this.answers[0].length - 1;
+                } else {
+                    this.bubbleSelection = this.bubbleSelection - 1;
+                }
+            } while (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].popped);
 
-        if(Globals.DictationEnabled)
-            Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
+            if(Globals.DictationEnabled)
+                Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
 
-        this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+            this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+        }
     },
 
     Unsel: function() {

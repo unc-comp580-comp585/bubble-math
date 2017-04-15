@@ -330,38 +330,42 @@ gamemode1.prototype = {
     },
 
     rotateCW: function() {
-        this.score_selectors++;
-        
-        if(Globals.SoundEnabled)
-            this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+        if (!this.won) {
+            this.score_selectors++;
 
-        do {
-            this.bubbleSelection = (this.bubbleSelection + 1) % this.questions.length;
-        } while(this.bubbles[this.bubbleSelection].popped)
+            if(Globals.SoundEnabled)
+                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
 
-        if(Globals.DictationEnabled)
-            Speech.read(this.answers[this.bubbleSelection]);
+            do {
+                this.bubbleSelection = (this.bubbleSelection + 1) % this.questions.length;
+            } while(this.bubbles[this.bubbleSelection].popped)
 
-        this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+            if(Globals.DictationEnabled)
+                Speech.read(this.answers[this.bubbleSelection]);
+
+            this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+        }
     },
 
     rotateCCW: function() {
-        this.score_selectors++;
+        if (!this.won) {
+            this.score_selectors++;
 
-        if(Globals.SoundEnabled)
-            this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+            if(Globals.SoundEnabled)
+                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
 
-        do {
-            if(this.bubbleSelection - 1 < 0)
-                this.bubbleSelection = this.questions.length - 1;
-            else 
-                this.bubbleSelection = this.bubbleSelection - 1;
-        } while(this.bubbles[this.bubbleSelection].popped)
+            do {
+                if(this.bubbleSelection - 1 < 0)
+                    this.bubbleSelection = this.questions.length - 1;
+                else
+                    this.bubbleSelection = this.bubbleSelection - 1;
+            } while(this.bubbles[this.bubbleSelection].popped)
 
-        if(Globals.DictationEnabled)
-            Speech.read(this.answers[this.bubbleSelection]);
+            if(Globals.DictationEnabled)
+                Speech.read(this.answers[this.bubbleSelection]);
 
-        this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+            this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+        }
     },
 
     Select: function() {
