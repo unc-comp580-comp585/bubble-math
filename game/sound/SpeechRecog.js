@@ -1,18 +1,6 @@
-var Sound = {};
+var SpRecog = {};
 
-// Increases/decreases speech rate
-Sound.speechRate = function(input){
-    if (input.event.key == "a"){
-        Globals.voice.rate = Math.min(Globals.voice.rate+0.2, 2.0);
-        console.log("Speech rate increased");
-    } 
-    else if (input.event.key == "s"){
-        Globals.voice.rate = Math.max(Globals.voice.rate-0.2, 0.4);
-        console.log("Speech rate decreased");
-    }
-};
-
-Sound.initRecognition = function(recognition){
+SpRecog.init = function(recognition){
     var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
     var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
     var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
@@ -33,7 +21,7 @@ Sound.initRecognition = function(recognition){
 }
 
 // Starts speech recognition instance to answer current question
-Sound.startRecognition = function(recognition){
+SpRecog.listen = function(recognition){
     console.log('Listening...');
     console.dir(recognition);
     recognition.start();

@@ -46,7 +46,7 @@ tutorial.prototype = {
         if (Globals.ControlSel === 0) {
             this.bindKeys();
             if (Globals.DictationEnabled) {
-                this.bindSpeechKeys();
+                this.bindDictationKeys();
             }
         }
         this.bindEssentialKeys();
@@ -329,8 +329,8 @@ tutorial.prototype = {
         let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(this.rotateCW, this);
 
-        let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        S.onDown.add(this.Select, this);
+        let Spacebar = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        Spacebar.onDown.add(this.Select, this);
 
         let En = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         En.onDown.add(this.Enter, this);
@@ -343,8 +343,12 @@ tutorial.prototype = {
         }
     },
 
-    bindSpeechKeys: function() {
+    bindDictationKeys: function() {
+        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(Speech.decreaseRate);
 
+        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        D.onDown.add(Speech.increaseRate);
     },
 
     bindEssentialKeys: function() {

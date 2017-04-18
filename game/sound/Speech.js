@@ -16,4 +16,12 @@ var Speech = {
         input = String(input).replace('*', 'times');
         Speech.read(input);
     },
+
+    increaseRate: function() {
+        Globals.voice.rate = Math.min(Globals.voice.rate+0.2, 2.0);
+    },
+
+    decreaseRate: function() {
+        Globals.voice.rate = Math.max(Globals.voice.rate-0.2, 0.4);
+    }
 }

@@ -139,7 +139,7 @@ gamemode1.prototype = {
         if(Globals.ControlSel === 0) {
             this.bindKeys();
             if(Globals.DictationEnabled) 
-                this.bindSpeechKeys();
+                this.bindDictationKeys();
         }
 
         this.bindEssentialKeys();
@@ -431,8 +431,12 @@ gamemode1.prototype = {
         S.onDown.add(this.Select, this);
     }, 
 
-    bindSpeechKeys: function() {
-        //TODO SpeechRecognition
+    bindDictationKeys: function() {
+        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(Speech.decreaseRate);
+
+        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        D.onDown.add(Speech.increaseRate);
     },
 
     bindControllerScheme: function(scheme_id) {
