@@ -19,16 +19,17 @@ tutorial.prototype = {
     text: {},
     score_text: {},
     score_multiplier_text: {},
+    bg: {},
 
     bubbleSelection: 0,
     questionIndex: 0,
     incorrectCounter: 0,
     won: false,
 
-    // Tutorial objects. During tutorial, each set of objects gets
-    // focus during its turn. Use '[]' to denote the last 'state'.
     tutorial_objects: [],
-    tutorial_strings: [],
+    tutorial_states: [],
+    tutorial_state_idx: -1,
+    tutorial_running: true,
 
     preload: function() {
         this.loadGFXAssets();
@@ -77,19 +78,100 @@ tutorial.prototype = {
 
         this.drawBubbles();
 
-        this.tutorial_objects.push([this.text.question]);
-        this.tutorial_objects.push([this.bubbles, this.wand]);
-        this.tutorial_objects.push([this.text.score, this.text.multiplier]);
-        this.tutorial_objects.push([]);
+        this.tutorial_objects = [
+            this.text.question,
+            this.text.score,
+            this.text.multiplier,
+            this.bg,
+        ];
+        let bubble_objects_and_wand = [this.wand];
+        for (const bubble of this.bubbles) {
+            bubble_objects_and_wand.push(bubble.sprite);
+            bubble_objects_and_wand.push(bubble.numText);
+        }
+        for (const bubble_obj of bubble_objects_and_wand) {
+            this.tutorial_objects.push(bubble_obj);
+        }
 
-        this.tutorial_strings.push("This is the current question");
-        this.tutorial_strings.push("This is where you select the bubble that answers the current question");
-        this.tutorial_strings.push("This is your current score and streak");
-        this.tutorial_strings.push("Ok, let's play!");
+        let outer = this;
+
+        let dim_alpha = 0.2;
+
+        this.tutorial_states.push({
+            objs: [this.text.question],
+            text: "This is the current question",
+            callback: function() {
+                for (let obj of outer.tutorial_objects) {
+                    obj.alpha = dim_alpha;
+                    for (let myobj of this.objs) {
+                        if (myobj === obj) {
+                            obj.alpha = 1.0;
+                        }
+                    }
+                }
+                if (Globals.DictationEnabled) {
+                    Speech.read(this.text);
+                }
+                console.log(this.text);
+            }
+        });
+        this.tutorial_states.push({
+            objs: bubble_objects_and_wand,
+            text: "This is where you select the bubble that answers the current question",
+            callback: function() {
+                for (let obj of outer.tutorial_objects) {
+                    obj.alpha = dim_alpha;
+                    for (let myobj of this.objs) {
+                        if (myobj === obj) {
+                            obj.alpha = 1.0;
+                        }
+                    }
+                }
+                if (Globals.DictationEnabled) {
+                    Speech.read(this.text);
+                }
+                console.log(this.text);
+            }
+        });
+        this.tutorial_states.push({
+            objs: [this.text.score, this.text.multiplier],
+            text: "This is your current score and streak",
+            callback: function() {
+                for (let obj of outer.tutorial_objects) {
+                    obj.alpha = dim_alpha;
+                    for (let myobj of this.objs) {
+                        if (myobj === obj) {
+                            obj.alpha = 1.0;
+                        }
+                    }
+                }
+                if (Globals.DictationEnabled) {
+                    Speech.read(this.text);
+                }
+                console.log(this.text);
+            }
+        });
+        this.tutorial_states.push({
+            objs: [],
+            text: "Ok, let's play!",
+            callback: function() {
+                for (let obj of outer.tutorial_objects) {
+                    obj.alpha = 1.0;
+                }
+                if (Globals.DictationEnabled) {
+                    Speech.read(this.text);
+                }
+                outer.tutorial_running = false;
+                console.log(this.text);
+            }
+        });
+
+        // Start tutorial
+        this.Enter();
     },
 
     loadGFXAssets: function() {
-        this.game.load.image('bg', 'assets/images/background.png').volume;
+        this.game.load.image('bg', 'assets/images/background.png');
         this.game.load.image('usagi', 'assets/images/bunny.png');
         this.game.load.image('bubble', 'assets/images/bubble.png');
         this.game.load.image('wand', 'assets/images/wand.png');
@@ -162,10 +244,10 @@ tutorial.prototype = {
     drawGFX: function() {
         let w = this.game.world.width;
         let h = this.game.world.height;
-        let bg = this.game.add.sprite(w/2, h/2, 'bg');
-        bg.anchor.setTo(0.5, 0.5);
-        bg.width = w;
-        bg.height = h;
+        this.bg = this.game.add.sprite(w/2, h/2, 'bg');
+        this.bg.anchor.setTo(0.5, 0.5);
+        this.bg.width = w;
+        this.bg.height = h;
 
         this.text.score = this.game.add.text(this.game.world.width - 220, 50, "", {
             font: "bold 26px Comic Sans MS",
@@ -250,6 +332,9 @@ tutorial.prototype = {
         let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         S.onDown.add(this.Select, this);
 
+        let En = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        En.onDown.add(this.Enter, this);
+
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
@@ -263,88 +348,104 @@ tutorial.prototype = {
     },
 
     rotateCW: function() {
-        this.score_selectors++;
+        if (!this.tutorial_running) {
+            this.score_selectors++;
 
-        if (Globals.SoundEnabled) {
-            this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+            if (Globals.SoundEnabled) {
+                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+            }
+
+            do {
+                this.bubbleSelection = (this.bubbleSelection + 1) % this.questions.length;
+            } while (this.bubbles[this.bubbleSelection].popped);
+
+            if (Globals.DictationEnabled) {
+                Speech.read(this.answers[this.bubbleSelection]);
+            }
+
+            this.wand.rotateTo(this.angles[this.bubbleSelection]);
         }
-
-        do {
-            this.bubbleSelection = (this.bubbleSelection + 1) % this.questions.length;
-        } while (this.bubbles[this.bubbleSelection].popped);
-
-        if (Globals.DictationEnabled) {
-            Speech.read(this.answers[this.bubbleSelection]);
-        }
-
-        this.wand.rotateTo(this.angles[this.bubbleSelection]);
     },
 
     rotateCCW: function() {
-        this.score_selectors++;
+        if (!this.tutorial_running) {
+            this.score_selectors++;
 
-        if (Globals.SoundEnabled) {
-            this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
-        }
-
-        do {
-            if (this.bubbleSelection - 1 < 0) {
-                this.bubbleSelection = this.questions.length - 1;
-            } else {
-                this.bubbleSelection = this.bubbleSelection - 1;
+            if (Globals.SoundEnabled) {
+                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
             }
-        } while (this.bubbles[this.bubbleSelection].popped);
 
-        if (Globals.DictationEnabled) {
-            Speech.read(this.answers[this.bubbleSelection]);
+            do {
+                if (this.bubbleSelection - 1 < 0) {
+                    this.bubbleSelection = this.questions.length - 1;
+                } else {
+                    this.bubbleSelection = this.bubbleSelection - 1;
+                }
+            } while (this.bubbles[this.bubbleSelection].popped);
+
+            if (Globals.DictationEnabled) {
+                Speech.read(this.answers[this.bubbleSelection]);
+            }
+
+            this.wand.rotateTo(this.angles[this.bubbleSelection]);
         }
-
-        this.wand.rotateTo(this.angles[this.bubbleSelection]);
     },
 
     Select: function() {
-        if (this.won) {
-            this.initializeTutorial();
-            this.wand.rotateTo(0);
-            return;
-        }
-
-        let result = eval(this.questions[this.questionIndex]);
-        let given = eval(this.answers[this.bubbleSelection])
-        if (given === result) {
-            this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-            this.score_multiplier += 1;
-            this.score_selectors = 0;
-
-            this.bubbles[this.bubbleSelection].sprite.animations.play('bubble-pop');
-            this.bubbles[this.bubbleSelection].popped = true;
-            this.bubbles[this.bubbleSelection].numText.visible = false;
-
-            this.questionIndex ++;
-            this.incorrectCounter = 0;
-
-            if (Globals.SoundEnabled) {
-                this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
-            }
-
-            if (this.questionIndex === this.questions.length) {
-                if (Globals.SoundEnabled) {
-                    this.sounds['win'].play();
-                }
-                this.won = true;
+        if (!this.tutorial_running) {
+            if (this.won) {
+                this.initializeTutorial();
+                this.wand.rotateTo(0);
                 return;
             }
 
-            if (Globals.DictationEnabled) {
-                Speech.readEq(this.questions[this.questionIndex]);
-            }
-        } else {
-            if (Globals.SoundEnabled) {
-                this.sounds['wrong'].play();
-            }
+            let result = eval(this.questions[this.questionIndex]);
+            let given = eval(this.answers[this.bubbleSelection]);
+            if (given === result) {
+                this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
+                this.score_multiplier += 1;
+                this.score_selectors = 0;
 
-            this.score_multiplier = 1;
-            this.incorrectCounter++;
+                this.bubbles[this.bubbleSelection].sprite.animations.play('bubble-pop');
+                this.bubbles[this.bubbleSelection].popped = true;
+                this.bubbles[this.bubbleSelection].numText.visible = false;
+
+                this.questionIndex ++;
+                this.incorrectCounter = 0;
+
+                if (Globals.SoundEnabled) {
+                    this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
+                }
+
+                if (this.questionIndex === this.questions.length) {
+                    if (Globals.SoundEnabled) {
+                        this.sounds['win'].play();
+                    }
+                    this.won = true;
+                    return;
+                }
+
+                if (Globals.DictationEnabled) {
+                    Speech.readEq(this.questions[this.questionIndex]);
+                }
+            } else {
+                if (Globals.SoundEnabled) {
+                    this.sounds['wrong'].play();
+                }
+
+                this.score_multiplier = 1;
+                this.incorrectCounter++;
+            }
         }
     },
+
+    Enter: function() {
+        this.tutorial_state_idx += 1;
+        if (this.tutorial_state_idx == this.tutorial_states.length) {
+            this.tutorial_running = false;
+        }
+        if (this.tutorial_running) {
+            this.tutorial_states[this.tutorial_state_idx].callback();
+        }
+    }
 };

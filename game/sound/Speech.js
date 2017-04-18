@@ -1,5 +1,4 @@
 var Speech = {
-    
     read: function(input) {
         // Web speech api
         window.speechSynthesis.cancel();
