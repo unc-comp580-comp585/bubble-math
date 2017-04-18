@@ -49,7 +49,7 @@ tutorial.prototype = {
                 this.bindSpeechKeys();
             }
         }
-
+        this.bindEssentialKeys();
         this.initializeTutorial();
     },
 
@@ -345,6 +345,13 @@ tutorial.prototype = {
 
     bindSpeechKeys: function() {
 
+    },
+
+    bindEssentialKeys: function() {
+        let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+        ESC.onDown.add(function() {
+            this.game.state.start("bootMainMenu");
+        }, this);   
     },
 
     rotateCW: function() {

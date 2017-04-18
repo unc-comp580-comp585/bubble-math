@@ -150,6 +150,7 @@ gamemode2.prototype = {
                 this.bindSpeechKeys();
         }
 
+        this.bindEssentialKeys();
 
         this.initializeNewGame();
     },
@@ -371,6 +372,13 @@ gamemode2.prototype = {
 
         let W = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
         W.onDown.add(this.Unsel, this);
+    },
+
+    bindEssentialKeys: function() {
+        let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+        ESC.onDown.add(function() {
+            this.game.state.start("bootMainMenu");
+        }, this);   
     },
 
     rotateCW: function() {

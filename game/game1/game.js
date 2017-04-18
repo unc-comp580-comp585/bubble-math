@@ -142,6 +142,8 @@ gamemode1.prototype = {
                 this.bindSpeechKeys();
         }
 
+        this.bindEssentialKeys();
+
 
         this.initializeNewGame();
     },
@@ -309,6 +311,13 @@ gamemode1.prototype = {
             arr[i] = arr[j];
             arr[j] = temp;
         }
+    },
+
+    bindEssentialKeys: function() {
+        let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+        ESC.onDown.add(function() {
+            this.game.state.start("bootMainMenu");
+        }, this);   
     },
 
     bindKeys: function() {
