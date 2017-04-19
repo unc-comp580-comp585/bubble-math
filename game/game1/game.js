@@ -25,6 +25,8 @@ gamemode1.prototype = {
     incorrectCounter: 0,
     won: false,
 
+    speechRecog : {},
+
     angles: [
             [0, 90, 180, 270], 
             [0, 45, 90, 135, 180, 225, 270, 315],
@@ -90,6 +92,7 @@ gamemode1.prototype = {
             //you won hooooraaaay
             this.game.load.audio('win', 'assets/audio/achievement.mp3');
         }
+
     },
 
     addSFXAssets: function() {
@@ -142,14 +145,20 @@ gamemode1.prototype = {
                 this.bindDictationKeys();
         }
 
+        if(Globals.SpeechRecognitionEnabled) {
+            this.speechRecog = SpRecog.init(this.speechRecog);
+            this.bindSpeechKeys();
+        }
+
         this.bindEssentialKeys();
 
 
         this.initializeNewGame();
     },
 
+    
+
     initializeNewGame: function() {
-        //TODO
         this.drawGFX();
 
         this.operations = Globals.GradeSel >= 2 ? ['+', '-', '*', '/'] : ['+', '-'];
@@ -174,9 +183,88 @@ gamemode1.prototype = {
 
         if(Globals.ControlSel === 1) {
             this.bindSwitch();
-            if(Globals.DictationEnabled) 
-                this.bindSpeechKeys();
         }
+    },
+
+    bindSpeechKeys: function() {
+        let T = this.game.input.keyboard.addKey(Phaser.Keyboard.T);
+        T.onDown.add(this.onSpeechRecog, this);
+    },
+
+    onSpeechRecog: function() {
+        this.speechRecog.onresult = (event) => {
+            let last = event.results.length - 1;
+            let number = event.results[last][0].transcript;
+            console.dir("Recieved: " + number);
+            if(Number.isInteger(parseInt(number))) {
+                this.selectAnswer(parseInt(number));
+            } else {
+                this.selectAnswer(parseInt(Globals.numbers[number]));
+            }
+        }
+        this.speechRecog.onspeechend = (event) => {
+            console.log("ended recog");
+            this.speechRecog.stop();
+        }  
+
+        this.speechRecog.onnomatch = (event) => {
+            console.warn("what?");
+        }
+
+        this.speechRecog.onerror = (event) => {
+            console.error("error occured in recognition " + event.error );
+        }
+
+        SpRecog.listen(this.speechRecog);
+    },
+
+    selectAnswer: function(answer) {
+        if(this.won) {
+            this.initializeNewGame();
+            this.wand.rotateTo(0);
+            return;
+        }
+
+        let result = eval(this.questions[this.questionIndex]);
+        let given = answer;
+
+        if(given === result) {
+            //score stuff
+            this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
+            this.score_multiplier += 1;
+            this.score_selectors = 0;
+
+            //animation stuff
+            this.bubbles[this.bubbleSelection].sprite.animations.play('bubble-pop');
+            this.bubbles[this.bubbleSelection].popped = true;
+            this.bubbles[this.bubbleSelection].numText.visible = false;
+
+            //mechanics stuff
+            this.questionIndex ++;
+            this.incorrectCounter = 0;
+
+            if(Globals.SoundEnabled)
+                this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
+
+            if(this.questionIndex === this.questions.length) {
+                if(Globals.SoundEnabled)
+                    this.sounds['win'].play();
+                this.won = true;
+                return;
+            }
+
+            if(Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
+
+        } else {
+            
+            if(Globals.SoundEnabled)
+                this.sounds['wrong'].play();
+
+            this.score_multiplier = 1;
+            this.incorrectCounter++;
+        }
+
     },
 
     updateGFX: function() {
@@ -385,7 +473,7 @@ gamemode1.prototype = {
         }
 
         let result = eval(this.questions[this.questionIndex]);
-        let given = eval(this.answers[this.bubbleSelection])
+        let given = eval(this.answers[this.bubbleSelection]);
         if(given === result) {
             //score stuff
             this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
