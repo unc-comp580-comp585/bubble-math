@@ -1,4 +1,4 @@
-function Wand(game, cx, cy) {
+function Wand(game, cx, cy, is_tutorial) {
     const wand_dims = [
         { w: 40, h: 70  },
         { w: 60, h: 120 },
@@ -6,7 +6,7 @@ function Wand(game, cx, cy) {
     ];
 
     const angles = [
-            [0, 90, 180, 270], 
+            [0, 90, 180, 270],
             [0, 45, 90, 135, 180, 225, 270, 315]
             [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
         ];
@@ -15,9 +15,10 @@ function Wand(game, cx, cy) {
     this.cx = cx;
     this.cy = cy;
 
+    let wand_dim_idx = (is_tutorial ? 0 : Globals.NumberBubbles);
 
-    let w = wand_dims[Globals.NumberBubbles].w;
-    let h = wand_dims[Globals.NumberBubbles].h;
+    let w = wand_dims[wand_dim_idx].w;
+    let h = wand_dims[wand_dim_idx].h;
     let angle = wand_dims[Globals.NumberBubbles].w;
 
     this.sprite = game.add.sprite(cx, cy, 'wand');

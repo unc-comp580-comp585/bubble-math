@@ -318,7 +318,7 @@ gamemode1.prototype = {
 
         let bunny = new Bunny(this.game, 110, 460, 200, 200);
         
-        this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY);
+        this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY, false);
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
     },
