@@ -6,6 +6,7 @@ var Globals = {
     GradeSel: 0,
     NumberBubbles: 0,
     ControlSel: 0,
+    jsDeadZone : 0.2,
 };
 
 
