@@ -25,11 +25,21 @@ gamemode1.prototype = {
     incorrectCounter: 0,
     won: false,
 
+    gamepad: null,
+
+    speechRecog : {},
+
     angles: [
             [0, 90, 180, 270], 
             [0, 45, 90, 135, 180, 225, 270, 315],
             [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330],
         ],
+
+    wheel: [
+        [1, 0, 3, 2],
+        [2, 1, 0, 7, 6, 5, 4, 3],
+        [3,2, 1, 0, 11, 10, 9, 8, 7, 6 ,5, 4],
+    ],
 
 
     interval: null,
@@ -90,6 +100,7 @@ gamemode1.prototype = {
             //you won hooooraaaay
             this.game.load.audio('win', 'assets/audio/achievement.mp3');
         }
+
     },
 
     addSFXAssets: function() {
@@ -139,7 +150,15 @@ gamemode1.prototype = {
         if(Globals.ControlSel === 0) {
             this.bindKeys();
             if(Globals.DictationEnabled) 
-                this.bindSpeechKeys();
+                this.bindDictationKeys();
+        } else if(Globals.ControlSel >= 2) {
+                this.game.input.gamepad.start();
+                this.gamepad = this.game.input.gamepad.pad1;
+        }
+
+        if(Globals.SpeechRecognitionEnabled) {
+            this.speechRecog = SpRecog.init(this.speechRecog);
+            this.bindSpeechKeys();
         }
 
         this.bindEssentialKeys();
@@ -149,7 +168,6 @@ gamemode1.prototype = {
     },
 
     initializeNewGame: function() {
-        //TODO
         this.drawGFX();
 
         this.operations = Globals.GradeSel >= 2 ? ['+', '-', '*', '/'] : ['+', '-'];
@@ -174,9 +192,88 @@ gamemode1.prototype = {
 
         if(Globals.ControlSel === 1) {
             this.bindSwitch();
-            if(Globals.DictationEnabled) 
-                this.bindSpeechKeys();
         }
+    },
+
+    bindSpeechKeys: function() {
+        let T = this.game.input.keyboard.addKey(Phaser.Keyboard.T);
+        T.onDown.add(this.onSpeechRecog, this);
+    },
+
+    onSpeechRecog: function() {
+        this.speechRecog.onresult = (event) => {
+            let last = event.results.length - 1;
+            let number = event.results[last][0].transcript;
+            console.dir("Recieved: " + number);
+            if(Number.isInteger(parseInt(number))) {
+                this.selectAnswer(parseInt(number));
+            } else {
+                this.selectAnswer(parseInt(Globals.numbers[number]));
+            }
+        }
+        this.speechRecog.onspeechend = (event) => {
+            console.log("ended recog");
+            this.speechRecog.stop();
+        }  
+
+        this.speechRecog.onnomatch = (event) => {
+            console.warn("what?");
+        }
+
+        this.speechRecog.onerror = (event) => {
+            console.error("error occured in recognition " + event.error );
+        }
+
+        SpRecog.listen(this.speechRecog);
+    },
+
+    selectAnswer: function(answer) {
+        if(this.won) {
+            this.initializeNewGame();
+            this.wand.rotateTo(0);
+            return;
+        }
+
+        let result = eval(this.questions[this.questionIndex]);
+        let given = answer;
+
+        if(given === result) {
+            //score stuff
+            this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
+            this.score_multiplier += 1;
+            this.score_selectors = 0;
+
+            //animation stuff
+            this.bubbles[this.bubbleSelection].sprite.animations.play('bubble-pop');
+            this.bubbles[this.bubbleSelection].popped = true;
+            this.bubbles[this.bubbleSelection].numText.visible = false;
+
+            //mechanics stuff
+            this.questionIndex ++;
+            this.incorrectCounter = 0;
+
+            if(Globals.SoundEnabled)
+                this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
+
+            if(this.questionIndex === this.questions.length) {
+                if(Globals.SoundEnabled)
+                    this.sounds['win'].play();
+                this.won = true;
+                return;
+            }
+
+            if(Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
+
+        } else {
+            
+            if(Globals.SoundEnabled)
+                this.sounds['wrong'].play();
+
+            this.score_multiplier = 1;
+            this.incorrectCounter++;
+        }
+
     },
 
     updateGFX: function() {
@@ -316,7 +413,7 @@ gamemode1.prototype = {
     bindEssentialKeys: function() {
         let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
         ESC.onDown.add(function() {
-            this.game.sound.stopAll();
+            this.sounds['bgm'].stop();
             this.game.state.start("bootMainMenu");
         }, this);   
     },
@@ -398,7 +495,7 @@ gamemode1.prototype = {
         }
 
         let result = eval(this.questions[this.questionIndex]);
-        let given = eval(this.answers[this.bubbleSelection])
+        let given = eval(this.answers[this.bubbleSelection]);
         if(given === result) {
             //score stuff
             this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
@@ -444,12 +541,148 @@ gamemode1.prototype = {
         S.onDown.add(this.Select, this);
     }, 
 
-    bindSpeechKeys: function() {
-        //TODO SpeechRecognition
+    bindDictationKeys: function() {
+        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(Speech.decreaseRate);
+
+        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        D.onDown.add(Speech.increaseRate);
+    },
+
+    processAnalog: function(angle, scheme_id) {
+        if(scheme_id === 0) {
+            if(angle <= 90 && angle > 270)
+                this.rotateCW();
+            else
+                this.rotateCW();
+        } else if(scheme_id === 1) {
+                let _angles = this.angles[Globals.NumberBubbles];
+                let index_selection = 0;
+                for(let i = 0; i < _angles.length; i++) {
+                    if(angle <= _angles[i]) {
+                        index_selection = i;
+                        break;
+                    }
+                }
+                let newBubble = this.wheel[Globals.NumberBubbles][index_selection];
+                if(this.bubbleSelection !== newBubble) {
+                    this.bubbleSelection = newBubble;
+                    this.wand.rotateTo(this.angles[Globals.NumberBubbles][newBubble]);
+                    if(Globals.DictationEnabled)
+                        Speech.readEq(this.answers[this.bubbleSelection]);
+                    if(Globals.SoundEnabled)
+                        this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+                }
+                
+        } else {
+            console.error("Invalid Control Scheme");
+        }
     },
 
     bindControllerScheme: function(scheme_id) {
-        //TODO
+        if(this.gamepad === null)
+        {
+               console.error("Gamepad was not setup correctly.");
+               return;
+        }
+        this.processControllerButtons();
+        let angle = this.getControllerAngle();
+        if(scheme_id === 0) {
+            if(angle !== null) {
+                    this.processAnalog(angle, scheme_id);
+            }
+        } else if(scheme_id === 1) {
+            if(angle !== null) {
+                this.processAnalog(angle, scheme_id);
+            }
+        } else {
+            console.error("Invalid Control Scheme");
+        }
+    },
+
+    getControllerAngle: function() {
+        let x = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        let y = -this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+        let isX = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.jsDeadZone;
+        let isY = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.jsDeadZone;
+        if(isX || isY) {
+            let tmp = Math.atan2(y, x);
+            let angle = 0;
+            if(y < 0) {
+                tmp += 2 * Math.PI;
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            } else {
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            }
+            angle = Math.abs(angle);
+            return angle;
+        }
+        return null;
+    },
+
+    processControllerButtons: function() {
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20)) {
+            console.info("A Button");
+            this.Select();
+        } 
+        
+         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
+            console.info("START");
+            if(Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
+        } 
+        
+         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
+            console.info("B Button");
+            //TODO Back Button
+        } 
+        
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 200) && !this.won) {
+            console.info*("Y Button");
+        } 
+        
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
+            console.info("X Button");
+            //TODO READ ALL THE RINGS
+        } 
+        
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_BUMPER, 20) && !this.won) {
+            console.info("RIGHT BUMPER");
+            if(Globals.DictationEnabled)
+                Speech.increaseRate();
+        } 
+        
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_LEFT_BUMPER, 20) && !this.won) {
+            console.info("LEFT BUMPER");
+            if(Globals.DictationEnabled)
+                Speech.decreaseRate();
+        }  
+        
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20) && !this.won) {
+            console.info("SELECT");
+            this.sounds['bgm'].stop();
+            this.game.state.start("bootMainMenu");
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20) && !this.won) {
+            console.info("DPAD Left");
+            this.rotateCCW();
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_RIGHT, 20) && !this.won) {
+            console.info("DPAD Right");
+            this.rotateCW();
+        }
+
+        //Unused
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_UP, 20) && !this.won) {
+            console.info("DPAD Up");
+        }
+        
+        //Unused
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_DOWN, 20) && !this.won) {
+            console.info("DPAD Down");
+        }
     },
 
     update: function() {
