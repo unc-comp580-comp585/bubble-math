@@ -407,7 +407,7 @@ optionsMenu.prototype = {
     gradeSel : 0,
     dictationSel: true,
     sfxSel: true,
-    musicSel: true,
+    musicSel: false,
     speechRec: true,
     controlSel: 0,
 

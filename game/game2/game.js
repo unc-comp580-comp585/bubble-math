@@ -348,8 +348,8 @@ gamemode2.prototype = {
         let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(this.rotateCW, this);
 
-        let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        S.onDown.add(this.Select, this);
+        let SPACE = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        SPACE.onDown.add(this.Select, this);
 
         if(Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
@@ -367,7 +367,19 @@ gamemode2.prototype = {
                     console.log('selected ', this.selectedIndicies);
                     console.log('answers ', this.answers);
                     console.log('bubbles ', this.bubbles);
-            }, this)
+            }, this);
+            let S = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+            S.onDown.add(function(){
+                Speech.read("Your score is: " + this.score);
+            }, this);
+            let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+            A.onDown.add(function(){
+                Globals.voice.rate += 0.1;
+            }, this);
+            let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+            D.onDown.add(function(){
+                Globals.voice.rate -= 0.1;
+            });
         }
 
         let W = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -377,6 +389,7 @@ gamemode2.prototype = {
     bindEssentialKeys: function() {
         let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
         ESC.onDown.add(function() {
+            this.game.sound.stopAll();
             this.game.state.start("bootMainMenu");
         }, this);   
     },

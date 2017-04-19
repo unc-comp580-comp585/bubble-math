@@ -316,6 +316,7 @@ gamemode1.prototype = {
     bindEssentialKeys: function() {
         let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
         ESC.onDown.add(function() {
+            this.game.sound.stopAll();
             this.game.state.start("bootMainMenu");
         }, this);   
     },
