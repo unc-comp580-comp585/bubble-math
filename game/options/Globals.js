@@ -1,5 +1,5 @@
 var Globals = {
-    MusicEnabled: true,
+    MusicEnabled: false,
     DictationEnabled: true,
     SoundEnabled: true,
     SpeechRecognitionEnabled: true,

@@ -11,9 +11,9 @@ var Speech = {
     },
 
     readEq: function(input) {
-        input = String(input).replace('-', 'minus');
-        input = String(input).replace('/', 'divided by');
-        input = String(input).replace('*', 'times');
+        input = input.replace(new RegExp('-', 'g'), 'minus');
+        input = input.replace(new RegExp('/', 'g'), 'divided by');
+        input = input.replace(new RegExp('\\*', 'g'), 'times');
         Speech.read(input);
     },
 }
