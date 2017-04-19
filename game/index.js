@@ -1,5 +1,5 @@
-var w = 800;
-var h = 600;
+var w = 1000;
+var h = 650;
 
 var game = new Phaser.Game((h > w) ? h : w, (h > w) ? w : h, Phaser.CANVAS, "game");
 

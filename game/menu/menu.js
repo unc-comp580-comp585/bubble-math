@@ -23,11 +23,24 @@ mainMenu.prototype = {
         bg.height = h;
         bg.alpha = 0.7;
 
-        this.titleText = this.game.add.text(300, 80, 'Bubble Math!', {font : '30px Comic Sans MS', fill: '#ffffff'});
-        this.tutorialText = this.game.add.text(300, 300, 'Tutorial', {font : '30px Comic Sans MS', fill: '#ffffff'});
-        this.game1Text = this.game.add.text(300, 350, 'Play Gamemode 1', {font : '30px Comic Sans MS', fill: '#ffffff'});
-        this.game2Text = this.game.add.text(300, 400, 'Play Gamemode 2', {font : '30px Comic Sans MS', fill: '#ffffff'});
-        this.optionsText = this.game.add.text(300, 450, 'Options', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        let cx = this.game.world.centerX;
+
+        let font = {
+            font: "30px Comic Sans MS",
+            fill: "#ffffff",
+        };
+
+        this.titleText = this.game.add.text(cx, 80, 'Bubble Math!', font);
+        this.tutorialText = this.game.add.text(cx, 300, 'Tutorial', font);
+        this.game1Text = this.game.add.text(cx, 350, 'Play Gamemode 1', font);
+        this.game2Text = this.game.add.text(cx, 400, 'Play Gamemode 2', font);
+        this.optionsText = this.game.add.text(cx, 450, 'Options', font);
+
+        this.titleText.anchor.setTo(0.5, 0.5);
+        this.tutorialText.anchor.setTo(0.5, 0.5);
+        this.game1Text.anchor.setTo(0.5, 0.5);
+        this.game2Text.anchor.setTo(0.5, 0.5);
+        this.optionsText.anchor.setTo(0.5, 0.5);
     },
 
     create: function() {
@@ -46,54 +59,57 @@ mainMenu.prototype = {
     },
 
     increaseSel: function() {
-        if(this.selection + 1 > 3)
+        if (this.selection + 1 > 3) {
             this.selection = 0;
-        else
+        } else {
             this.selection ++;
+        }
     },
 
     decreaseSel: function() {
-        if(this.selection - 1 < 0)
+        if (this.selection - 1 < 0) {
             this.selection = 3;
-        else
-            this.selection --;
+        } else {
+            this.selection--;
+        }
     },
 
     nextState: function() {
-        switch(this.selection) {
+        switch (this.selection) {
             case 0:
                 Globals.GameMode = 0;
-                this.game.state.start("Tutorial"); break;
+                this.game.state.start("Tutorial");
+                break;
             case 1:
                 Globals.GameMode = 1;
-                this.game.state.start("Game1"); break;
+                this.game.state.start("Game1");
+                break;
             case 2:
                 Globals.GameMode = 2;
-                this.game.state.start("Game2"); break;
+                this.game.state.start("Game2");
+                break;
             case 3:
-                this.game.state.start("Options"); break;
+                this.game.state.start("Options");
+                break;
         }
     },
 
     resetMenu: function() {
             this.tutorialText.addColor("#ffffff", 0);
             this.game1Text.addColor("#ffffff", 0);
-            this.game2Text.addColor("#ffffff", 0); 
+            this.game2Text.addColor("#ffffff", 0);
             this.optionsText.addColor("#ffffff", 0);
     },
 
-
     update: function() {
         this.resetMenu();
-        switch(this.selection) {
+        switch (this.selection) {
             case 0: this.tutorialText.addColor("#00ff00", 0); break;
             case 1: this.game1Text.addColor("#00ff00", 0); break;
             case 2: this.game2Text.addColor("#00ff00", 0); break;
             case 3: this.optionsText.addColor("#00ff00", 0); break;
         }
-
-
     },
-    
+
     selection: 0,
 };

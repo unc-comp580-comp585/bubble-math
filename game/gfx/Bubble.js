@@ -15,11 +15,13 @@ function Bubble(game, cx, cy, r, num) {
     let scale = 2*r + 80;
     Graphics.scaleSprite(game, Globals.handles.bubble, this.sprite, scale, scale);
 
-    // Set font settings
-    //      TODO: Set size based on radius
-    //      TODO: Figure out why it's not vertically aligned
+    let fontsize = 26;
+    if (Globals.GameMode == 2 && Globals.GradeSel % 2 == 1) {
+        fontsize = 16;
+    }
+
     this.numText = game.add.text(cx, cy, num.toString(), {
-        font: "bold 26px Comic Sans MS",
+        font: "bold " + fontsize + "px Comic Sans MS",
         fill: Globals.colors.unselected,
         boundsAlignH: "center",
         boundsAlignV: "middle",

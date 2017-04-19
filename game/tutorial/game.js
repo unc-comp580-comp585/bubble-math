@@ -68,18 +68,29 @@ tutorial.prototype = {
 
         if (Globals.ControlSel === 2) {
             this.bindControllerScheme(0);
-        } else if(Globals.ControlSel === 3) {
+        } else if (Globals.ControlSel === 3) {
             this.bindControllerScheme(1);
         }
     },
 
     initializeTutorial: function() {
-        this.drawGFX();
+        this.questions = ["2 + 2", "7 - 2", "4 + 5", "8 + 3"];
+        this.answers = ["9", "4", "5", "11"];
+        this.angles = [0, 90, 180, 270];
 
+        this.score = 0;
+        this.score_multiplier = 1;
+        this.score_selectors = 0;
+
+        this.bubbleSelection = 0;
+        this.questionIndex = 0;
+        this.incorrectCounter = 0;
+        this.won = false;
+
+        this.drawGFX();
         this.drawBubbles();
 
         this.tutorial_state_idx = -1;
-
         this.tutorial_running = true;
 
         this.tutorial_objects = [
@@ -281,7 +292,7 @@ tutorial.prototype = {
         });
         this.text.question.anchor.setTo(0.5, 0.5);
 
-        let bunny = new Bunny(this.game, 110, 460, 200, 200);
+        let bunny = new Bunny(this.game, 150, 510, 200, 200);
 
         this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY, true);
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
@@ -358,9 +369,7 @@ tutorial.prototype = {
 
     bindEssentialKeys: function() {
         let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
-        ESC.onDown.add(function() {
-            this.game.state.start("bootMainMenu");
-        }, this);   
+        ESC.onDown.add(this.Esc, this);
     },
 
     rotateCW: function() {
@@ -373,7 +382,7 @@ tutorial.prototype = {
 
             do {
                 this.bubbleSelection = (this.bubbleSelection + 1) % this.questions.length;
-            } while (this.bubbles[this.bubbleSelection].popped);
+            } while (!this.won && this.bubbles[this.bubbleSelection].popped);
 
             if (Globals.DictationEnabled) {
                 Speech.read(this.answers[this.bubbleSelection]);
@@ -397,7 +406,7 @@ tutorial.prototype = {
                 } else {
                     this.bubbleSelection = this.bubbleSelection - 1;
                 }
-            } while (this.bubbles[this.bubbleSelection].popped);
+            } while (!this.won && this.bubbles[this.bubbleSelection].popped);
 
             if (Globals.DictationEnabled) {
                 Speech.read(this.answers[this.bubbleSelection]);
@@ -410,8 +419,7 @@ tutorial.prototype = {
     Select: function() {
         if (!this.tutorial_running) {
             if (this.won) {
-                this.initializeTutorial();
-                this.wand.rotateTo(0);
+                this.Esc();
                 return;
             }
 
@@ -463,5 +471,9 @@ tutorial.prototype = {
         if (this.tutorial_running) {
             this.tutorial_states[this.tutorial_state_idx].callback();
         }
-    }
+    },
+
+    Esc: function() {
+        this.game.state.start("bootMainMenu");
+    },
 };
