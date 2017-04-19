@@ -413,6 +413,7 @@ gamemode1.prototype = {
     bindEssentialKeys: function() {
         let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
         ESC.onDown.add(function() {
+            this.sounds['bgm'].stop();
             this.game.state.start("bootMainMenu");
         }, this);   
     },
@@ -555,6 +556,10 @@ gamemode1.prototype = {
                 if(this.bubbleSelection !== newBubble) {
                     this.bubbleSelection = newBubble;
                     this.wand.rotateTo(this.angles[Globals.NumberBubbles][newBubble]);
+                    if(Globals.DictationEnabled)
+                        Speech.readEq(this.answers[this.bubbleSelection]);
+                    if(Globals.SoundEnabled)
+                        this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
                 }
                 
         } else {
@@ -563,7 +568,6 @@ gamemode1.prototype = {
     },
 
     bindControllerScheme: function(scheme_id) {
-        //TODO
         if(this.gamepad === null)
         {
                console.error("Gamepad was not setup correctly.");
@@ -605,36 +609,67 @@ gamemode1.prototype = {
     },
 
     processControllerButtons: function() {
-        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20) && !this.won) {
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20)) {
             console.info("A Button");
+            this.Select();
         } 
         
-         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20) && !this.won) {
+         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
             console.info("START");
+            if(Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
         } 
         
          if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
+            //TODO Back Button
         } 
         
-        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 200) && !this.won) {
             console.info*("Y Button");
         } 
         
         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
             console.info("X Button");
+            //TODO READ ALL THE RINGS
         } 
         
         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_BUMPER, 20) && !this.won) {
             console.info("RIGHT BUMPER");
+            if(Globals.DictationEnabled)
+                Speech.increaseRate();
         } 
         
         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_LEFT_BUMPER, 20) && !this.won) {
             console.info("LEFT BUMPER");
+            if(Globals.DictationEnabled)
+                Speech.decreaseRate();
         }  
         
         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20) && !this.won) {
             console.info("SELECT");
+            this.sounds['bgm'].stop();
+            this.game.state.start("bootMainMenu");
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20) && !this.won) {
+            console.info("DPAD Left");
+            this.rotateCCW();
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_RIGHT, 20) && !this.won) {
+            console.info("DPAD Right");
+            this.rotateCW();
+        }
+
+        //Unused
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_UP, 20) && !this.won) {
+            console.info("DPAD Up");
+        }
+        
+        //Unused
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_DOWN, 20) && !this.won) {
+            console.info("DPAD Down");
         }
     },
 
