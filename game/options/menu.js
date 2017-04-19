@@ -40,53 +40,63 @@ optionsMenu.prototype = {
     ApplyText: null,
 
     preload: function() {
+        this.game.load.image('bg', 'assets/images/background.png');
     },
 
     initMenu: function() {
+        // Background
+        let w = this.game.world.width;
+        let h = this.game.world.height;
+        let bg = this.game.add.sprite(w/2, h/2, 'bg');
+        bg.anchor.setTo(0.5, 0.5);
+        bg.width = w;
+        bg.height = h;
+        bg.alpha = 0.7;
+
         
         //Number of Bubbles
-        this.NumberBubblesText = this.game.add.text(100, 100, 'Number of Bubbles', {font : '30px Arial', fill: '#ffffff'});
-        this.NumberBubbles4 = this.game.add.text(400, 100, '4', {font : '30px Arial', fill: '#ffffff'});
-        this.NumberBubbles8 = this.game.add.text(450, 100, '8', {font : '30px Arial', fill: '#ffffff'});
-        this.NumberBubbles12 = this.game.add.text(500, 100, '12', {font : '30px Arial', fill: '#ffffff'});
+        this.NumberBubblesText = this.game.add.text(100, 100, 'Number of Bubbles', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.NumberBubbles4 = this.game.add.text(400, 100, '4', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.NumberBubbles8 = this.game.add.text(450, 100, '8', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.NumberBubbles12 = this.game.add.text(500, 100, '12', {font : '30px Comic Sans MS', fill: '#ffffff'});
         
         //Grade
-        this.GradeText = this.game.add.text(100, 150, 'Grade', {font : '30px Arial', fill: '#ffffff'});
-        this.Grade1 = this.game.add.text(400, 150, '1', {font : '30px Arial', fill: '#ffffff'});
-        this.Grade2 = this.game.add.text(450, 150, '2', {font : '30px Arial', fill: '#ffffff'});
-        this.Grade3 = this.game.add.text(500, 150, '3', {font : '30px Arial', fill: '#ffffff'});
-        this.Grade4 = this.game.add.text(550, 150, '4', {font : '30px Arial', fill: '#ffffff'});
+        this.GradeText = this.game.add.text(100, 150, 'Grade', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.Grade1 = this.game.add.text(400, 150, '1', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.Grade2 = this.game.add.text(450, 150, '2', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.Grade3 = this.game.add.text(500, 150, '3', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.Grade4 = this.game.add.text(550, 150, '4', {font : '30px Comic Sans MS', fill: '#ffffff'});
         
         //Dictation Options
-        this.DictationText = this.game.add.text(100, 200, 'Dictation', {font : '30px Arial', fill: '#ffffff'});
-        this.DictationOn = this.game.add.text(400, 200, 'On', {font : '30px Arial', fill: '#ffffff'});
-        this.DictationOff = this.game.add.text(500, 200, 'Off', {font : '30px Arial', fill: '#ffffff'});
+        this.DictationText = this.game.add.text(100, 200, 'Dictation', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.DictationOn = this.game.add.text(400, 200, 'On', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.DictationOff = this.game.add.text(500, 200, 'Off', {font : '30px Comic Sans MS', fill: '#ffffff'});
         
         //SFX Options
-        this.SFXText = this.game.add.text(100, 250, 'Sound Effects', {font : '30px Arial', fill: '#ffffff'});
-        this.SFXOn = this.game.add.text(400, 250, 'On', {font : '30px Arial', fill: '#ffffff'});
-        this.SFXOff = this.game.add.text(500, 250, 'Off', {font : '30px Arial', fill: '#ffffff'});
+        this.SFXText = this.game.add.text(100, 250, 'Sound Effects', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.SFXOn = this.game.add.text(400, 250, 'On', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.SFXOff = this.game.add.text(500, 250, 'Off', {font : '30px Comic Sans MS', fill: '#ffffff'});
         
         //Music Options
-        this.MusicText = this.game.add.text(100, 300, 'Music', {font : '30px Arial', fill: '#ffffff'});
-        this.MusicOn = this.game.add.text(400, 300, 'On', {font : '30px Arial', fill: '#ffffff'});
-        this.MusicOff = this.game.add.text(500, 300, 'Off', {font : '30px Arial', fill: '#ffffff'});
+        this.MusicText = this.game.add.text(100, 300, 'Music', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.MusicOn = this.game.add.text(400, 300, 'On', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.MusicOff = this.game.add.text(500, 300, 'Off', {font : '30px Comic Sans MS', fill: '#ffffff'});
 
         //Speech Recognition Options
-        this.SpeechRecogText = this.game.add.text(100, 350, 'Speech Recognition', {font : '30px Arial', fill: '#ffffff'});
-        this.SpeechRecogOn = this.game.add.text(400, 350, 'On', {font : '30px Arial', fill: '#ffffff'});
-        this.SpeechRecogOff = this.game.add.text(500, 350, 'Off', {font : '30px Arial', fill: '#ffffff'});
+        this.SpeechRecogText = this.game.add.text(100, 350, 'Speech Recognition', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.SpeechRecogOn = this.game.add.text(400, 350, 'On', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.SpeechRecogOff = this.game.add.text(500, 350, 'Off', {font : '30px Comic Sans MS', fill: '#ffffff'});
 
         //Control Scheme
-        this.ControlText = this.game.add.text(100, 400, 'Control Mode', {font : '30px Arial', fill: '#ffffff'});
-        this.ControlKeyboard = this.game.add.text(150, 450, 'Keyboard', {font : '30px Arial', fill: '#ffffff'});
-        this.ControlSwitch = this.game.add.text(325, 450, 'Switch', {font : '30px Arial', fill: '#ffffff'});
-        this.ControlGamepad1 = this.game.add.text(450, 450, 'Controller (1)', {font : '30px Arial', fill: '#ffffff'});
-        this.ControlGamepad2 = this.game.add.text(325, 500, "Controller (2)", {font: '30px Arial', fill: '#ffffff'})
+        this.ControlText = this.game.add.text(100, 400, 'Control Mode', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.ControlKeyboard = this.game.add.text(150, 450, 'Keyboard', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.ControlSwitch = this.game.add.text(325, 450, 'Switch', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.ControlGamepad1 = this.game.add.text(450, 450, 'Controller (1)', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.ControlGamepad2 = this.game.add.text(325, 500, "Controller (2)", {font: '30px Comic Sans MS', fill: '#ffffff'})
 
 
         //back
-        this.ApplyText = this.game.add.text(100, 550, 'Apply', {font : '30px Arial', fill: '#ffffff'});
+        this.ApplyText = this.game.add.text(100, 550, 'Apply', {font : '30px Comic Sans MS', fill: '#ffffff'});
     },
 
     drawSelectedOptions: function() {

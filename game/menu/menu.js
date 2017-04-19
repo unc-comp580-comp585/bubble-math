@@ -10,16 +10,24 @@ mainMenu.prototype = {
     optionsText: null,
 
     preload: function() {
-
-
+        this.game.load.image('bg', 'assets/images/background.png');
     },
 
     drawMenu: function() {
-        this.titleText = this.game.add.text(300, 80, 'Bubble Math!', {font : '30px Arial', fill: '#ffffff'});
-        this.tutorialText = this.game.add.text(300, 350, 'Tutorial', {font : '30px Arial', fill: '#ffffff'});
-        this.game1Text = this.game.add.text(300, 400, 'Play Gamemode 1', {font : '30px Arial', fill: '#ffffff'});
-        this.game2Text = this.game.add.text(300, 450, 'Play Gamemode 2', {font : '30px Arial', fill: '#ffffff'});
-        this.optionsText = this.game.add.text(300, 500, 'Options', {font : '30px Arial', fill: '#ffffff'});
+        // Background
+        let w = this.game.world.width;
+        let h = this.game.world.height;
+        let bg = this.game.add.sprite(w/2, h/2, 'bg');
+        bg.anchor.setTo(0.5, 0.5);
+        bg.width = w;
+        bg.height = h;
+        bg.alpha = 0.7;
+
+        this.titleText = this.game.add.text(300, 80, 'Bubble Math!', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.tutorialText = this.game.add.text(300, 300, 'Tutorial', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.game1Text = this.game.add.text(300, 350, 'Play Gamemode 1', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.game2Text = this.game.add.text(300, 400, 'Play Gamemode 2', {font : '30px Comic Sans MS', fill: '#ffffff'});
+        this.optionsText = this.game.add.text(300, 450, 'Options', {font : '30px Comic Sans MS', fill: '#ffffff'});
     },
 
     create: function() {
