@@ -334,7 +334,11 @@ gamemode1.prototype = {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
                     Speech.readEq("The question is: " + this.questions[this.questionIndex] + ".");
-            }, this)
+            }, this);
+            let S = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+            S.onDown.add(function(){
+                    Speech.read("Your score is: " + this.score);
+            }, this);
         }
     },
 
