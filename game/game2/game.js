@@ -359,8 +359,8 @@ gamemode2.prototype = {
         let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(this.rotateCW, this);
 
-        let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        S.onDown.add(this.Select, this);
+        let SPACE = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        SPACE.onDown.add(this.Select, this);
 
         if(Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
@@ -378,7 +378,19 @@ gamemode2.prototype = {
                     console.log('selected ', this.selectedIndicies);
                     console.log('answers ', this.answers);
                     console.log('bubbles ', this.bubbles);
-            }, this)
+            }, this);
+            let S = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+            S.onDown.add(function(){
+                Speech.read("Your score is: " + this.score);
+            }, this);
+            let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+            A.onDown.add(function(){
+                Globals.voice.rate += 0.1;
+            }, this);
+            let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+            D.onDown.add(function(){
+                Globals.voice.rate -= 0.1;
+            });
         }
 
         let W = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -503,6 +515,12 @@ gamemode2.prototype = {
                 this.selectedBubbles = [];
                 this.selectedIndicies = [];
 
+                for (let i = 0; i < 2; i++) {
+                    for (let bubble of this.bubbles[i]) {
+                        bubble.chosen = false;
+                    }
+                }
+
                 if(Globals.SoundEnabled)
                     this.sounds['wrong'].play();
 
@@ -514,6 +532,8 @@ gamemode2.prototype = {
             this.selectedIndicies.push(this.bubbleSelection);
             this.selectedBubbles.push(this.answers[0][this.bubbleSelection]);
             this.isInnerRing = false;
+
+            this.bubbles[0][this.bubbleSelection].chosen = true;
 
             if(Globals.DictationEnabled)
                 Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
@@ -717,21 +737,21 @@ gamemode2.prototype = {
         for (let i = 0; i < this.bubbles[0].length; i++) {
             for (let j = 0; j <= 1; j++) {
                 if (this.bubbles[j][i].popped) {
-                    this.bubbles[j][i].numText.fill = '#000000';
+                    this.bubbles[j][i].numText.fill = Globals.colors.popped;
                 } else if (this.bubbles[j][i].chosen) {
-                    this.bubbles[j][i].numText.fill = '#ffff00';
+                    this.bubbles[j][i].numText.fill = Globals.colors.chosen;
                 } else {
-                    this.bubbles[j][i].numText.fill = '#ffffff';
+                    this.bubbles[j][i].numText.fill = Globals.colors.unselected;
                 }
             }
         }
 
         if (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].popped) {
-            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = '#000000';
+            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = Globals.colors.popped;
         } else if (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].chosen) {
-            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = '#ffff00';
+            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = Globals.colors.chosen;
         } else {
-            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = '#ffff00';
+            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = Globals.colors.selected;
         }
     },
 

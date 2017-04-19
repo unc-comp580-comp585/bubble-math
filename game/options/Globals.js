@@ -1,5 +1,5 @@
 var Globals = {
-    MusicEnabled: true,
+    MusicEnabled: false,
     DictationEnabled: true,
     SoundEnabled: true,
     SpeechRecognitionEnabled: true,
@@ -29,7 +29,7 @@ Globals.colors = {
     selected: "#ffff00",    // Yellow
     unselected: "#ffffff",  // White
     popped: "#000000",      // Black
-    chosen: "#00ff00",      // Green
+    chosen: "#00aa00",      // Green
 };
 
 // Speech recognition options and locales

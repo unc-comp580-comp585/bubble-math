@@ -425,14 +425,26 @@ gamemode1.prototype = {
         let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(this.rotateCW, this);
 
-        let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        S.onDown.add(this.Select, this);
+        let SPACE = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        SPACE.onDown.add(this.Select, this);
 
         if(Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
-                    Speech.readEq("The question is: " + this.questions[this.questionIndex] + ".");
-            }, this)
+                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ".");
+            }, this);
+            let S = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+            S.onDown.add(function(){
+                Speech.read("Your score is: " + this.score);
+            }, this);
+            let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+            A.onDown.add(function(){
+                Globals.voice.rate += 0.1;
+            }, this);
+            let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+            D.onDown.add(function(){
+                Globals.voice.rate -= 0.1;
+            });
         }
     },
 
