@@ -28,6 +28,8 @@ gamemode2.prototype = {
     isInnerRing: true,
     question: null,
 
+    killIterations: 0,
+
     //score
     score : 0,
     score_multiplier: 0,
@@ -541,6 +543,7 @@ gamemode2.prototype = {
     },
 
     selectQuestion: function() {
+        this.killIterations ++;
         let b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
         let bubble1 = this.bubbles[0][b1Index];
         
@@ -559,6 +562,18 @@ gamemode2.prototype = {
 
         let answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
 
+        let notInt = !Number.isInteger(answer);
+        let neg = answer < 0;
+
+        if(notInt && this.killIterations < 1000)
+            answer = this.selectQuestion();
+
+        this.killIterations = 0;
+
+        if(this.killIterations == 1000) {
+            sound.readEq("You monster. You Killed me.");
+            this.won = true;
+        }
         this.question = ''+answer;
 
         return answer;
