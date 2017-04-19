@@ -4,6 +4,7 @@ var Globals = {
     SoundEnabled: true,
     SpeechRecognitionEnabled: true,
     GradeSel: 0,
+    GameMode: 1,
     NumberBubbles: 0,
     ControlSel: 0,
     jsDeadZone : 0.2,

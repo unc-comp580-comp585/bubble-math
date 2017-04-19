@@ -61,10 +61,17 @@ mainMenu.prototype = {
 
     nextState: function() {
         switch(this.selection) {
-            case 0: this.game.state.start("Tutorial"); break;
-            case 1: this.game.state.start("Game1"); break;
-            case 2: this.game.state.start("Game2"); break;
-            case 3: this.game.state.start("Options"); break;
+            case 0:
+                Globals.GameMode = 0;
+                this.game.state.start("Tutorial"); break;
+            case 1:
+                Globals.GameMode = 1;
+                this.game.state.start("Game1"); break;
+            case 2:
+                Globals.GameMode = 2;
+                this.game.state.start("Game2"); break;
+            case 3:
+                this.game.state.start("Options"); break;
         }
     },
 
