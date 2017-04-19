@@ -413,7 +413,8 @@ gamemode1.prototype = {
     bindEssentialKeys: function() {
         let ESC = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
         ESC.onDown.add(function() {
-            this.sounds['bgm'].stop();
+            if(Globals.MusicEnabled)
+                this.sounds['bgm'].stop();
             this.game.state.start("bootMainMenu");
         }, this);   
     },
@@ -445,6 +446,8 @@ gamemode1.prototype = {
             D.onDown.add(function(){
                 Globals.voice.rate -= 0.1;
             });
+            let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
+            F.onDown.add(this.readBubbles, this);
         }
     },
 
@@ -715,5 +718,18 @@ gamemode1.prototype = {
             this.bubbles[this.bubbleSelection].numText.fill =  '#000000';
         else 
             this.bubbles[this.bubbleSelection].numText.fill = '#ffff00';
+    },
+
+    readBubbles: function(){
+        let count = 0;
+        let s = ""
+        for(let i = 0; i < this.bubbles.length; i++){
+            if (!this.bubbles[i].popped){
+                count++;
+                s += " " + String(this.bubbles[i].numText.text) + "..";
+            }
+        }
+        s = "The remaining: " + String(count) + ". bubbles are: " + s;
+        Speech.read(s);
     }
 }

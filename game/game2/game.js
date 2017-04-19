@@ -391,6 +391,8 @@ gamemode2.prototype = {
             D.onDown.add(function(){
                 Globals.voice.rate -= 0.1;
             });
+            let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
+            F.onDown.add(this.readBubbles, this);
         }
 
         let W = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -770,4 +772,18 @@ gamemode2.prototype = {
                 this.bubbles[selected_ring][i].numText.alpha = selected_alpha;
             }
     },
+
+    readBubbles: function(){
+        let selected_ring = (this.isInnerRing ? 0 : 1);
+        let count = 0;
+        let s = "";
+        for(let bubble of this.bubbles[selected_ring]){
+            if (!bubble.popped){
+                count++;
+                s += " " + String(bubble.numText.text) + "..";
+            }
+        }
+        s = "The remaining: " + String(count) + ". bubbles are: " + s;
+        Speech.readEq(s);
+    }
 }
