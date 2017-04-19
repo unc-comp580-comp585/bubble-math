@@ -78,6 +78,10 @@ tutorial.prototype = {
 
         this.drawBubbles();
 
+        this.tutorial_state_idx = -1;
+
+        this.tutorial_running = true;
+
         this.tutorial_objects = [
             this.text.question,
             this.text.score,
@@ -96,6 +100,8 @@ tutorial.prototype = {
         let outer = this;
 
         let dim_alpha = 0.2;
+
+        this.tutorial_states = [];
 
         this.tutorial_states.push({
             objs: [this.text.question],
