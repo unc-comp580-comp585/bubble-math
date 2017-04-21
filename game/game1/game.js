@@ -706,7 +706,10 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
-            // TODO: Back Button
+            if (Globals.MusicEnabled) {
+                this.sounds['bgm'].stop();
+            }
+            this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 200) && !this.won) {
@@ -715,7 +718,9 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
             console.info("X Button");
-            // TODO: READ ALL THE RINGS
+            if (Globals.DictationEnabled){
+                this.readBubbles();
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_BUMPER, 20) && !this.won) {
@@ -794,16 +799,29 @@ gamemode1.prototype = {
         }
     },
 
-    readBubbles: function(){
+    readBubbles: async function(){
         let count = 0;
-        let s = ""
+        let bubble_text = [];
+        let tone_index = [];
         for (let i = 0; i < this.bubbles.length; i++){
             if (!this.bubbles[i].popped){
                 count++;
-                s += " " + String(this.bubbles[i].numText.text) + "..";
+                bubble_text.push(String(this.bubbles[i].numText.text));
+                tone_index.push(i);
             }
         }
-        s = "The remaining: " + String(count) + ". bubbles are: " + s;
-        Speech.read(s);
-    }
+        Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
+        await this.sleep(500);
+        for (let i = 0; i < bubble_text.length; i++){
+            await this.sleep(1000).then(() => {
+                this.sounds.tones[tone_index[i]].play();
+                Speech.read(String(bubble_text[i]));
+            });
+        }
+    },
+
+    sleep: function (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    },
+
 }
