@@ -274,7 +274,36 @@ gamemode1.prototype = {
     updateGFX: function() {
         this.text.score.setText("Score: " + this.score);
         this.text.multiplier.setText("x" + this.score_multiplier);
-        this.text.question.setText(this.questions[this.questionIndex]);
+
+        let text = this.questions[this.questionIndex];
+
+        let fractions_enabled = (Globals.GradeSel % 2 == 1);
+        if (fractions_enabled) {
+            let len = text.length;
+            let op_idx = text.search(/\s(\+|-|\*|\/)\s/);
+            let op = text.substring(op_idx+1, op_idx+2);
+            let fst_expr = text.substring(1, op_idx-1);
+            let snd_expr = text.substring(op_idx+4, len-1);
+
+            let fst_slash_idx = fst_expr.indexOf("/");
+            let snd_slash_idx = snd_expr.indexOf("/");
+
+            let fst_numer = fst_expr.substring(0, fst_slash_idx);
+            let fst_denom = fst_expr.substring(fst_slash_idx+1);
+            let snd_numer = snd_expr.substring(0, snd_slash_idx);
+            let snd_denom = snd_expr.substring(snd_slash_idx+1);
+
+            let fst_line = fst_numer + "      " + snd_numer;
+            let snd_line = "—  " + op + "  —";
+            let thd_line = fst_denom + "      " + snd_denom;
+
+            text = fst_line + "\n" + snd_line + "\n" + thd_line;
+
+            this.text.question.setText(text);
+            this.text.question.lineSpacing = -30;
+        } else {
+            this.text.question.setText(text);
+        }
     },
 
     drawGFX: function() {
