@@ -13,6 +13,8 @@ gamemode1.prototype = {
     answers: [],
 
     sounds: {},
+    notes: ["c", "d", "e", "f", "g", "a", "b", "c", "d", "e", "f", "g"],
+    octaves: [4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5],
 
     // Graphics
     bubbles: [],
@@ -95,20 +97,6 @@ gamemode1.prototype = {
 
             // You won hooooraaaay
             this.game.load.audio('win', 'assets/audio/achievement.mp3');
-
-            //bubble tones
-            this.game.load.audio('C4', 'assets/audio/C4.wav');
-            this.game.load.audio('D4', 'assets/audio/D4.wav');
-            this.game.load.audio('E4', 'assets/audio/E4.wav');
-            this.game.load.audio('F4', 'assets/audio/F4.wav');
-            this.game.load.audio('G4', 'assets/audio/G4.wav');
-            this.game.load.audio('A4', 'assets/audio/A4.wav');
-            this.game.load.audio('B4', 'assets/audio/B4.wav');
-            this.game.load.audio('C5', 'assets/audio/C5.wav');
-            this.game.load.audio('D5', 'assets/audio/D5.wav');
-            this.game.load.audio('E5', 'assets/audio/E5.wav');
-            this.game.load.audio('F5', 'assets/audio/F5.wav');
-            this.game.load.audio('G5', 'assets/audio/G5.wav');
         }
     },
 
@@ -139,25 +127,10 @@ gamemode1.prototype = {
             // Win Sound
             this.sounds['win'] = this.game.add.audio('win');
 
-            // Tones
-            this.sounds['tones'] = [];
-            this.sounds['tones'].push(this.game.add.audio('C4'));
-            this.sounds['tones'].push(this.game.add.audio('D4'));
-            this.sounds['tones'].push(this.game.add.audio('E4'));
-            this.sounds['tones'].push(this.game.add.audio('F4'));
-            this.sounds['tones'].push(this.game.add.audio('G4'));
-            this.sounds['tones'].push(this.game.add.audio('A4'));
-            this.sounds['tones'].push(this.game.add.audio('B4'));
-            this.sounds['tones'].push(this.game.add.audio('C5'));
-            this.sounds['tones'].push(this.game.add.audio('D5'));
-            this.sounds['tones'].push(this.game.add.audio('E5'));
-            this.sounds['tones'].push(this.game.add.audio('F5'));
-            this.sounds['tones'].push(this.game.add.audio('G5'));
-
-            for(let snd of this.sounds['tones']){
-                snd.volume = 0.6;
-                snd.duration = 0.3;
-            }
+            tones.attack = 0;
+            tones.release = 150;
+            tones.type = "sawtooth";
+            tones.volume = 0.5;
 
             for(let snd of this.sounds['trans']){
                 snd.volume = 0.4;
@@ -528,8 +501,9 @@ gamemode1.prototype = {
 
             this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
-            if(Globals.SoundEnabled)
-                this.sounds.tones[this.bubbleSelection].play();
+            if(Globals.SoundEnabled){
+                tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
+            }
         }
     },
 
@@ -551,8 +525,9 @@ gamemode1.prototype = {
 
             this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
-            if(Globals.SoundEnabled)
-                this.sounds.tones[this.bubbleSelection].play();
+            if(Globals.SoundEnabled){
+                tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
+            }
         }
     },
 
@@ -814,8 +789,12 @@ gamemode1.prototype = {
         await this.sleep(500);
         for (let i = 0; i < bubble_text.length; i++){
             await this.sleep(1000).then(() => {
-                this.sounds.tones[tone_index[i]].play();
-                Speech.read(String(bubble_text[i]));
+                if(Globals.SoundEnabled){
+                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);    
+                }
+                if(Globals.SoundEnabled){
+                    Speech.read(String(bubble_text[i]));    
+                }
             });
         }
     },
@@ -823,5 +802,7 @@ gamemode1.prototype = {
     sleep: function (time) {
         return new Promise((resolve) => setTimeout(resolve, time));
     },
+
+
 
 }
