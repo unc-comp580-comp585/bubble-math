@@ -234,8 +234,8 @@ gamemode2.prototype = {
 
     drawBubbles: function() {
         const radii = [
-            [70, 100, 130],
-            [130, 160, 190]
+            [70, 100, 140],
+            [130, 160, 210]
         ];
 
         const radius = 15;
@@ -253,8 +253,8 @@ gamemode2.prototype = {
             let inner_num = this.answers[0][i];
             let outer_num = this.answers[1][i];
 
-            this.bubbles[0].push(new Bubble(this.game, cx_inner, cy_inner, radius, inner_num));
-            this.bubbles[1].push(new Bubble(this.game, cx_outer, cy_outer, radius, outer_num));
+            this.bubbles[0].push(new Bubble(this.game, cx_inner, cy_inner, radius, inner_num, true));
+            this.bubbles[1].push(new Bubble(this.game, cx_outer, cy_outer, radius, outer_num, false));
         }
     },
 
@@ -478,10 +478,16 @@ gamemode2.prototype = {
                 this.bubbles[0][this.selectedIndicies[0]].sprite.animations.play('bubble-pop');
                 this.bubbles[0][this.selectedIndicies[0]].popped = true;
                 this.bubbles[0][this.selectedIndicies[0]].numText.visible = false;
+                if (this.bubbles[0][this.selectedIndicies[0]].opText) {
+                    this.bubbles[0][this.selectedIndicies[0]].opText.visible = false;
+                }
 
                 this.bubbles[1][this.selectedIndicies[1]].sprite.animations.play('bubble-pop');
                 this.bubbles[1][this.selectedIndicies[1]].popped = true;
                 this.bubbles[1][this.selectedIndicies[1]].numText.visible = false;
+                if (this.bubbles[1][this.selectedIndicies[1]].opText) {
+                    this.bubbles[1][this.selectedIndicies[1]].opText.visible = false;
+                }
 
                 // Mechanics stuff
                 this.answerIndex ++;
@@ -756,20 +762,40 @@ gamemode2.prototype = {
             for (let j = 0; j <= 1; j++) {
                 if (this.bubbles[j][i].popped) {
                     this.bubbles[j][i].numText.fill = Globals.colors.popped;
+                    if (this.bubbles[j][i].opText) {
+                        this.bubbles[j][i].opText.fill = Globals.colors.popped;
+                    }
                 } else if (this.bubbles[j][i].chosen) {
                     this.bubbles[j][i].numText.fill = Globals.colors.chosen;
+                    if (this.bubbles[j][i].opText) {
+                        this.bubbles[j][i].opText.fill = Globals.colors.chosen;
+                    }
                 } else {
                     this.bubbles[j][i].numText.fill = Globals.colors.unselected;
+                    if (this.bubbles[j][i].opText) {
+                        this.bubbles[j][i].opText.fill = Globals.colors.unselected;
+                    }
                 }
             }
         }
 
-        if (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].popped) {
-            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = Globals.colors.popped;
-        } else if (this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].chosen) {
-            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = Globals.colors.chosen;
+        let ring_idx = (this.isInnerRing ? 0 : 1);
+
+        if (this.bubbles[ring_idx][this.bubbleSelection].popped) {
+            this.bubbles[ring_idx][this.bubbleSelection].numText.fill = Globals.colors.popped;
+            if (this.bubbles[ring_idx][this.bubbleSelection].opText) {
+                this.bubbles[ring_idx][this.bubbleSelection].opText.fill = Globals.colors.popped;
+            }
+        } else if (this.bubbles[ring_idx][this.bubbleSelection].chosen) {
+            this.bubbles[ring_idx][this.bubbleSelection].numText.fill = Globals.colors.chosen;
+            if (this.bubbles[ring_idx][this.bubbleSelection].opText) {
+                this.bubbles[ring_idx][this.bubbleSelection].opText.fill = Globals.colors.chosen;
+            }
         } else {
-            this.bubbles[this.isInnerRing ? 0 : 1][this.bubbleSelection].numText.fill = Globals.colors.selected;
+            this.bubbles[ring_idx][this.bubbleSelection].numText.fill = Globals.colors.selected;
+            if (this.bubbles[ring_idx][this.bubbleSelection].opText) {
+                this.bubbles[ring_idx][this.bubbleSelection].opText.fill = Globals.colors.selected;
+            }
         }
     },
 
@@ -783,9 +809,15 @@ gamemode2.prototype = {
         for (let i = 0; i < this.bubbles[0].length; i++) {
             this.bubbles[unselected_ring][i].sprite.alpha = unselected_alpha;
             this.bubbles[unselected_ring][i].numText.alpha = unselected_alpha;
+            if (this.bubbles[unselected_ring][i].opText) {
+                this.bubbles[unselected_ring][i].opText.alpha = unselected_alpha;
+            }
 
             this.bubbles[selected_ring][i].sprite.alpha = selected_alpha;
             this.bubbles[selected_ring][i].numText.alpha = selected_alpha;
+            if (this.bubbles[selected_ring][i].opText) {
+                this.bubbles[selected_ring][i].opText.alpha = selected_alpha;
+            }
         }
     },
 
