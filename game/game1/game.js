@@ -128,9 +128,9 @@ gamemode1.prototype = {
             this.sounds['win'] = this.game.add.audio('win');
 
             tones.attack = 0;
-            tones.release = 150;
-            tones.type = "sawtooth";
-            tones.volume = 0.5;
+            tones.release = 200;
+            tones.type = "triangle";
+            // tones.volume = 0.4;
 
             for(let snd of this.sounds['trans']){
                 snd.volume = 0.4;
@@ -786,9 +786,9 @@ gamemode1.prototype = {
             }
         }
         Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
-        await this.sleep(500);
+        await this.sleep(1000);
         for (let i = 0; i < bubble_text.length; i++){
-            await this.sleep(1000).then(() => {
+            await this.sleep(700).then(() => {
                 if(Globals.SoundEnabled){
                     tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);    
                 }
