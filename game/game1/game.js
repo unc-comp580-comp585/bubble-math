@@ -86,12 +86,6 @@ gamemode1.prototype = {
             this.game.load.audio('pop_2', 'assets/audio/bubble-pop-2.mp3');
             this.game.load.audio('pop_3', 'assets/audio/bubble-pop-3.mp3');
 
-            // Transition sounds
-            this.game.load.audio('short_1', 'assets/audio/short-bubbles-1.mp3');
-            this.game.load.audio('short_2', 'assets/audio/short-bubbles-2.mp3');
-            this.game.load.audio('short_3', 'assets/audio/short-bubbles-3.mp3');
-            this.game.load.audio('short_4', 'assets/audio/short-bubbles-4.mp3');
-
             // Incorrect noise
             this.game.load.audio('wrong', 'assets/audio/wrong-1.mp3');
 
@@ -113,13 +107,6 @@ gamemode1.prototype = {
             this.sounds['pops'].push(this.game.add.audio('pop_1'));
             this.sounds['pops'].push(this.game.add.audio('pop_2'));
             this.sounds['pops'].push(this.game.add.audio('pop_3'));
-
-            // Transition Sounds
-            this.sounds['trans'] = [];
-            this.sounds['trans'].push(this.game.add.audio('short_1'));
-            this.sounds['trans'].push(this.game.add.audio('short_2'));
-            this.sounds['trans'].push(this.game.add.audio('short_3'));
-            this.sounds['trans'].push(this.game.add.audio('short_4'));
 
             // Wrong Sound
             this.sounds['wrong'] = this.game.add.audio('wrong');
