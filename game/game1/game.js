@@ -308,6 +308,8 @@ gamemode1.prototype = {
             fill: '#ffffff',
             boundsAlignH: 'center',
             boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.score.anchor.setTo(0.0, 1.0);
         this.text.score.setText("Score: " + this.score);
@@ -317,6 +319,8 @@ gamemode1.prototype = {
             fill: '#ffffff',
             boundsAlignH: 'center',
             boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.multiplier.anchor.setTo(0.0, 1.0);
         this.text.multiplier.setText("x" + this.score_multiplier);
@@ -326,6 +330,8 @@ gamemode1.prototype = {
             fill: "#ffffff",
             boundsAlignH: "center",
             boundsAlignV: "middle",
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.question.anchor.setTo(0.5, 0.5);
 
@@ -334,6 +340,18 @@ gamemode1.prototype = {
         this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY, false);
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
+        this.text.progress = this.game.add.text(this.game.world.width - 220, 180, "", {
+            font: "bold 26px Comic Sans MS",
+            fill: '#ffffff',
+            boundsAlignH: 'center',
+            boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
+        });
+        this.text.progress.anchor.setTo(0.0, 1.0);
+        this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
+        
+        // Progress bar
         this.progressBar = game.add.graphics(710,-300);
         this.progressBar.lineStyle(2, '0x000000');
         this.progressBar.beginFill('0xeeeeee',1);
@@ -542,7 +560,7 @@ gamemode1.prototype = {
             this.bubbles[this.bubbleSelection].numText.visible = false;
 
             // Mechanics stuff
-            this.questionIndex ++;
+            this.questionIndex++;
             this.incorrectCounter = 0;
 
             this.updateProgressBar();
@@ -777,8 +795,12 @@ gamemode1.prototype = {
     },
 
     updateProgressBar: function(){
+        if(!this.won){
+            this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
+        } else {
+            this.text.progress.setText("Progress: " + String(this.questions.length) + "/" + String(this.questions.length));
+        }
         this.progressBar.clear();
-
         this.progressBar = game.add.graphics(710,-300);
         this.progressBar.lineStyle(2, '0x000000');
         this.progressBar.beginFill('0xeeeeee',1);
