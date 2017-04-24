@@ -124,10 +124,6 @@ gamemode2.prototype = {
             tones.type = "triangle";
             // tones.volume = 0.4;
 
-            for (let snd of this.sounds['trans']) {
-                snd.volume = 0.4;
-            }
-
             this.sounds['win'].volume = 0.3;
             this.sounds['wrong'].volume = 0.3;
         }
@@ -533,10 +529,14 @@ gamemode2.prototype = {
                     this.sounds['wrong'].play();
                 }
                 if (Globals.DictationEnabled){
-                    if(given > result){
-                        Speech.read("Too small, try again");
+                    if (this.incorrectCounter < 2){
+                        if(given > result){
+                            Speech.read("Too small, try again");
+                        } else {
+                            Speech.read("Too large, try again");
+                        }
                     } else {
-                        Speech.read("Too large, try again");
+                        this.suggestSolution(given);
                     }
                 }
                 this.score_multiplier = 1;
@@ -592,6 +592,22 @@ gamemode2.prototype = {
         this.question = ''+answer;
 
         return answer;
+    },
+
+    suggestSolution: async function(given){
+        for(let inner_bubble of this.bubbles[0]){
+            for(let outer_bubble of this.bubbles[1]){
+                if(!inner_bubble.popped && !outer_bubble.popped){
+                    if(eval(inner_bubble.numText.text + outer_bubble.numText.text) === given){
+                        Speech.read("Try this: ");
+                        await this.sleep(700).then(() => {
+                            Speech.readEq(inner_bubble.numText.text + outer_bubble.numText.text + ' = ' + given);
+                        });
+                        return;
+                    }
+                }
+            }
+        }
     },
 
     bindSwitch: function() {

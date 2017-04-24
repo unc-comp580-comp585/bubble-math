@@ -14,6 +14,7 @@ var Speech = {
         input = input.replace(new RegExp('-', 'g'), 'minus');
         input = input.replace(new RegExp('/', 'g'), 'divided by');
         input = input.replace(new RegExp('\\*', 'g'), 'times');
+        input = input.replace(new RegExp('=', 'g'), 'equals');
         Speech.read(input);
     },
 

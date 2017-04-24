@@ -119,10 +119,6 @@ gamemode1.prototype = {
             tones.type = "triangle";
             // tones.volume = 0.4;
 
-            for(let snd of this.sounds['trans']){
-                snd.volume = 0.4;
-            }
-
             this.sounds['win'].volume = 0.3;
             this.sounds['wrong'].volume = 0.3;
         }
