@@ -68,8 +68,8 @@ Globals.numbers = {
 
 // Speech synthesis (tts) options
 Globals.voice = {
-    volume: 0.9,
-    rate: 2.0,
+    volume: 0.6,
+    rate: 1.4,
     pitch: 1.1,
     lang: 'en-US',
 };

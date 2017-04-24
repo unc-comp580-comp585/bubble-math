@@ -4,6 +4,11 @@ var gamemode2 = function(game) {
 
 gamemode2.prototype = {
     sounds: {},
+    notes: ["c", "d", "e", "f", "g", "a", "b", "c", "d", "e", "f", "g"],
+    octaves: [
+        [3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+        [5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6]
+    ],
 
     // Graphics
     bubbles: [[], []],
@@ -126,6 +131,11 @@ gamemode2.prototype = {
 
             // Win sound
             this.sounds['win'] = this.game.add.audio('win');
+
+            tones.attack = 0;
+            tones.release = 200;
+            tones.type = "triangle";
+            // tones.volume = 0.4;
 
             for (let snd of this.sounds['trans']) {
                 snd.volume = 0.4;
@@ -402,12 +412,11 @@ gamemode2.prototype = {
     },
 
     rotateCW: function() {
+        let selected_ring = (this.isInnerRing ? 0 : 1);
+        tones.volume = (selected_ring < 1 ? 1.0 : 0.3);
+
         if (!this.won) {
             this.score_selectors++;
-
-            if (Globals.SoundEnabled) {
-                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
-            }
 
             do {
                 this.bubbleSelection = (this.bubbleSelection + 1) % this.answers[0].length;
@@ -417,17 +426,20 @@ gamemode2.prototype = {
                 Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
             }
 
+            if(Globals.SoundEnabled){
+                tones.play(this.notes[this.bubbleSelection], this.octaves[selected_ring][this.bubbleSelection]);
+            }
+
             this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
         }
     },
 
     rotateCCW: function() {
+        let selected_ring = (this.isInnerRing ? 0 : 1);
+        tones.volume = (selected_ring < 1 ? 1.0 : 0.3);
+
         if (!this.won) {
             this.score_selectors++;
-
-            if (Globals.SoundEnabled) {
-                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
-            }
 
             do {
                 if (this.bubbleSelection-1 < 0) {
@@ -439,6 +451,10 @@ gamemode2.prototype = {
 
             if (Globals.DictationEnabled) {
                 Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
+            }
+
+            if(Globals.SoundEnabled){
+                tones.play(this.notes[this.bubbleSelection], this.octaves[selected_ring][this.bubbleSelection]);
             }
 
             this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
@@ -468,7 +484,8 @@ gamemode2.prototype = {
         if (this.selectedBubbles.length == 1) {
             let result = eval(''+this.selectedBubbles[0] + this.answers[1][this.bubbleSelection]);
             this.selectedIndicies.push(this.bubbleSelection);
-            if (result === eval(this.question)){
+            let given = eval(this.question);
+            if (result === given){
                 // Score stuff
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
                 this.score_multiplier ++;
@@ -528,7 +545,13 @@ gamemode2.prototype = {
                 if (Globals.SoundEnabled) {
                     this.sounds['wrong'].play();
                 }
-
+                if (Globals.DictationEnabled){
+                    if(given > result){
+                        Speech.read("Too small, try again");
+                    } else {
+                        Speech.read("Too large, try again");
+                    }
+                }
                 this.score_multiplier = 1;
                 this.incorrectCounter++;
                 this.isInnerRing = true;
@@ -821,17 +844,58 @@ gamemode2.prototype = {
         }
     },
 
-    readBubbles: function(){
-        let selected_ring = (this.isInnerRing ? 0 : 1);
+
+    readBubbles: async function(){
+        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
+        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
         let count = 0;
-        let s = "";
-        for(let bubble of this.bubbles[selected_ring]){
-            if (!bubble.popped){
+        let outer_count = 0;
+        let bubble_text = [];
+        let tone_index = [];
+        let outer_bubble_text = [];
+        let outer_tone_index = [];
+        for (let i = 0; i < this.bubbles[0].length; i++){
+            if (!this.bubbles[0][i].popped){
                 count++;
-                s += " " + String(bubble.numText.text) + "..";
+                bubble_text.push(String(this.bubbles[0][i].numText.text));
+                tone_index.push(i);
+            }
+            if (!this.bubbles[1][i].popped){
+                outer_count++;
+                outer_bubble_text.push(String(this.bubbles[1][i].numText.text));
+                outer_tone_index.push(i);
             }
         }
-        s = "The remaining: " + String(count) + ". bubbles are: " + s;
-        Speech.readEq(s);
-    }
+        Speech.read("The remaining: " + String(count) + ".. numbers with operators are: ");
+        await this.sleep(delay);
+        for (let i = 0; i < bubble_text.length; i++){
+            await this.sleep(ring_delay).then(() => {
+                if(Globals.SoundEnabled){
+                    tones.play(this.notes[tone_index[i]], this.octaves[0][tone_index[i]]);    
+                }
+                if(Globals.DictationEnabled){
+                    Speech.readEq(String(bubble_text[i]));
+                }
+            });
+        }
+        await this.sleep(delay);
+        Speech.read("And the remaining: " + String(outer_count) + ".. numbers are: ");
+        tones.volume = 0.8;
+        await this.sleep(delay);
+        for (let i = 0; i < outer_bubble_text.length; i++){
+            await this.sleep(ring_delay).then(() => {
+                if(Globals.SoundEnabled){
+                    tones.play(this.notes[outer_tone_index[i]], this.octaves[1][outer_tone_index[i]]);    
+                }
+                if(Globals.DictationEnabled){
+                    Speech.readEq(String(outer_bubble_text[i]));    
+                }
+            });
+        }
+        tones.volume = 1.0;
+    },
+
+    sleep: function (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    },
 }

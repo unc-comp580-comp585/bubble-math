@@ -574,7 +574,17 @@ gamemode1.prototype = {
             if (Globals.SoundEnabled) {
                 this.sounds['wrong'].play();
             }
-
+            if (Globals.DictationEnabled){
+                if (this.incorrectCounter < 2){
+                    if(given < result){
+                        Speech.read("Too small, try again");
+                    } else {
+                        Speech.read("Too large, try again");
+                    }
+                } else {
+                    Speech.readEq(String(this.questions[this.questionIndex]) + " equals " + String(result));
+                }
+            }
             this.score_multiplier = 1;
             this.incorrectCounter++;
         }
@@ -775,6 +785,8 @@ gamemode1.prototype = {
     },
 
     readBubbles: async function(){
+        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
+        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
         let count = 0;
         let bubble_text = [];
         let tone_index = [];
@@ -786,9 +798,9 @@ gamemode1.prototype = {
             }
         }
         Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
-        await this.sleep(1000);
+        await this.sleep(delay);
         for (let i = 0; i < bubble_text.length; i++){
-            await this.sleep(700).then(() => {
+            await this.sleep(ring_delay).then(() => {
                 if(Globals.SoundEnabled){
                     tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);    
                 }
@@ -802,7 +814,4 @@ gamemode1.prototype = {
     sleep: function (time) {
         return new Promise((resolve) => setTimeout(resolve, time));
     },
-
-
-
 }
