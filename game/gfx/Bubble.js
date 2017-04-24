@@ -40,6 +40,8 @@ function Bubble(game, cx, cy, r, num, is_inner) {
         fill: Globals.colors.unselected,
         boundsAlignH: "center",
         boundsAlignV: "middle",
+        stroke: 'black',
+        strokeThickness: 4,
     });
     this.numText.anchor.setTo(0.5, 0.5);
     this.numText.lineSpacing = -20;
@@ -58,6 +60,8 @@ function Bubble(game, cx, cy, r, num, is_inner) {
             fill: Globals.colors.unselected,
             boundsAlignH: "center",
             boundsAlignV: "middle",
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.opText.anchor.setTo(0.5, 0.5);
     }

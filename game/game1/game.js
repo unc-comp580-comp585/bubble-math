@@ -340,6 +340,7 @@ gamemode1.prototype = {
         this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY, false);
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
+        // Progress text
         this.text.progress = this.game.add.text(this.game.world.width - 220, 180, "", {
             font: "bold 26px Comic Sans MS",
             fill: '#ffffff',
