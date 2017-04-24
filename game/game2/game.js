@@ -714,8 +714,9 @@ gamemode2.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
             console.info("X Button");
-
-            //TODO READ ALL THE RINGS
+            if (Globals.DictationEnabled){
+                this.readBubbles();
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_BUMPER, 20) && !this.won) {

@@ -691,10 +691,10 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
-            if (Globals.MusicEnabled) {
-                this.sounds['bgm'].stop();
-            }
-            this.game.state.start("bootMainMenu");
+            // if (Globals.MusicEnabled) {
+            //     this.sounds['bgm'].stop();
+            // }
+            // this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 200) && !this.won) {
