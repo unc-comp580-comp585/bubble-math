@@ -168,8 +168,8 @@ gamemode2.prototype = {
         this.bubbleSelection = 0;
         this.won = false;
 
-        this.drawGFX();
         this.genEquations();
+        this.drawGFX();
         this.drawBubbles();
         this.selectQuestion();
         this.updateGFX();
@@ -236,6 +236,8 @@ gamemode2.prototype = {
             fill: '#ffffff',
             boundsAlignH: 'center',
             boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.score.anchor.setTo(0.0, 1.0);
         this.text.score.setText("Score: " + this.score);
@@ -245,6 +247,8 @@ gamemode2.prototype = {
             fill: '#ffffff',
             boundsAlignH: 'center',
             boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.multiplier.anchor.setTo(0.0, 1.0);
         this.text.multiplier.setText("x" + this.score_multiplier);
@@ -254,6 +258,8 @@ gamemode2.prototype = {
             fill: "#ffffff",
             boundsAlignH: "center",
             boundsAlignV: "middle",
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.question.anchor.setTo(0.5, 0.5);
 
@@ -261,6 +267,25 @@ gamemode2.prototype = {
 
         this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY, false);
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+
+        // Progress text
+        this.text.progress = this.game.add.text(this.game.world.width - 220, 180, "", {
+            font: "bold 26px Comic Sans MS",
+            fill: '#ffffff',
+            boundsAlignH: 'center',
+            boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
+        });
+        this.text.progress.anchor.setTo(0.0, 1.0);
+        this.text.progress.setText("Progress: " + String(this.answerIndex) + "/" + String(this.answers[0].length));
+        
+        // Progress bar
+        this.progressBar = game.add.graphics(710,-300);
+        this.progressBar.lineStyle(2, '0x000000');
+        this.progressBar.beginFill('0xeeeeee',1);
+        this.progressBar.drawRoundedRect(100,500,35,300,1);
+        this.progressBar.endFill();
     },
 
     drawBubbles: function() {
@@ -513,6 +538,8 @@ gamemode2.prototype = {
                 this.answerIndex++;
                 this.incorrectCounter = 0;
 
+                this.updateProgressBar();
+
                 if (Globals.SoundEnabled) {
                     this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
                 }
@@ -585,6 +612,8 @@ gamemode2.prototype = {
                 // Mechanics stuff
                 this.answerIndex ++;
                 this.incorrectCounter = 0;
+
+                this.updateProgressBar();
 
                 if (Globals.SoundEnabled) {
                     this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
@@ -945,6 +974,24 @@ gamemode2.prototype = {
         }
     },
 
+    updateProgressBar: function(){
+        if(!this.won){
+            this.text.progress.setText("Progress: " + String(this.answerIndex) + "/" + String(this.answers[0].length));
+        } else {
+            this.text.progress.setText("Progress: " + String(this.answers[0].length) + "/" + String(this.answers[0].length));
+        }
+        this.progressBar.clear();
+        this.progressBar = game.add.graphics(710,-300);
+        this.progressBar.lineStyle(2, '0x000000');
+        this.progressBar.beginFill('0xeeeeee',1);
+        this.progressBar.drawRoundedRect(101,501,35,300,1);
+        this.progressBar.endFill();
+        for(let i = 1; i <= this.answerIndex; i++){
+            this.progressBar.beginFill('0x8CE9FF',1);
+            this.progressBar.drawRoundedRect(102,502+(298/this.answers[0].length)*(this.answers[0].length - i),33,298/this.answers[0].length,1);
+            this.progressBar.endFill();
+        }
+    },
 
     readBubbles: async function(){
         let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
