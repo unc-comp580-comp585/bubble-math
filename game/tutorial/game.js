@@ -4,6 +4,8 @@ var tutorial = function(game) {
 
 tutorial.prototype = {
     sounds: {},
+    notes: ["c", "d", "e", "f", "g", "a", "b", "c", "d", "e", "f", "g"],
+    octaves: [4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5],
 
     // Hard-coded questions/answers for tutorial
     questions: ["2 + 2", "7 - 2", "4 + 5", "8 + 3"],
@@ -20,6 +22,7 @@ tutorial.prototype = {
     score_text: {},
     score_multiplier_text: {},
     bg: {},
+    progressBar: null,
 
     bubbleSelection: 0,
     questionIndex: 0,
@@ -208,12 +211,6 @@ tutorial.prototype = {
             this.game.load.audio('pop_2', 'assets/audio/bubble-pop-2.mp3');
             this.game.load.audio('pop_3', 'assets/audio/bubble-pop-3.mp3');
 
-            // Transition sounds
-            this.game.load.audio('short_1', 'assets/audio/short-bubbles-1.mp3');
-            this.game.load.audio('short_2', 'assets/audio/short-bubbles-2.mp3');
-            this.game.load.audio('short_3', 'assets/audio/short-bubbles-3.mp3');
-            this.game.load.audio('short_4', 'assets/audio/short-bubbles-4.mp3');
-
             // Wrong answer
             this.game.load.audio('wrong', 'assets/audio/wrong-1.mp3');
 
@@ -236,23 +233,16 @@ tutorial.prototype = {
             this.sounds['pops'].push(this.game.add.audio('pop_2'));
             this.sounds['pops'].push(this.game.add.audio('pop_3'));
 
-            // Transitions
-            this.sounds['trans'] = [];
-            this.sounds['trans'].push(this.game.add.audio('short_1'));
-            this.sounds['trans'].push(this.game.add.audio('short_2'));
-            this.sounds['trans'].push(this.game.add.audio('short_3'));
-            this.sounds['trans'].push(this.game.add.audio('short_4'));
-
             // Incorrect
             this.sounds['wrong'] = this.game.add.audio('wrong');
 
             // Victory
             this.sounds['win'] = this.game.add.audio('win');
 
-            // Volume
-            for (let snd of this.sounds['trans']) {
-                snd.volume = 0.4;
-            }
+            tones.attack = 0;
+            tones.release = 200;
+            tones.type = "triangle";
+
             this.sounds['win'].volume = 0.3;
             this.sounds['wrong'].volume = 0.3;
         }
@@ -271,6 +261,8 @@ tutorial.prototype = {
             fill: '#ffffff',
             boundsAlignH: 'center',
             boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.score.anchor.setTo(0.0, 1.0);
         this.text.score.setText("Score: " + this.score);
@@ -280,6 +272,8 @@ tutorial.prototype = {
             fill: '#ffffff',
             boundsAlignH: 'center',
             boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.multiplier.anchor.setTo(0.0, 1.0);
         this.text.multiplier.setText("x" + this.score_multiplier);
@@ -289,6 +283,8 @@ tutorial.prototype = {
             fill: "#ffffff",
             boundsAlignH: "center",
             boundsAlignV: "middle",
+            stroke: 'black',
+            strokeThickness: 4,
         });
         this.text.question.anchor.setTo(0.5, 0.5);
 
@@ -296,6 +292,25 @@ tutorial.prototype = {
 
         this.wand = new Wand(this.game, this.game.world.centerX, this.game.world.centerY, true);
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
+
+        // Progress text
+        this.text.progress = this.game.add.text(this.game.world.width - 220, 180, "", {
+            font: "bold 26px Comic Sans MS",
+            fill: '#ffffff',
+            boundsAlignH: 'center',
+            boundsAlignV: 'middle',
+            stroke: 'black',
+            strokeThickness: 4,
+        });
+        this.text.progress.anchor.setTo(0.0, 1.0);
+        this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
+        
+        // Progress bar
+        this.progressBar = game.add.graphics(710,-300);
+        this.progressBar.lineStyle(2, '0x000000');
+        this.progressBar.beginFill('0xeeeeee',1);
+        this.progressBar.drawRoundedRect(100,500,35,300,1);
+        this.progressBar.endFill();
     },
 
     drawBubbles: function() {
@@ -338,6 +353,25 @@ tutorial.prototype = {
         this.text.question.setText(this.questions[this.questionIndex]);
     },
 
+    updateProgressBar: function(){
+        if(!this.won){
+            this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
+        } else {
+            this.text.progress.setText("Progress: " + String(this.questions.length) + "/" + String(this.questions.length));
+        }
+        this.progressBar.clear();
+        this.progressBar = game.add.graphics(710,-300);
+        this.progressBar.lineStyle(2, '0x000000');
+        this.progressBar.beginFill('0xeeeeee',1);
+        this.progressBar.drawRoundedRect(101,501,35,300,1);
+        this.progressBar.endFill();
+        for(let i = 1; i <= this.questionIndex; i++){
+            this.progressBar.beginFill('0x8CE9FF',1);
+            this.progressBar.drawRoundedRect(102,502+(298/this.questions.length)*(this.questions.length - i),33,298/this.questions.length,1);
+            this.progressBar.endFill();
+        }
+    },
+
     bindKeys: function() {
         let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
         Q.onDown.add(this.rotateCCW, this);
@@ -376,10 +410,6 @@ tutorial.prototype = {
         if (!this.tutorial_running) {
             this.score_selectors++;
 
-            if (Globals.SoundEnabled) {
-                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
-            }
-
             do {
                 this.bubbleSelection = (this.bubbleSelection + 1) % this.questions.length;
             } while (!this.won && this.bubbles[this.bubbleSelection].popped);
@@ -389,16 +419,16 @@ tutorial.prototype = {
             }
 
             this.wand.rotateTo(this.angles[this.bubbleSelection]);
+
+            if(Globals.SoundEnabled){
+                tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
+            }
         }
     },
 
     rotateCCW: function() {
         if (!this.tutorial_running) {
             this.score_selectors++;
-
-            if (Globals.SoundEnabled) {
-                this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
-            }
 
             do {
                 if (this.bubbleSelection - 1 < 0) {
@@ -413,6 +443,10 @@ tutorial.prototype = {
             }
 
             this.wand.rotateTo(this.angles[this.bubbleSelection]);
+
+            if(Globals.SoundEnabled){
+                tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
+            }
         }
     },
 
@@ -436,6 +470,8 @@ tutorial.prototype = {
 
                 this.questionIndex ++;
                 this.incorrectCounter = 0;
+
+                this.updateProgressBar();
 
                 if (Globals.SoundEnabled) {
                     this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
