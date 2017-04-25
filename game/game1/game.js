@@ -351,7 +351,7 @@ gamemode1.prototype = {
         });
         this.text.progress.anchor.setTo(0.0, 1.0);
         this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
-        
+
         // Progress bar
         this.progressBar = game.add.graphics(710,-300);
         this.progressBar.lineStyle(2, '0x000000');
@@ -477,17 +477,17 @@ gamemode1.prototype = {
             }, this);
 
             let S = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
-            S.onDown.add(function(){
+            S.onDown.add(function() {
                 Speech.read("Your score is: " + this.score);
             }, this);
 
             let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-            A.onDown.add(function(){
+            A.onDown.add(function() {
                 Globals.voice.rate += 0.1;
             }, this);
 
             let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-            D.onDown.add(function(){
+            D.onDown.add(function() {
                 Globals.voice.rate -= 0.1;
             });
 
@@ -510,7 +510,18 @@ gamemode1.prototype = {
 
             this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
-            if(Globals.SoundEnabled){
+            for (let bubble of this.bubbles) {
+                bubble.selected = false;
+                if (bubble === this.bubbles[this.bubbleSelection]) {
+                    bubble.selected = true;
+                }
+                bubble.shrink();
+                if (bubble.selected) {
+                    bubble.enlarge();
+                }
+            }
+
+            if (Globals.SoundEnabled) {
                 tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
             }
         }
@@ -534,7 +545,18 @@ gamemode1.prototype = {
 
             this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
-            if(Globals.SoundEnabled){
+            for (let bubble of this.bubbles) {
+                bubble.selected = false;
+                if (bubble === this.bubbles[this.bubbleSelection]) {
+                    bubble.selected = true;
+                }
+                bubble.shrink();
+                if (bubble.selected) {
+                    bubble.enlarge();
+                }
+            }
+
+            if (Globals.SoundEnabled) {
                 tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
             }
         }
@@ -585,9 +607,9 @@ gamemode1.prototype = {
             if (Globals.SoundEnabled) {
                 this.sounds['wrong'].play();
             }
-            if (Globals.DictationEnabled){
-                if (this.incorrectCounter < 2){
-                    if(given < result){
+            if (Globals.DictationEnabled) {
+                if (this.incorrectCounter < 2) {
+                    if (given < result) {
                         Speech.read("Too small, try again");
                     } else {
                         Speech.read("Too large, try again");
@@ -714,7 +736,7 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
             console.info("X Button");
-            if (Globals.DictationEnabled){
+            if (Globals.DictationEnabled) {
                 this.readBubbles();
             }
         }
@@ -795,8 +817,8 @@ gamemode1.prototype = {
         }
     },
 
-    updateProgressBar: function(){
-        if(!this.won){
+    updateProgressBar: function() {
+        if (!this.won) {
             this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
         } else {
             this.text.progress.setText("Progress: " + String(this.questions.length) + "/" + String(this.questions.length));
@@ -807,21 +829,21 @@ gamemode1.prototype = {
         this.progressBar.beginFill('0xeeeeee',1);
         this.progressBar.drawRoundedRect(101,501,35,300,1);
         this.progressBar.endFill();
-        for(let i = 1; i <= this.questionIndex; i++){
+        for (let i = 1; i <= this.questionIndex; i++) {
             this.progressBar.beginFill('0x8CE9FF',1);
             this.progressBar.drawRoundedRect(102,502+(298/this.questions.length)*(this.questions.length - i),33,298/this.questions.length,1);
             this.progressBar.endFill();
         }
     },
 
-    readBubbles: async function(){
+    readBubbles: async function() {
         let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
         let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
         let count = 0;
         let bubble_text = [];
         let tone_index = [];
-        for (let i = 0; i < this.bubbles.length; i++){
-            if (!this.bubbles[i].popped){
+        for (let i = 0; i < this.bubbles.length; i++) {
+            if (!this.bubbles[i].popped) {
                 count++;
                 bubble_text.push(String(this.bubbles[i].numText.text));
                 tone_index.push(i);
@@ -829,13 +851,13 @@ gamemode1.prototype = {
         }
         Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
         await this.sleep(delay);
-        for (let i = 0; i < bubble_text.length; i++){
+        for (let i = 0; i < bubble_text.length; i++) {
             await this.sleep(ring_delay).then(() => {
-                if(Globals.SoundEnabled){
-                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);    
+                if (Globals.SoundEnabled) {
+                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);
                 }
-                if(Globals.SoundEnabled){
-                    Speech.read(String(bubble_text[i]));    
+                if (Globals.SoundEnabled) {
+                    Speech.read(String(bubble_text[i]));
                 }
             });
         }
