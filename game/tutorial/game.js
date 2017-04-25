@@ -439,6 +439,17 @@ tutorial.prototype = {
 
             this.wand.rotateTo(this.angles[this.bubbleSelection]);
 
+            for (let bubble of this.bubbles) {
+                bubble.selected = false;
+                if (bubble === this.bubbles[this.bubbleSelection]) {
+                    bubble.selected = true;
+                }
+                bubble.shrink();
+                if (bubble.selected) {
+                    bubble.enlarge();
+                }
+            }
+
             if (Globals.SoundEnabled) {
                 tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
             }
@@ -462,6 +473,17 @@ tutorial.prototype = {
             }
 
             this.wand.rotateTo(this.angles[this.bubbleSelection]);
+
+            for (let bubble of this.bubbles) {
+                bubble.selected = false;
+                if (bubble === this.bubbles[this.bubbleSelection]) {
+                    bubble.selected = true;
+                }
+                bubble.shrink();
+                if (bubble.selected) {
+                    bubble.enlarge();
+                }
+            }
 
             if (Globals.SoundEnabled) {
                 tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);

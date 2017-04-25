@@ -15,6 +15,8 @@ function Bubble(game, cx, cy, r, num, is_inner) {
     let new_w = 2*r + 100;
     let new_h = 2*r + 90;
     Graphics.scaleSprite(game, Globals.handles.bubble, this.sprite, new_w, new_h);
+    this.original_w = new_w;
+    this.original_h = new_h;
 
     let text = num.toString();
     let fontsize = 26;
@@ -70,5 +72,18 @@ function Bubble(game, cx, cy, r, num, is_inner) {
 
     // Add popping animation
     this.sprite.animations.add('bubble-pop');
+
     this.chosen = false;
+
+    this.selected = false;
+}
+
+Bubble.prototype.enlarge = function() {
+    let new_w = this.original_w + 15;
+    let new_h = this.original_w + 5;
+    Graphics.scaleSprite(this.game, Globals.handles.bubble, this.sprite, new_w, new_h);
+}
+
+Bubble.prototype.shrink = function() {
+    Graphics.scaleSprite(this.game, Globals.handles.bubble, this.sprite, this.original_w, this.original_h);
 }
