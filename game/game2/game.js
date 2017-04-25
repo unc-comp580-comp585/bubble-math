@@ -36,7 +36,7 @@ gamemode2.prototype = {
     score_selectors: 0,
 
     // Speech recog instance and answer
-    speechRecog : null,
+    speechRecog : {},
     spoken_input: null,
 
     angles: [
@@ -184,9 +184,6 @@ gamemode2.prototype = {
 
         if (Globals.ControlSel === 1) {
             this.bindSwitch();
-            if (Globals.DictationEnabled) {
-                this.bindSpeechKeys();
-            }
         }
     },
 
@@ -201,7 +198,9 @@ gamemode2.prototype = {
             let answer = event.results[last][0].transcript;
             console.dir("Recieved: " + answer);
             this.spoken_input = SpRecog.parseEq(answer);
-            this.Select();
+            if (this.spoken_input.indexOf(new RegExp("/\+|\-|=|\\|\\*/"))){
+                this.Select();
+            }
         }
 
         this.speechRecog.onspeechend = (event) => {
@@ -503,7 +502,7 @@ gamemode2.prototype = {
             return;
         } else if (this.spoken_input){
             let given = eval(this.question);
-            let result = eval(this.spoken_input);
+            let result = (Number.isFinite(eval(this.spoken_input)) ? eval(this.spoken_input) : null);
             if (given === result){
                 // Score stuff
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
@@ -511,7 +510,7 @@ gamemode2.prototype = {
                 this.score_selectors = 0;
 
                 // Mechanics stuff
-                this.answerIndex ++;
+                this.answerIndex++;
                 this.incorrectCounter = 0;
 
                 if (Globals.SoundEnabled) {
@@ -523,6 +522,8 @@ gamemode2.prototype = {
                     }
                     this.won = true;
                     return;
+                } else {
+                    this.selectQuestion();
                 }
                 if (Globals.DictationEnabled) {
                     Speech.readEq(this.question);
@@ -709,8 +710,12 @@ gamemode2.prototype = {
         S.onDown.add(this.Select, this);
     },
 
-    bindSpeechKeys: function() {
-        // TODO: SpeechRecognition
+    bindDictationKeys: function() {
+        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(Speech.decreaseRate);
+
+        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        D.onDown.add(Speech.increaseRate);
     },
 
     processAnalog: function(angle, scheme_id) {

@@ -25,6 +25,7 @@ SpRecog.parseEq = function(input){
     input = input.replace(new RegExp('minus', 'g'), '-');
     input = input.replace(new RegExp('divided by', 'g'), '/');
     input = input.replace(new RegExp('times', 'g'), '*');
+    input = input.replace(new RegExp('x', 'g'), '*');
     input = input.replace(new RegExp('equals', 'g'), '=');
     return input;
 };
