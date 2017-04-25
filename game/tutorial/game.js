@@ -100,6 +100,8 @@ tutorial.prototype = {
             this.text.question,
             this.text.score,
             this.text.multiplier,
+            this.text.progress,
+            this.progressBar,
             this.bg,
         ];
         let bubble_objects_and_wand = [this.wand];
@@ -116,7 +118,6 @@ tutorial.prototype = {
         let dim_alpha = 0.2;
 
         this.tutorial_states = [];
-
         this.tutorial_states.push({
             objs: [this.text.question],
             text: "This is the current question",
@@ -156,6 +157,24 @@ tutorial.prototype = {
         this.tutorial_states.push({
             objs: [this.text.score, this.text.multiplier],
             text: "This is your current score and streak",
+            callback: function() {
+                for (let obj of outer.tutorial_objects) {
+                    obj.alpha = dim_alpha;
+                    for (let myobj of this.objs) {
+                        if (myobj === obj) {
+                            obj.alpha = 1.0;
+                        }
+                    }
+                }
+                if (Globals.DictationEnabled) {
+                    Speech.read(this.text);
+                }
+                console.log(this.text);
+            }
+        });
+        this.tutorial_states.push({
+            objs: [this.text.progress, this.progressBar],
+            text: "This is your current progress",
             callback: function() {
                 for (let obj of outer.tutorial_objects) {
                     obj.alpha = dim_alpha;
@@ -304,7 +323,7 @@ tutorial.prototype = {
         });
         this.text.progress.anchor.setTo(0.0, 1.0);
         this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
-        
+
         // Progress bar
         this.progressBar = game.add.graphics(710,-300);
         this.progressBar.lineStyle(2, '0x000000');
@@ -353,8 +372,8 @@ tutorial.prototype = {
         this.text.question.setText(this.questions[this.questionIndex]);
     },
 
-    updateProgressBar: function(){
-        if(!this.won){
+    updateProgressBar: function() {
+        if (!this.won) {
             this.text.progress.setText("Progress: " + String(this.questionIndex) + "/" + String(this.questions.length));
         } else {
             this.text.progress.setText("Progress: " + String(this.questions.length) + "/" + String(this.questions.length));
@@ -365,7 +384,7 @@ tutorial.prototype = {
         this.progressBar.beginFill('0xeeeeee',1);
         this.progressBar.drawRoundedRect(101,501,35,300,1);
         this.progressBar.endFill();
-        for(let i = 1; i <= this.questionIndex; i++){
+        for (let i = 1; i <= this.questionIndex; i++) {
             this.progressBar.beginFill('0x8CE9FF',1);
             this.progressBar.drawRoundedRect(102,502+(298/this.questions.length)*(this.questions.length - i),33,298/this.questions.length,1);
             this.progressBar.endFill();
@@ -420,7 +439,7 @@ tutorial.prototype = {
 
             this.wand.rotateTo(this.angles[this.bubbleSelection]);
 
-            if(Globals.SoundEnabled){
+            if (Globals.SoundEnabled) {
                 tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
             }
         }
@@ -444,7 +463,7 @@ tutorial.prototype = {
 
             this.wand.rotateTo(this.angles[this.bubbleSelection]);
 
-            if(Globals.SoundEnabled){
+            if (Globals.SoundEnabled) {
                 tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
             }
         }
