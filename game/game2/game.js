@@ -528,7 +528,7 @@ gamemode2.prototype = {
         } else if (this.spoken_input){
             let given = eval(this.question);
             let result = (Number.isFinite(eval(this.spoken_input)) ? eval(this.spoken_input) : null);
-            if (given === result){
+            if (given == result){
                 // Score stuff
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
                 this.score_multiplier ++;
