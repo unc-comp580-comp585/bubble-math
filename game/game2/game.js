@@ -269,7 +269,7 @@ gamemode2.prototype = {
         this.wand.rotateTo(this.angles[Globals.NumberBubbles][this.bubbleSelection]);
 
         // Progress text
-        this.text.progress = this.game.add.text(this.game.world.width - 220, 180, "", {
+        this.text.progress = this.game.add.text(this.game.world.width - 220, 150, "", {
             font: "bold 26px Comic Sans MS",
             fill: '#ffffff',
             boundsAlignH: 'center',
@@ -281,10 +281,10 @@ gamemode2.prototype = {
         this.text.progress.setText("Progress: " + String(this.answerIndex) + "/" + String(this.answers[0].length));
 
         // Progress bar
-        this.progressBar = game.add.graphics(710,-300);
+        this.progressBar = game.add.graphics(675,-325);
         this.progressBar.lineStyle(2, '0x000000');
         this.progressBar.beginFill('0xeeeeee',1);
-        this.progressBar.drawRoundedRect(100,500,35,300,1);
+        this.progressBar.drawRoundedRect(100,500,200,35,20);
         this.progressBar.endFill();
     },
 
@@ -1006,16 +1006,14 @@ gamemode2.prototype = {
             this.text.progress.setText("Progress: " + String(this.answers[0].length) + "/" + String(this.answers[0].length));
         }
         this.progressBar.clear();
-        this.progressBar = game.add.graphics(710,-300);
+        this.progressBar = game.add.graphics(675,-325);
         this.progressBar.lineStyle(2, '0x000000');
         this.progressBar.beginFill('0xeeeeee',1);
-        this.progressBar.drawRoundedRect(101,501,35,300,1);
+        this.progressBar.drawRoundedRect(100,500,200,35,20);
         this.progressBar.endFill();
-        for (let i = 1; i <= this.answerIndex; i++) {
-            this.progressBar.beginFill('0x8CE9FF',1);
-            this.progressBar.drawRoundedRect(102,502+(298/this.answers[0].length)*(this.answers[0].length - i),33,298/this.answers[0].length,1);
-            this.progressBar.endFill();
-        }
+        this.progressBar.beginFill('0x8CE9FF',1);
+        this.progressBar.drawRoundedRect(101,501,198/this.answers[0].length*this.answerIndex,33,20);
+        this.progressBar.endFill();
     },
 
     readBubbles: async function() {
