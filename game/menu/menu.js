@@ -44,6 +44,10 @@ mainMenu.prototype = {
     },
 
     create: function() {
+
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+
         this.drawMenu();
 
         this.selection = 0;

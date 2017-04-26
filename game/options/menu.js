@@ -208,6 +208,10 @@ optionsMenu.prototype = {
     },
 
     create: function() {
+
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+
         this.initMenu();
 
         this.selection = 0;
