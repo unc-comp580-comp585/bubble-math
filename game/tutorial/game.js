@@ -206,7 +206,7 @@ tutorial.prototype = {
         });
 
         // Start tutorial
-        this.Enter();
+        this.Select();
     },
 
     loadGFXAssets: function() {
@@ -401,9 +401,6 @@ tutorial.prototype = {
         let Spacebar = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         Spacebar.onDown.add(this.Select, this);
 
-        let En = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        En.onDown.add(this.Enter, this);
-
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
@@ -492,7 +489,15 @@ tutorial.prototype = {
     },
 
     Select: function() {
-        if (!this.tutorial_running) {
+        if (this.tutorial_running) {
+            this.tutorial_state_idx += 1;
+            if (this.tutorial_state_idx == this.tutorial_states.length) {
+                this.tutorial_running = false;
+            }
+            if (this.tutorial_running) {
+                this.tutorial_states[this.tutorial_state_idx].callback();
+            }
+        } else {
             let result = eval(this.questions[this.questionIndex]);
             let given = eval(this.answers[this.bubbleSelection]);
             if (given === result) {
@@ -533,16 +538,6 @@ tutorial.prototype = {
                 this.score_multiplier = 1;
                 this.incorrectCounter++;
             }
-        }
-    },
-
-    Enter: function() {
-        this.tutorial_state_idx += 1;
-        if (this.tutorial_state_idx == this.tutorial_states.length) {
-            this.tutorial_running = false;
-        }
-        if (this.tutorial_running) {
-            this.tutorial_states[this.tutorial_state_idx].callback();
         }
     },
 
