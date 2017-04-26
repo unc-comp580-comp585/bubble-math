@@ -770,6 +770,9 @@ gamemode2.prototype = {
     },
 
     processAnalog: function(angle, scheme_id) {
+        let selected_ring = (this.isInnerRing ? 0 : 1);
+        tones.volume = (selected_ring < 1 ? 1.0 : 0.3);
+        
         if (scheme_id === 0) {
             if (angle <= 90 && angle > 270) {
                 this.rotateCW();
@@ -793,7 +796,7 @@ gamemode2.prototype = {
                         Speech.readEq(this.answers[this.bubbleSelection]);
                     }
                     if (Globals.SoundEnabled) {
-                        this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+                        tones.play(this.notes[this.bubbleSelection], this.octaves[selected_ring][this.bubbleSelection]);
                     }
                 }
         } else {

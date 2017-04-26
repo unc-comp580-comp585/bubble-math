@@ -678,7 +678,7 @@ gamemode1.prototype = {
                     Speech.readEq(this.answers[this.bubbleSelection]);
                 }
                 if (Globals.SoundEnabled) {
-                    this.sounds.trans[this.game.rnd.integerInRange(0, this.sounds.trans.length - 1)].play();
+                    tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
                 }
             }
         } else {
