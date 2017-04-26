@@ -222,7 +222,7 @@ gamemode2.prototype = {
     updateGFX: function() {
         this.text.score.setText("Score: " + this.score);
         this.text.multiplier.setText("x" + this.score_multiplier);
-        this.text.question.setText(this.question);
+        this.text.question.setText(this.question.replace("*", "×").replace("/", "÷"));
     },
 
     drawGFX: function() {

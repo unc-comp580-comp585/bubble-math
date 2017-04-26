@@ -290,9 +290,12 @@ gamemode1.prototype = {
 
             text = fst_line + "\n" + snd_line + "\n" + thd_line;
 
+            text = text.replace("*", "×").replace("/", "÷");
+
             this.text.question.setText(text);
             this.text.question.lineSpacing = -30;
         } else {
+            text = text.replace("*", "×").replace("/", "÷");
             this.text.question.setText(text);
         }
     },
