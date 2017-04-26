@@ -284,11 +284,24 @@ gamemode1.prototype = {
             let snd_numer = snd_expr.substring(0, snd_slash_idx);
             let snd_denom = snd_expr.substring(snd_slash_idx+1);
 
-            let fst_line = fst_numer + "      " + snd_numer;
-            let snd_line = "—  " + op + "  —";
-            let thd_line = fst_denom + "      " + snd_denom;
+            let fst_numer_double_digit = (fst_numer.length === 2);
+            let fst_denom_double_digit = (fst_denom.length === 2);
 
-            text = fst_line + "\n" + snd_line + "\n" + thd_line;
+            let top_space = "      ";
+            let bot_space = "      ";
+
+            if (fst_numer_double_digit) {
+                top_space = "     ";
+            }
+            if (fst_denom_double_digit) {
+                bot_space = "     ";
+            }
+
+            let top_line = fst_numer + top_space + snd_numer;
+            let mid_line = "—  " + op + "  —";
+            let bot_line = fst_denom + bot_space + snd_denom;
+
+            text = top_line + "\n" + mid_line + "\n" + bot_line;
 
             text = text.replace("*", "×").replace("/", "÷");
 
