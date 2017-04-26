@@ -493,11 +493,6 @@ tutorial.prototype = {
 
     Select: function() {
         if (!this.tutorial_running) {
-            if (this.won) {
-                this.Esc();
-                return;
-            }
-
             let result = eval(this.questions[this.questionIndex]);
             let given = eval(this.answers[this.bubbleSelection]);
             if (given === result) {
@@ -523,6 +518,7 @@ tutorial.prototype = {
                         this.sounds['win'].play();
                     }
                     this.won = true;
+                    this.Esc();
                     return;
                 }
 
