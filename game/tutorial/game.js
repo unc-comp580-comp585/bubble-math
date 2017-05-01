@@ -138,7 +138,7 @@ tutorial.prototype = {
         });
         this.tutorial_states.push({
             objs: bubble_objects_and_wand,
-            text: "This is where you select the bubble that answers the current question",
+            text: "This is where you select the bubble that answers the current question.",
             callback: function() {
                 for (let obj of outer.tutorial_objects) {
                     obj.alpha = dim_alpha;
@@ -147,6 +147,21 @@ tutorial.prototype = {
                             obj.alpha = 1.0;
                         }
                     }
+                }
+                switch (Globals.ControlSel) {
+                    case 0:
+                        // Keyboard
+                        this.text += "Use the A and D keys to move around the circle and Space to select a bubble.";
+                        break;
+                    case 1:
+                        // Switch
+                        this.text += "Wait until the bubble you want is selected, then press Space.";
+                        break;
+                    case 2:
+                    case 3:
+                        // Controller
+                        this.text += "Use the analog stick or the D Pad to move around the circle and press A to select a bubble";
+                        break;
                 }
                 if (Globals.DictationEnabled) {
                     Speech.read(this.text);
@@ -183,6 +198,39 @@ tutorial.prototype = {
                             obj.alpha = 1.0;
                         }
                     }
+                }
+                if (Globals.DictationEnabled) {
+                    Speech.read(this.text);
+                }
+                console.log(this.text);
+            }
+        });
+        this.tutorial_states.push({
+            objs: [],
+            text: "",
+            callback: function() {
+                for (let obj of outer.tutorial_objects) {
+                    obj.alpha = dim_alpha;
+                }
+                switch (Globals.ControlSel) {
+                    case 0:
+                        // Keyboard
+                        this.text += "To increase or decrease the dictation rate, use the Q and E keys. ";
+                        this.text += "To hear what all the bubbles are, press F. ";
+                        this.text += "To hear the current question and your score, press R. ";
+                        this.text += "To go back to the main menu, press Escape. ";
+                        break;
+                    case 1:
+                        // Switch
+                        break;
+                    case 2:
+                    case 3:
+                        // Controller
+                        this.text += "To increase or decrease the dictation rate, use the bumber keys. ";
+                        this.text += "To hear what all the bubbles are, press X. ";
+                        this.text += "To hear the current question and your score, press Y. ";
+                        this.text += "To go back to the main menu, press Start. ";
+                        break;
                 }
                 if (Globals.DictationEnabled) {
                     Speech.read(this.text);

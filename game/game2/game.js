@@ -412,6 +412,7 @@ gamemode2.prototype = {
                 if (this.selectedBubbles.length > 1) {
                     str += " and " + this.selectedBubbles[1];
                 }
+                str += ". Your score is: " + this.score;
                 Speech.readEq(str);
 
                 console.log('bub sel ',this.selectedBubbles);
@@ -865,7 +866,15 @@ gamemode2.prototype = {
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 200) && !this.won) {
-            console.info*("Y Button");
+            let str = "The question is: " + this.question + ".";
+            if (this.selectedBubbles.length > 0) {
+                str += " You have: " + this.selectedBubbles[0];
+            }
+            if (this.selectedBubbles.length > 1) {
+                str += " and " + this.selectedBubbles[1];
+            }
+            str += ". Your score is: " + this.score;
+            Speech.readEq(str);
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
