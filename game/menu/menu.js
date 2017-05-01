@@ -8,6 +8,7 @@ mainMenu.prototype = {
     game1Text: null,
     game2Text: null,
     optionsText: null,
+    gamepad: null,
 
     preload: function() {
         this.game.load.image('bg', 'assets/images/background.png');
@@ -60,6 +61,11 @@ mainMenu.prototype = {
 
         let down = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
         down.onDown.add(this.increaseSel, this);
+
+        this.game.input.gamepad.start();
+        this.gamepad = this.game.input.gamepad.pad1;
+
+
     },
 
     increaseSel: function() {
@@ -113,7 +119,71 @@ mainMenu.prototype = {
             case 2: this.game2Text.addColor("#00ff00", 0); break;
             case 3: this.optionsText.addColor("#00ff00", 0); break;
         }
+
+        if(this.gamepad != null) {
+            this.bindControllerScheme(0);
+        }
+    },
+    processAnalog: function(angle, scheme_id) { 
+        if (angle >= 0 && angle < 180) {
+            this.decreaseSel();
+        } else {
+            this.increaseSel();
+        }
     },
 
+    bindControllerScheme: function(scheme_id) {
+        if (this.gamepad === null) {
+            console.error("Gamepad was not setup correctly.");
+            return;
+        }
+        this.processControllerButtons();
+        let angle = this.getControllerAngle();
+        this.cntrlCounter ++;
+        this.cntrlCounter = this.cntrlCounter % this.cntrollerReset;
+        if(angle != null && this.cntrlCounter == 0) {
+            this.processAnalog(angle, 0);
+        }
+    },
+
+    getControllerAngle: function() {
+        let x = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        let y = -this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+        let isX = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.jsDeadZone;
+        let isY = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.jsDeadZone;
+        if (isX || isY) {
+            let tmp = Math.atan2(y, x);
+            let angle = 0;
+            if (y < 0) {
+                tmp += 2 * Math.PI;
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            } else {
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            }
+            angle = Math.abs(angle);
+            return angle;
+        }
+        return null;
+    },
+
+    processControllerButtons: function() {
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20)) {
+            this.nextState();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
+            this.nextState();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_UP, 20)) {
+            this.decreaseSel(); 
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_DOWN, 20)) {
+            this.increaseSel();
+        }
+    },
     selection: 0,
+    cntrlCounter: 0,
+    cntrollerReset: 10,
 };
