@@ -34,6 +34,13 @@ tutorial.prototype = {
     tutorial_state_idx: -1,
     tutorial_running: true,
 
+    interval: null,
+
+
+
+    wheel: [1, 0, 3, 2],
+
+
     preload: function() {
         this.loadGFXAssets();
         this.loadSFXAssets();
@@ -51,6 +58,9 @@ tutorial.prototype = {
             if (Globals.DictationEnabled) {
                 this.bindDictationKeys();
             }
+        } else if (Globals.ControlSel >= 1) {
+            this.game.input.gamepad.start();
+            this.gamepad = this.game.input.gamepad.pad1;
         }
         this.bindEssentialKeys();
         this.initializeTutorial();
@@ -64,7 +74,6 @@ tutorial.prototype = {
 
         if (this.questionIndex == this.questions.length) {
             if (this.interval !== null) {
-                // TODO: What is this?
                 clearInterval(this.interval);
             }
         }
@@ -252,7 +261,9 @@ tutorial.prototype = {
                 console.log(this.text);
             }
         });
-
+        if (Globals.ControlSel === 1) {
+            this.bindSwitch();
+        }
         // Start tutorial
         this.Select();
     },
@@ -573,6 +584,9 @@ tutorial.prototype = {
                     return;
                 }
 
+                if(Globals.ControlSel === 1)
+                    this.rotateCW();
+
                 if (Globals.DictationEnabled) {
                     Speech.readEq(this.questions[this.questionIndex]);
                 }
@@ -589,5 +603,163 @@ tutorial.prototype = {
 
     Esc: function() {
         this.game.state.start("bootMainMenu");
+    },
+
+        processAnalog: function(angle, scheme_id) {
+        if (scheme_id === 0) {
+            if (angle <= 90 && angle > 270) {
+                this.rotateCW();
+            } else {
+                this.rotateCW();
+            }
+        } else if (scheme_id === 1) {
+            let _angles = this.angles;
+            let index_selection = 0;
+            for (let i = 0; i < _angles.length; i++) {
+                if (angle <= _angles[i]) {
+                    index_selection = i;
+                    break;
+                }
+            }
+            let newBubble = this.wheel[index_selection];
+            if (this.bubbleSelection !== newBubble && !this.bubbles[newBubble].popped) {
+                this.bubbleSelection = newBubble;
+                this.wand.rotateTo(this.angles[newBubble]);
+                if (Globals.DictationEnabled) {
+                    Speech.readEq(this.answers[this.bubbleSelection]);
+                }
+                if (Globals.SoundEnabled) {
+                    tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
+                }
+            }
+        } else if(Globals.ControlSel === 1) {
+            return null;
+        } else {
+            console.error("Invalid Control Scheme");
+        }
+    },
+    
+    bindSwitch: function() {
+        this.interval = setInterval(() => this.rotateCW(), Globals.SwitchInterval);
+
+        let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        S.onDown.add(this.Select, this);
+    },
+
+
+    bindControllerScheme: function(scheme_id) {
+        if (this.gamepad === null) {
+            console.error("Gamepad was not setup correctly.");
+            return;
+        }
+        this.processControllerButtons();
+        let angle = this.getControllerAngle();
+        if (scheme_id === 0) {
+            if (angle !== null) {
+                this.processAnalog(angle, scheme_id);
+            }
+        } else if (scheme_id === 1) {
+            if (angle !== null) {
+                this.processAnalog(angle, scheme_id);
+            }
+        } else if(Globals.ControlSel === 1)  {
+
+        } else {
+            console.error("Invalid Control Scheme");
+        }
+    },
+
+    getControllerAngle: function() {
+        let x = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        let y = -this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+        let isX = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.jsDeadZone;
+        let isY = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.jsDeadZone;
+        if (isX || isY) {
+            let tmp = Math.atan2(y, x);
+            let angle = 0;
+            if (y < 0) {
+                tmp += 2 * Math.PI;
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            } else {
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            }
+            angle = Math.abs(angle);
+            return angle;
+        }
+        return null;
+    },
+
+    processControllerButtons: function() {
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20)) {
+            console.info("A Button");
+            this.Select();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
+            console.info("START");
+            if(Globals.MusicEnabled)
+                this.sounds['bgm'].stop();
+            this.game.state.start("bootMainMenu");
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
+            console.info("B Button");
+            // if (Globals.MusicEnabled) {
+            //     this.sounds['bgm'].stop();
+            // }
+            // this.game.state.start("bootMainMenu");
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
+            console.info("Y Button");
+            Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
+            console.info("X Button");
+            if (Globals.DictationEnabled) {
+                this.readBubbles();
+            }
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_BUMPER, 20) && !this.won) {
+            console.info("RIGHT BUMPER");
+            if (Globals.DictationEnabled) {
+                Speech.increaseRate();
+            }
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_LEFT_BUMPER, 20) && !this.won) {
+            console.info("LEFT BUMPER");
+            if (Globals.DictationEnabled) {
+                Speech.decreaseRate();
+            }
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
+            console.info("SELECT");
+            if (Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20) && !this.won) {
+            console.info("DPAD Left");
+            this.rotateCCW();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_RIGHT, 20) && !this.won) {
+            console.info("DPAD Right");
+            this.rotateCW();
+        }
+
+        // Unused
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_UP, 20) && !this.won) {
+            console.info("DPAD Up");
+        }
+
+        // Unused
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_DOWN, 20) && !this.won) {
+            console.info("DPAD Down");
+        }
     },
 };
