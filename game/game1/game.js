@@ -221,6 +221,7 @@ gamemode1.prototype = {
 
         let result = eval(this.questions[this.questionIndex]);
         let given = answer;
+        console.info(given);
 
         if (given === result) {
             // Score stuff
@@ -661,7 +662,7 @@ gamemode1.prototype = {
                 }
             }
             let newBubble = this.wheel[Globals.NumberBubbles][index_selection];
-            if (this.bubbleSelection !== newBubble) {
+            if (this.bubbleSelection !== newBubble && !this.bubbles[newBubble].popped) {
                 this.bubbleSelection = newBubble;
                 this.wand.rotateTo(this.angles[Globals.NumberBubbles][newBubble]);
                 if (Globals.DictationEnabled) {

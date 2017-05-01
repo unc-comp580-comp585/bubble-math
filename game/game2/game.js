@@ -779,11 +779,11 @@ gamemode2.prototype = {
                     }
                 }
                 let newBubble = this.wheel[Globals.NumberBubbles][index_selection];
-                if (this.bubbleSelection !== newBubble) {
+                if (this.bubbleSelection !== newBubble && !this.bubbles[selected_ring][newBubble].popped) {
                     this.bubbleSelection = newBubble;
                     this.wand.rotateTo(this.angles[Globals.NumberBubbles][newBubble]);
-                    if (Globals.DictationEnabled) {
-                        Speech.readEq(this.answers[this.bubbleSelection]);
+                    if (Globals.DictationEnabled) { 
+                        Speech.readEq(this.answers[selected_ring][this.bubbleSelection]);
                     }
                     if (Globals.SoundEnabled) {
                         tones.play(this.notes[this.bubbleSelection], this.octaves[selected_ring][this.bubbleSelection]);
