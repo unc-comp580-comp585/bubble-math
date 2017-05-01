@@ -425,16 +425,6 @@ gamemode2.prototype = {
                 Speech.read("Your score is: " + this.score);
             }, this);
 
-            let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
-            A.onDown.add(function() {
-                Globals.voice.rate += 0.1;
-            }, this);
-
-            let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
-            E.onDown.add(function() {
-                Globals.voice.rate -= 0.1;
-            });
-
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
             F.onDown.add(this.readBubbles, this);
         }
@@ -762,11 +752,11 @@ gamemode2.prototype = {
     },
 
     bindDictationKeys: function() {
-        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-        A.onDown.add(Speech.decreaseRate);
+        let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        Q.onDown.add(Speech.decreaseRate);
 
-        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-        D.onDown.add(Speech.increaseRate);
+        let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
+        E.onDown.add(Speech.increaseRate);
     },
 
     processAnalog: function(angle, scheme_id) {
