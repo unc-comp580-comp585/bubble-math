@@ -746,8 +746,9 @@ gamemode1.prototype = {
             // this.game.state.start("bootMainMenu");
         }
 
-        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 200) && !this.won) {
-            console.info*("Y Button");
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
+            console.info("Y Button");
+            Speech.read("Your score is: " + this.score);
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
