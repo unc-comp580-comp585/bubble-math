@@ -240,8 +240,8 @@ optionsMenu.prototype = {
         this.gamepad = this.game.input.gamepad.pad1;
     },
 
-    back: function() {
-        if (this.optionSel == 7) {
+    back: function(bypass) {
+        if (this.optionSel == 7 || bypass) {
             this.game.state.start("startMainMenu");
         }
     },
@@ -282,7 +282,7 @@ optionsMenu.prototype = {
                 break;
             case 2:
                 this.dictationSel = !this.dictationSel;
-                Globals.DictationEnabled = this.DictationEnabled;
+                Globals.DictationEnabled = this.dictationSel;
                 break;
             case 3:
                 this.sfxSel = !this.sfxSel;
@@ -328,7 +328,7 @@ optionsMenu.prototype = {
                 break;
             case 2:
                 this.dictationSel = !this.dictationSel;
-                Globals.DictationEnabled = this.DictationEnabled;
+                Globals.DictationEnabled = this.dictationSel;
                 break;
             case 3:
                 this.sfxSel = !this.sfxSel;
@@ -450,12 +450,6 @@ optionsMenu.prototype = {
         } else {
             this.increaseSel();
         }
-
-        if(angle <= 90 && angle > 270) {
-            this.increaseOptionSel();
-        } else {
-            this.decreaseOptionSel();
-        }
     },
 
     bindControllerScheme: function(scheme_id) {
@@ -494,17 +488,27 @@ optionsMenu.prototype = {
 
     processControllerButtons: function() {
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20)) {
-            if(this.optionSel === 7) 
-                this.back();
+                this.back(false);
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20)) {
+                this.back(true);
+        }
+        
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_BUMPER, 20)) {
+            this.increaseOptionSel();
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_LEFT_BUMPER, 20)) {
+            this.decreaseOptionSel();
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
-            if(this.optionSel === 7)
-                this.back();
+            this.back(true);
         }
 
         if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
-            this.back();
+            this.back(true);
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_UP, 20)) {
@@ -526,7 +530,7 @@ optionsMenu.prototype = {
     
     optionSel : 0,
     cntrlCounter: 0,
-    cntrollerReset: 20,
+    cntrollerReset: 10,
     bubbleSel : 0,
     gradeSel : 0,
     dictationSel: true,

@@ -438,11 +438,11 @@ tutorial.prototype = {
     },
 
     bindKeys: function() {
-        let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
-        Q.onDown.add(this.rotateCCW, this);
+        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(this.rotateCCW, this);
 
-        let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
-        E.onDown.add(this.rotateCW, this);
+        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        D.onDown.add(this.rotateCW, this);
 
         let Spacebar = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         Spacebar.onDown.add(this.Select, this);
@@ -456,11 +456,11 @@ tutorial.prototype = {
     },
 
     bindDictationKeys: function() {
-        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-        A.onDown.add(Speech.decreaseRate);
+        let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        Q.onDown.add(Speech.decreaseRate);
 
-        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-        D.onDown.add(Speech.increaseRate);
+        let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
+        E.onDown.add(Speech.increaseRate);
     },
 
     bindEssentialKeys: function() {

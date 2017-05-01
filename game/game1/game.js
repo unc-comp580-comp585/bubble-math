@@ -137,7 +137,7 @@ gamemode1.prototype = {
             if (Globals.DictationEnabled) {
                 this.bindDictationKeys();
             }
-        } else if (Globals.ControlSel >= 2) {
+        } else if (Globals.ControlSel >= 1) {
             this.game.input.gamepad.start();
             this.gamepad = this.game.input.gamepad.pad1;
         }
@@ -221,6 +221,7 @@ gamemode1.prototype = {
 
         let result = eval(this.questions[this.questionIndex]);
         let given = answer;
+        console.info(given);
 
         if (given === result) {
             // Score stuff
@@ -491,17 +492,7 @@ gamemode1.prototype = {
             R.onDown.add(function() {
                 Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
             }, this);
-
-            let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
-            Q.onDown.add(function() {
-                Globals.voice.rate += 0.1;
-            }, this);
-
-            let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
-            E.onDown.add(function() {
-                Globals.voice.rate -= 0.1;
-            });
-
+            
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
             F.onDown.add(this.readBubbles, this);
         }
@@ -642,11 +633,11 @@ gamemode1.prototype = {
     },
 
     bindDictationKeys: function() {
-        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-        A.onDown.add(Speech.decreaseRate);
+        let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
+        Q.onDown.add(Speech.decreaseRate);
 
-        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-        D.onDown.add(Speech.increaseRate);
+        let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
+        E.onDown.add(Speech.increaseRate);
     },
 
     processAnalog: function(angle, scheme_id) {
@@ -666,7 +657,7 @@ gamemode1.prototype = {
                 }
             }
             let newBubble = this.wheel[Globals.NumberBubbles][index_selection];
-            if (this.bubbleSelection !== newBubble) {
+            if (this.bubbleSelection !== newBubble && !this.bubbles[newBubble].popped) {
                 this.bubbleSelection = newBubble;
                 this.wand.rotateTo(this.angles[Globals.NumberBubbles][newBubble]);
                 if (Globals.DictationEnabled) {
@@ -676,6 +667,8 @@ gamemode1.prototype = {
                     tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
                 }
             }
+        } else if(Globals.ControlSel === 1) {
+            return null;
         } else {
             console.error("Invalid Control Scheme");
         }
@@ -696,6 +689,8 @@ gamemode1.prototype = {
             if (angle !== null) {
                 this.processAnalog(angle, scheme_id);
             }
+        } else if(Globals.ControlSel === 1)  {
+
         } else {
             console.error("Invalid Control Scheme");
         }
@@ -729,8 +724,9 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
             console.info("START");
-            if (Globals.DictationEnabled)
-                Speech.readEq(this.questions[this.questionIndex]);
+            if(Globals.MusicEnabled)
+                this.sounds['bgm'].stop();
+            this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
@@ -769,9 +765,8 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
             console.info("SELECT");
-            if(Globals.MusicEnabled)
-                this.sounds['bgm'].stop();
-            this.game.state.start("bootMainMenu");
+            if (Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20) && !this.won) {
@@ -811,6 +806,8 @@ gamemode1.prototype = {
             this.bindControllerScheme(0);
         } else if (Globals.ControlSel === 3) {
             this.bindControllerScheme(1);
+        } else if(Globals.ControlSel === 1) {
+            this.bindControllerScheme(2);
         }
     },
 
