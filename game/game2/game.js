@@ -543,6 +543,8 @@ gamemode2.prototype = {
             let result = (Number.isFinite(eval(this.spoken_input)) ? eval(this.spoken_input) : null);
             if (given == result) {
                 // Score stuff
+                if(Globals.ControlSel === 1)
+                    this.rotateCW();
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
                 this.score_multiplier ++;
                 this.score_selectors = 0;
@@ -568,6 +570,8 @@ gamemode2.prototype = {
                 if (Globals.DictationEnabled) {
                     Speech.readEq(this.question);
                 }
+
+
 
                 // Selection reset
                 this.isInnerRing = true;
@@ -631,7 +635,6 @@ gamemode2.prototype = {
                 if (Globals.SoundEnabled) {
                     this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
                 }
-
                 if (this.answerIndex === this.answers[0].length) {
                     if (Globals.SoundEnabled) {
                         this.sounds['win'].play();
@@ -639,6 +642,9 @@ gamemode2.prototype = {
                     this.won = true;
                     return;
                 } else {
+                    if(Globals.ControlSel === 1)
+                        this.rotateCW();
+                    
                     this.selectQuestion();
                 }
 

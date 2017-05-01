@@ -587,7 +587,6 @@ gamemode1.prototype = {
             // Mechanics stuff
             this.questionIndex++;
             this.incorrectCounter = 0;
-
             this.updateProgressBar();
 
             if (Globals.SoundEnabled) {
@@ -601,7 +600,10 @@ gamemode1.prototype = {
                 this.won = true;
                 return;
             }
+            if(Globals.ControlSel === 1)
+                this.rotateCW();
 
+                 
             if (Globals.DictationEnabled) {
                 Speech.readEq(this.questions[this.questionIndex]);
             }
