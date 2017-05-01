@@ -37,6 +37,8 @@ optionsMenu.prototype = {
     ControlGamepad1: null,
     ControlGamepad2: null,
 
+    gamepad: null,
+
     ApplyText: null,
 
     preload: function() {
@@ -99,7 +101,7 @@ optionsMenu.prototype = {
         this.ControlGamepad2 = this.game.add.text(675, 450, "Controller (2)", font);
 
         // Back
-        this.ApplyText = this.game.add.text(100, 530, 'Apply', font);
+        this.ApplyText = this.game.add.text(100, 530, 'Back', font);
     },
 
     drawSelectedOptions: function() {
@@ -230,6 +232,12 @@ optionsMenu.prototype = {
 
         let enter = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enter.onDown.add(this.back, this);
+
+        let esc = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+        esc.onDown.add(this.back, this);
+
+        this.game.input.gamepad.start();
+        this.gamepad = this.game.input.gamepad.pad1;
     },
 
     back: function() {
@@ -348,6 +356,7 @@ optionsMenu.prototype = {
     update: function() {
         this.resetColors();
         this.drawSelectedOptions();
+        this.bindControllerScheme(0);
         switch (this.optionSel) {
             case 0:
                 this.NumberBubblesText.addColor('#00ff00', 0);
@@ -435,7 +444,89 @@ optionsMenu.prototype = {
         }
     },
 
+    processAnalog: function(angle, scheme_id) { 
+        if (angle >= 0 && angle < 180) {
+            this.decreaseSel();
+        } else {
+            this.increaseSel();
+        }
+
+        if(angle <= 90 && angle > 270) {
+            this.increaseOptionSel();
+        } else {
+            this.decreaseOptionSel();
+        }
+    },
+
+    bindControllerScheme: function(scheme_id) {
+        if (this.gamepad === null) {
+            console.error("Gamepad was not setup correctly.");
+            return;
+        }
+        this.processControllerButtons();
+        let angle = this.getControllerAngle();
+        this.cntrlCounter ++;
+        this.cntrlCounter = this.cntrlCounter % this.cntrollerReset;
+        if(angle != null && this.cntrlCounter == 0) {
+            this.processAnalog(angle, 0);
+        }
+    },
+
+    getControllerAngle: function() {
+        let x = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        let y = -this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+        let isX = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X)) > Globals.jsDeadZone;
+        let isY = Math.abs(this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y)) > Globals.jsDeadZone;
+        if (isX || isY) {
+            let tmp = Math.atan2(y, x);
+            let angle = 0;
+            if (y < 0) {
+                tmp += 2 * Math.PI;
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            } else {
+                angle = (360.0 * tmp) / (2 * Math.PI);
+            }
+            angle = Math.abs(angle);
+            return angle;
+        }
+        return null;
+    },
+
+    processControllerButtons: function() {
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 20)) {
+            if(this.optionSel === 7) 
+                this.back();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
+            if(this.optionSel === 7)
+                this.back();
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
+            this.back();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_UP, 20)) {
+            this.decreaseSel(); 
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20)) {
+            this.decreaseOptionSel();
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_RIGHT, 20)) {
+            this.increaseOptionSel();
+        }
+
+        if(this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_DOWN, 20)) {
+            this.increaseSel();
+        }
+    },    
+    
     optionSel : 0,
+    cntrlCounter: 0,
+    cntrollerReset: 20,
     bubbleSel : 0,
     gradeSel : 0,
     dictationSel: true,

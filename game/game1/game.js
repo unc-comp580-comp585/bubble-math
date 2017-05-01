@@ -477,11 +477,11 @@ gamemode1.prototype = {
     },
 
     bindKeys: function() {
-        let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
-        Q.onDown.add(this.rotateCCW, this);
+        let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        A.onDown.add(this.rotateCCW, this);
 
-        let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
-        E.onDown.add(this.rotateCW, this);
+        let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        D.onDown.add(this.rotateCW, this);
 
         let SPACE = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         SPACE.onDown.add(this.Select, this);
@@ -497,13 +497,13 @@ gamemode1.prototype = {
                 Speech.read("Your score is: " + this.score);
             }, this);
 
-            let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-            A.onDown.add(function() {
+            let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
+            Q.onDown.add(function() {
                 Globals.voice.rate += 0.1;
             }, this);
 
-            let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-            D.onDown.add(function() {
+            let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
+            E.onDown.add(function() {
                 Globals.voice.rate -= 0.1;
             });
 
@@ -771,9 +771,10 @@ gamemode1.prototype = {
             }
         }
 
-        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20) && !this.won) {
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
             console.info("SELECT");
-            this.sounds['bgm'].stop();
+            if(Globals.MusicEnabled)
+                this.sounds['bgm'].stop();
             this.game.state.start("bootMainMenu");
         }
 
