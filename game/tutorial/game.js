@@ -36,10 +36,7 @@ tutorial.prototype = {
 
     interval: null,
 
-
-
     wheel: [1, 0, 3, 2],
-
 
     preload: function() {
         this.loadGFXAssets();
@@ -214,39 +211,41 @@ tutorial.prototype = {
                 console.log(this.text);
             }
         });
-        this.tutorial_states.push({
-            objs: [],
-            text: "",
-            callback: function() {
-                for (let obj of outer.tutorial_objects) {
-                    obj.alpha = dim_alpha;
+        if (Globals.ControlSel != 1) {
+            this.tutorial_states.push({
+                objs: [],
+                text: "",
+                callback: function() {
+                    for (let obj of outer.tutorial_objects) {
+                        obj.alpha = dim_alpha;
+                    }
+                    switch (Globals.ControlSel) {
+                        case 0:
+                            // Keyboard
+                            this.text += "To increase or decrease the dictation rate, use the Q and E keys. ";
+                            this.text += "To hear what all the bubbles are, press F. ";
+                            this.text += "To hear the current question and your score, press R. ";
+                            this.text += "To go back to the main menu, press Escape. ";
+                            break;
+                        case 1:
+                            // Switch
+                            break;
+                        case 2:
+                        case 3:
+                            // Controller
+                            this.text += "To increase or decrease the dictation rate, use the bumber keys. ";
+                            this.text += "To hear what all the bubbles are, press X. ";
+                            this.text += "To hear the current question and your score, press Y. ";
+                            this.text += "To go back to the main menu, press Start. ";
+                            break;
+                    }
+                    if (Globals.DictationEnabled) {
+                        Speech.read(this.text);
+                    }
+                    console.log(this.text);
                 }
-                switch (Globals.ControlSel) {
-                    case 0:
-                        // Keyboard
-                        this.text += "To increase or decrease the dictation rate, use the Q and E keys. ";
-                        this.text += "To hear what all the bubbles are, press F. ";
-                        this.text += "To hear the current question and your score, press R. ";
-                        this.text += "To go back to the main menu, press Escape. ";
-                        break;
-                    case 1:
-                        // Switch
-                        break;
-                    case 2:
-                    case 3:
-                        // Controller
-                        this.text += "To increase or decrease the dictation rate, use the bumber keys. ";
-                        this.text += "To hear what all the bubbles are, press X. ";
-                        this.text += "To hear the current question and your score, press Y. ";
-                        this.text += "To go back to the main menu, press Start. ";
-                        break;
-                }
-                if (Globals.DictationEnabled) {
-                    Speech.read(this.text);
-                }
-                console.log(this.text);
-            }
-        });
+            });
+        }
         this.tutorial_states.push({
             objs: [],
             text: "Ok, let's play!",
@@ -638,7 +637,7 @@ tutorial.prototype = {
             console.error("Invalid Control Scheme");
         }
     },
-    
+
     bindSwitch: function() {
         this.interval = setInterval(() => this.rotateCW(), Globals.SwitchInterval);
 
