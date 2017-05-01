@@ -145,7 +145,7 @@ gamemode2.prototype = {
             if (Globals.DictationEnabled) {
                 this.bindSpeechKeys();
             }
-        } else if (Globals.ControlSel >= 2) {
+        } else if (Globals.ControlSel >= 1) {
                 this.game.input.gamepad.start();
                 this.gamepad = this.game.input.gamepad.pad1;
         }
@@ -799,6 +799,8 @@ gamemode2.prototype = {
                         tones.play(this.notes[this.bubbleSelection], this.octaves[selected_ring][this.bubbleSelection]);
                     }
                 }
+        } else if(Globals.ControlSel === 1) {
+            return null;
         } else {
             console.error("Invalid Control Scheme");
         }
@@ -819,6 +821,8 @@ gamemode2.prototype = {
             if (angle !== null) {
                 this.processAnalog(angle, scheme_id);
             }
+        } else if(Globals.ControlSel === 1)  {
+
         } else {
             console.error("Invalid Control Scheme");
         }
@@ -850,11 +854,19 @@ gamemode2.prototype = {
             this.Select();
         }
 
-        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
-            console.info("START");
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
+            console.info("BACK");
             if (Globals.DictationEnabled) {
                 Speech.readEq(this.questions[this.questionIndex]);
             }
+        }
+
+        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
+            console.info("START");
+            this.game.input.gamepad.stop();
+            if(Globals.MusicEnabled)
+                this.sounds['bgm'].stop();
+            this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
@@ -885,14 +897,6 @@ gamemode2.prototype = {
             if (Globals.DictationEnabled) {
                 Speech.decreaseRate();
             }
-        }
-
-        if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
-            console.info("SELECT");
-            this.game.input.gamepad.stop();
-            if(Globals.MusicEnabled)
-                this.sounds['bgm'].stop();
-            this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20) && !this.won) {
@@ -933,6 +937,8 @@ gamemode2.prototype = {
             this.bindControllerScheme(0);
         } else if (Globals.ControlSel === 3) {
             this.bindControllerScheme(1);
+        } else if(Globals.ControlSel === 1) {
+            this.bindControllerScheme(2);
         }
     },
 

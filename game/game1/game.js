@@ -137,7 +137,7 @@ gamemode1.prototype = {
             if (Globals.DictationEnabled) {
                 this.bindDictationKeys();
             }
-        } else if (Globals.ControlSel >= 2) {
+        } else if (Globals.ControlSel >= 1) {
             this.game.input.gamepad.start();
             this.gamepad = this.game.input.gamepad.pad1;
         }
@@ -681,6 +681,8 @@ gamemode1.prototype = {
                     tones.play(this.notes[this.bubbleSelection], this.octaves[this.bubbleSelection]);
                 }
             }
+        } else if(Globals.ControlSel === 1) {
+            return null;
         } else {
             console.error("Invalid Control Scheme");
         }
@@ -701,6 +703,8 @@ gamemode1.prototype = {
             if (angle !== null) {
                 this.processAnalog(angle, scheme_id);
             }
+        } else if(Globals.ControlSel === 1)  {
+
         } else {
             console.error("Invalid Control Scheme");
         }
@@ -734,8 +738,9 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_START, 20)) {
             console.info("START");
-            if (Globals.DictationEnabled)
-                Speech.readEq(this.questions[this.questionIndex]);
+            if(Globals.MusicEnabled)
+                this.sounds['bgm'].stop();
+            this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
@@ -773,9 +778,8 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_BACK, 20)) {
             console.info("SELECT");
-            if(Globals.MusicEnabled)
-                this.sounds['bgm'].stop();
-            this.game.state.start("bootMainMenu");
+            if (Globals.DictationEnabled)
+                Speech.readEq(this.questions[this.questionIndex]);
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_LEFT, 20) && !this.won) {
@@ -815,6 +819,8 @@ gamemode1.prototype = {
             this.bindControllerScheme(0);
         } else if (Globals.ControlSel === 3) {
             this.bindControllerScheme(1);
+        } else if(Globals.ControlSel === 1) {
+            this.bindControllerScheme(2);
         }
     },
 
