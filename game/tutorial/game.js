@@ -215,11 +215,10 @@ tutorial.prototype = {
                 switch (Globals.ControlSel) {
                     case 0:
                         // Keyboard
-                        // TODO
-                        this.text += "To increase or decrease the dictation rate, use the Q and E keys.";
-                        this.text += "To hear what all the bubbles are, press F";
-                        this.text += "To hear the current question and your score, press R.";
-                        this.text += "To go back to the main menu, press Escape.";
+                        this.text += "To increase or decrease the dictation rate, use the Q and E keys. ";
+                        this.text += "To hear what all the bubbles are, press F. ";
+                        this.text += "To hear the current question and your score, press R. ";
+                        this.text += "To go back to the main menu, press Escape. ";
                         break;
                     case 1:
                         // Switch
@@ -227,11 +226,10 @@ tutorial.prototype = {
                     case 2:
                     case 3:
                         // Controller
-                        // TODO
-                        this.text += "To increase or decrease the dictation rate, use the bumber keys.";
-                        this.text += "To hear what all the bubbles are, press X.";
-                        this.text += "To hear the current question and your score, press Y.";
-                        this.text += "To go back to the main menu, press Start.";
+                        this.text += "To increase or decrease the dictation rate, use the bumber keys. ";
+                        this.text += "To hear what all the bubbles are, press X. ";
+                        this.text += "To hear the current question and your score, press Y. ";
+                        this.text += "To go back to the main menu, press Start. ";
                         break;
                 }
                 if (Globals.DictationEnabled) {
