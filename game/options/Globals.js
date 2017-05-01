@@ -8,6 +8,7 @@ var Globals = {
     NumberBubbles: 0,
     ControlSel: 0,
     jsDeadZone : 0.2,
+    SwitchInterval: 5000,
 };
 
 

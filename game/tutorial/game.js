@@ -34,6 +34,8 @@ tutorial.prototype = {
     tutorial_state_idx: -1,
     tutorial_running: true,
 
+    interval: null,
+
 
 
     wheel: [1, 0, 3, 2],
@@ -72,7 +74,6 @@ tutorial.prototype = {
 
         if (this.questionIndex == this.questions.length) {
             if (this.interval !== null) {
-                // TODO: What is this?
                 clearInterval(this.interval);
             }
         }
@@ -260,7 +261,9 @@ tutorial.prototype = {
                 console.log(this.text);
             }
         });
-
+        if (Globals.ControlSel === 1) {
+            this.bindSwitch();
+        }
         // Start tutorial
         this.Select();
     },
@@ -581,6 +584,9 @@ tutorial.prototype = {
                     return;
                 }
 
+                if(Globals.ControlSel === 1)
+                    this.rotateCW();
+
                 if (Globals.DictationEnabled) {
                     Speech.readEq(this.questions[this.questionIndex]);
                 }
@@ -632,6 +638,14 @@ tutorial.prototype = {
             console.error("Invalid Control Scheme");
         }
     },
+    
+    bindSwitch: function() {
+        this.interval = setInterval(() => this.rotateCW(), Globals.SwitchInterval);
+
+        let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        S.onDown.add(this.Select, this);
+    },
+
 
     bindControllerScheme: function(scheme_id) {
         if (this.gamepad === null) {

@@ -626,7 +626,7 @@ gamemode1.prototype = {
     },
 
     bindSwitch: function() {
-        this.interval = setInterval(() => this.rotateCW(), 1000);
+        this.interval = setInterval(() => this.rotateCW(), Globals.SwitchInterval);
 
         let S = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         S.onDown.add(this.Select, this);
