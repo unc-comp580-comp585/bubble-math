@@ -489,12 +489,7 @@ gamemode1.prototype = {
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
-                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ".");
-            }, this);
-
-            let S = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
-            S.onDown.add(function() {
-                Speech.read("Your score is: " + this.score);
+                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
             }, this);
 
             let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
@@ -748,7 +743,7 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
             console.info("Y Button");
-            Speech.read("Your score is: " + this.score);
+            Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {

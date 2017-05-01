@@ -218,7 +218,7 @@ tutorial.prototype = {
                         // TODO
                         this.text += "To increase or decrease the dictation rate, use the Q and E keys.";
                         this.text += "To hear what all the bubbles are, press F";
-                        this.text += "To hear your score, press S.";
+                        this.text += "To hear the current question and your score, press R.";
                         this.text += "To go back to the main menu, press Escape.";
                         break;
                     case 1:
@@ -230,7 +230,7 @@ tutorial.prototype = {
                         // TODO
                         this.text += "To increase or decrease the dictation rate, use the bumber keys.";
                         this.text += "To hear what all the bubbles are, press X.";
-                        this.text += "To hear your score, press Y.";
+                        this.text += "To hear the current question and your score, press Y.";
                         this.text += "To go back to the main menu, press Start.";
                         break;
                 }
