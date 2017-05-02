@@ -1,11 +1,13 @@
 var Globals = {
-    MusicEnabled: true,
+    MusicEnabled: false,
     DictationEnabled: true,
     SoundEnabled: true,
     SpeechRecognitionEnabled: true,
     GradeSel: 0,
+    GameMode: 1,
     NumberBubbles: 0,
     ControlSel: 0,
+    jsDeadZone : 0.2,
 };
 
 
@@ -28,7 +30,7 @@ Globals.colors = {
     selected: "#ffff00",    // Yellow
     unselected: "#ffffff",  // White
     popped: "#000000",      // Black
-    chosen: "#00ff00",      // Green
+    chosen: "#00aa00",      // Green
 };
 
 // Speech recognition options and locales
@@ -66,8 +68,8 @@ Globals.numbers = {
 
 // Speech synthesis (tts) options
 Globals.voice = {
-    volume: 1.0,
-    rate: 2.0,
+    volume: 0.6,
+    rate: 1.4,
     pitch: 1.1,
     lang: 'en-US',
 };

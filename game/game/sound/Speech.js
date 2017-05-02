@@ -1,5 +1,4 @@
 var Speech = {
-    
     read: function(input) {
         // Web speech api
         window.speechSynthesis.cancel();
@@ -12,9 +11,18 @@ var Speech = {
     },
 
     readEq: function(input) {
-        input = String(input).replace('-', 'minus');
-        input = String(input).replace('/', 'divided by');
-        input = String(input).replace('*', 'times');
+        input = input.replace(new RegExp('-', 'g'), 'minus');
+        input = input.replace(new RegExp('/', 'g'), 'divided by');
+        input = input.replace(new RegExp('\\*', 'g'), 'times');
+        input = input.replace(new RegExp('=', 'g'), 'equals');
         Speech.read(input);
     },
+
+    increaseRate: function() {
+        Globals.voice.rate = Math.min(Globals.voice.rate+0.2, 2.0);
+    },
+
+    decreaseRate: function() {
+        Globals.voice.rate = Math.max(Globals.voice.rate-0.2, 0.4);
+    }
 }
