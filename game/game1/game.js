@@ -156,7 +156,7 @@ gamemode1.prototype = {
         this.drawGFX();
 
         this.operations = Globals.GradeSel >= 2 ? ['+', '-', '*', '/'] : ['+', '-'];
-        this.fractions = Globals.GradeSel % 2 == 1;
+        this.fractions = Globals.GradeSel % 2 == 1 || Globals.GradeSel === 4;
 
         this.questionIndex = 0;
 
@@ -398,7 +398,16 @@ gamemode1.prototype = {
     genEquations: function() {
         let builtEq = [];
         let builtAns = [];
-        const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        let nums = null;
+
+        if(Globals.GradeSel < 4)
+            nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        else
+        {
+            nums = [];
+            for(let i = 0; i <= 100; i++)
+                nums.push(i);
+        }
         let length = (1 + Globals.NumberBubbles) * 4;
         let j =0;
         while (j < length) {
@@ -447,7 +456,7 @@ gamemode1.prototype = {
 
             let tooMany = count > 2;
 
-            if (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany) {
+            if (Globals.GradeSel !== 4 && (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany)) {
                 continue;
             } else {
                 j++
