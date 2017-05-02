@@ -602,8 +602,7 @@ gamemode1.prototype = {
             }
             if(Globals.ControlSel === 1)
                 this.rotateCW();
-
-            if(Globals.ControlSel >= 2) {
+            else  {
                     for(let index in this.bubbles) {
                         if(!this.bubbles[index].popped)
                         {
@@ -657,7 +656,7 @@ gamemode1.prototype = {
             if (angle <= 90 && angle > 270) {
                 this.rotateCW();
             } else {
-                this.rotateCW();
+                this.rotateCCW();
             }
         } else if (scheme_id === 1) {
             let _angles = this.angles[Globals.NumberBubbles];

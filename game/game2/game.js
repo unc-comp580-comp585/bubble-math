@@ -626,7 +626,7 @@ gamemode2.prototype = {
                     this.bubbles[1][this.selectedIndicies[1]].opText.visible = false;
                 }
 
-                // Mechanics stuff
+                // Mechanics stuff  
                 this.answerIndex ++;
                 this.incorrectCounter = 0;
 
@@ -642,10 +642,6 @@ gamemode2.prototype = {
                     this.won = true;
                     return;
                 } else {
-                    if(Globals.ControlSel >= 1)
-                        this.rotateCW();
-
-                if(Globals.ControlSel >= 2) {
                     for(let index in this.bubbles[0]) {
                         if(!this.bubbles[0][index].popped)
                         {
@@ -654,7 +650,6 @@ gamemode2.prototype = {
                             break;
                         }
                     }
-                }
                     
                     this.selectQuestion();
                 }
@@ -701,6 +696,17 @@ gamemode2.prototype = {
             this.isInnerRing = false;
 
             this.bubbles[0][this.bubbleSelection].chosen = true;
+            if(this.bubbles[1][this.bubbleSelection].popped) {
+                for(let index in this.bubbles[1])  {
+                    if(!this.bubbles[1][index].popped)
+                    {
+                        this.bubbleSelection = index;
+                        this.wand.rotateTo(this.angles[Globals.NumberBubbles][index]);
+                        break;
+                    }
+                }
+            }
+
 
             if (Globals.DictationEnabled) {
                 Speech.readEq(this.answers[this.isInnerRing ? 0 : 1][this.bubbleSelection]);
