@@ -33,8 +33,8 @@ mainMenu.prototype = {
 
         this.titleText = this.game.add.text(cx, 80, 'Bubble Math!', font);
         this.tutorialText = this.game.add.text(cx, 300, 'Tutorial', font);
-        this.game1Text = this.game.add.text(cx, 350, 'Play Gamemode 1', font);
-        this.game2Text = this.game.add.text(cx, 400, 'Play Gamemode 2', font);
+        this.game1Text = this.game.add.text(cx, 350, 'Arithmetic', font);
+        this.game2Text = this.game.add.text(cx, 400, 'Algebra', font);
         this.optionsText = this.game.add.text(cx, 450, 'Options', font);
 
         this.titleText.anchor.setTo(0.5, 0.5);
