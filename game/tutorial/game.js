@@ -462,8 +462,11 @@ tutorial.prototype = {
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
-                    Speech.readEq("The question is: " + this.questions[this.questionIndex] + ".");
-            }, this)
+                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+            }, this);
+            
+            let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
+            F.onDown.add(this.readBubbles, this);
         }
     },
 
@@ -762,5 +765,36 @@ tutorial.prototype = {
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_DPAD_DOWN, 20) && !this.won) {
             console.info("DPAD Down");
         }
+    },
+
+    readBubbles: async function() {
+        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
+        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
+        let count = 0;
+        let bubble_text = [];
+        let tone_index = [];
+        for (let i = 0; i < this.bubbles.length; i++) {
+            if (!this.bubbles[i].popped) {
+                count++;
+                bubble_text.push(String(this.bubbles[i].numText.text));
+                tone_index.push(i);
+            }
+        }
+        Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
+        await this.sleep(delay);
+        for (let i = 0; i < bubble_text.length; i++) {
+            await this.sleep(ring_delay).then(() => {
+                if (Globals.SoundEnabled) {
+                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);
+                }
+                if (Globals.SoundEnabled) {
+                    Speech.read(String(bubble_text[i]));
+                }
+            });
+        }
+    },
+
+    sleep: function (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
     },
 };
