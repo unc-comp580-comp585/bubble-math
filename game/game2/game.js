@@ -717,37 +717,82 @@ gamemode2.prototype = {
 
     selectQuestion: function() {
         this.killIterations++;
+        console.info(this.killIterations);
         let b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
         let bubble1 = this.bubbles[0][b1Index];
 
-        while (bubble1.popped) {
-            b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
-            bubble1 = this.bubbles[0][b1Index];
+        let possibAnswer = false;
+        for(let bubble1_Index in this.bubbles[0]) {
+            let bubble1 = this.bubbles[0][bubble1_Index];
+            if(bubble1.popped)
+                continue;
+            for(let bubble2_Index in this.bubbles[1]) {
+                let bubble2 = this.bubbles[1][bubble2_Index];
+                if(bubble2.popped)
+                    continue;
+                let answer = eval(this.answers[0][bubble1_Index] + ' ' + this.answers[1][bubble2_Index]);
+                if(Number.isInteger(answer))
+                    possibAnswer = true;
+
+            }
         }
 
-        let b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1);
-        let bubble2 = this.bubbles[1][b2Index];
+        if(!possibAnswer)  {
 
-        while (bubble2.popped) {
-            b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1)
-            bubble2 = this.bubbles[1][b2Index];
-        }
+            for(let bubble1 of this.bubbles[0]) {
+                if(!bubble1.popped) {
+                        bubble1.sprite.animations.play('bubble-pop');
+                        bubble1.popped = true;
+                        bubble1.numText.visible = false;
+                        if (bubble1.opText) {
+                            bubble1.opText.visible = false;
+                        }
+                }
+            }
 
-        let answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
+            for(let bubble2 of this.bubbles[1]) {
+                    if(!bubble2.popped)
+                    {
+                        bubble2.sprite.animations.play('bubble-pop');
+                        bubble2.popped = true;
+                        bubble2.numText.visible = false;
+                        if (bubble2.opText) {
+                            bubble2.opText.visible = false;
+                        }
+                    }
+            }
 
-        let notInt = !Number.isInteger(answer);
-        let neg = answer < 0;
-
-        if (notInt && this.killIterations < 1000) {
-            answer = this.selectQuestion();
-        }
-
-        this.killIterations = 0;
-
-        if (this.killIterations == 1000) {
-            sound.readEq("You monster. You Killed me.");
             this.won = true;
+            this.updateProgressBar();
+            this.sounds['win'].play();
+            return;
         }
+        let isInt = false;
+        let answer = null;
+
+        while(!isInt) {
+            let b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1);
+            let bubble1 = this.bubbles[0][b1Index];
+            while (bubble1.popped) {
+                b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
+                bubble1 = this.bubbles[0][b1Index];
+            }
+
+            let b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1);
+            let bubble2 = this.bubbles[1][b2Index];
+
+            while (bubble2.popped) {
+                b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1)
+                bubble2 = this.bubbles[1][b2Index];
+            }
+
+            answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
+            console.dir(answer);
+            isInt = Number.isInteger(answer);
+            console.dir(isInt);
+        }
+
+
         this.question = ''+answer;
 
         return answer;
