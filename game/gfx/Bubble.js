@@ -23,21 +23,26 @@ function Bubble(game, cx, cy, r, num, is_inner) {
 
     let fractions_enabled = (Globals.GradeSel % 2 == 1) || Globals.GradeSel === 4;
 
-    if (Globals.GameMode == 2) {
-        if (fractions_enabled) {
-            fontsize = 18;
-            let len = text.length;
-            let slash = text.indexOf("/");
-            let numer = text.substring(1, slash);
-            if (is_inner) {
-                let denom = text.substring(slash+1, len-2);
-                text = numer + "\n—\n" + denom + "   ";
+    if (Globals.GameMode === 1 && Globals.GradeSel === 4) {
+        fontsize = 18;
+        text = text.substring(0, 4);
+    } else {
+        if (Globals.GameMode == 2) {
+            if (fractions_enabled) {
+                fontsize = 18;
+                let len = text.length;
+                let slash = text.indexOf("/");
+                let numer = text.substring(1, slash);
+                if (is_inner) {
+                    let denom = text.substring(slash+1, len-2);
+                    text = numer + "\n—\n" + denom + "   ";
+                } else {
+                    let denom = text.substring(slash+1, len-1);
+                    text = numer + "\n—\n" + denom;
+                }
             } else {
-                let denom = text.substring(slash+1, len-1);
-                text = numer + "\n—\n" + denom;
+                text = text.replace("*", "×").replace("/", "÷");
             }
-        } else {
-            text = text.replace("*", "×").replace("/", "÷");
         }
     }
 
