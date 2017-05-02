@@ -163,7 +163,7 @@ tutorial.prototype = {
                         break;
                     case 1:
                         // Switch
-                        this.text += "Wait until the bubble you want is selected, then press Space.";
+                        this.text += "Wait until the bubble you want is selected, then press Space on the keyboard or A on the controller.";
                         break;
                     case 2:
                     case 3:
