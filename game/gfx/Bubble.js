@@ -21,7 +21,7 @@ function Bubble(game, cx, cy, r, num, is_inner) {
     let text = num.toString();
     let fontsize = 26;
 
-    let fractions_enabled = (Globals.GradeSel % 2 == 1);
+    let fractions_enabled = (Globals.GradeSel % 2 == 1) || Globals.GradeSel === 4;
 
     if (Globals.GameMode == 2) {
         if (fractions_enabled) {

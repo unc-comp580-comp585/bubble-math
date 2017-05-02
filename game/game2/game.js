@@ -162,7 +162,7 @@ gamemode2.prototype = {
 
     initializeNewGame: function() {
         this.operations = Globals.GradeSel >= 2 ? ['+', '-', '*', '/'] : ['+', '-'];
-        this.fractions = Globals.GradeSel % 2 == 1;
+        this.fractions = Globals.GradeSel % 2 == 1 || Globals.GradeSel === 4;
 
         this.answerIndex = 0;
         this.bubbleSelection = 0;
@@ -369,7 +369,7 @@ gamemode2.prototype = {
 
             let tooMany = count > 2;
 
-            if (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany) {
+            if (Globals.GradeSel !== 4 && (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany)) {
                 continue;
             } else {
                 j++
@@ -719,7 +719,6 @@ gamemode2.prototype = {
 
     selectQuestion: function() {
         this.killIterations++;
-        console.info(this.killIterations);
         let b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
         let bubble1 = this.bubbles[0][b1Index];
 
@@ -739,7 +738,7 @@ gamemode2.prototype = {
             }
         }
 
-        if(!possibAnswer)  {
+        if(Globals.GradeSel !== 4 && !possibAnswer)  {
 
             for(let bubble1 of this.bubbles[0]) {
                 if(!bubble1.popped) {
@@ -789,9 +788,10 @@ gamemode2.prototype = {
             }
 
             answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
-            console.dir(answer);
+
             isInt = Number.isInteger(answer);
-            console.dir(isInt);
+            if(Globals.GradeSel === 4) 
+                break;
         }
 
 
