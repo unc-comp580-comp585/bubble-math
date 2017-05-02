@@ -1,6 +1,7 @@
 var Speech = {
     read: function(input) {
         // Web speech api
+        clearTimeouts();
         window.speechSynthesis.cancel();
         var msg = new SpeechSynthesisUtterance(input);
         msg.volume = Globals.voice.volume;
