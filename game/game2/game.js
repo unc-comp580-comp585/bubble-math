@@ -185,6 +185,8 @@ gamemode2.prototype = {
         if (Globals.ControlSel === 1) {
             this.bindSwitch();
         }
+
+        this.wand.rotateTo(0);
     },
 
     bindSpeechKeys: function() {
@@ -547,7 +549,7 @@ gamemode2.prototype = {
                 if(Globals.ControlSel === 1)
                     this.rotateCW();
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-                this.score_multiplier ++;
+                this.score_multiplier = Math.min(20, this.score_multiplier + 1);
                 this.score_selectors = 0;
 
                 // Mechanics stuff
@@ -609,7 +611,7 @@ gamemode2.prototype = {
             if (result === given) {
                 // Score stuff
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-                this.score_multiplier ++;
+                this.score_multiplier =  Math.min(20, this.score_multiplier + 1);
                 this.score_selectors = 0;
 
                 // Animation stuff
@@ -989,6 +991,12 @@ gamemode2.prototype = {
     },
 
     update: function() {
+
+        if(this.won) {
+            this.initializeNewGame();
+            this.won = !this.won;
+        }
+
         if (this.answerIndex < this.answers[0].length) {
             this.updateBubbleColors();
             this.updateBubbleAlphas();
