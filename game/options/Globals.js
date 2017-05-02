@@ -75,6 +75,8 @@ Globals.voice = {
     lang: 'en-US',
 };
 
+Globals.speech_lock = true;
+
 // Collection of strings for speech synthesis
 Globals.speech = {
     correct: [

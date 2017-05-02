@@ -767,31 +767,45 @@ tutorial.prototype = {
         }
     },
 
-    readBubbles: async function() {
-        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
-        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
+    readBubbles: function() {
         let count = 0;
         let bubble_text = [];
         let tone_index = [];
+        let utterances = [];
         for (let i = 0; i < this.bubbles.length; i++) {
             if (!this.bubbles[i].popped) {
                 count++;
                 bubble_text.push(String(this.bubbles[i].numText.text));
+                let input = String(this.bubbles[i].numText.text);
                 tone_index.push(i);
+                input = input.replace(new RegExp('-', 'g'), 'minus');
+                input = input.replace(new RegExp('/', 'g'), 'divided by');
+                input = input.replace(new RegExp('\\*', 'g'), 'times');
+                input = input.replace(new RegExp('=', 'g'), 'equals');
+                let msg = new SpeechSynthesisUtterance(input);
+                utterances.push(msg);
+                msg.volume = Globals.voice.volume;
+                msg.rate = Globals.voice.rate;
+                msg.pitch = Globals.voice.pitch;
+                msg.lang = Globals.voice.lang;
+                let note = this.notes[tone_index.length-1];
+                let oct = this.octaves[tone_index.length-1];
+                let next = utterances.length;
+                msg.onstart = function(event){
+                    tones.play(note, oct);
+                };
+                msg.onend = function(event){
+                    if(Globals.speech_lock){
+                        try{
+                            window.speechSynthesis.speak(utterances[next]);
+                        } catch(e){
+                            // console.log("End of bubbles");
+                        }
+                    }
+                };
             }
         }
-        Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
-        await this.sleep(delay);
-        for (let i = 0; i < bubble_text.length; i++) {
-            await this.sleep(ring_delay).then(() => {
-                if (Globals.SoundEnabled) {
-                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);
-                }
-                if (Globals.SoundEnabled) {
-                    Speech.readEq(String(bubble_text[i]));
-                }
-            });
-        }
+        Speech.read("The remaining: " + String(count) + ".. bubbles are: ", utterances[0]);
     },
 
     sleep: function (time) {
