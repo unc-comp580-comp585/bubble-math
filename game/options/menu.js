@@ -14,6 +14,7 @@ optionsMenu.prototype = {
     Grade2: null,
     Grade3: null,
     Grade4: null,
+    GradeCollege: null,
 
     DictationText: null,
     DictationOn: null,
@@ -72,6 +73,7 @@ optionsMenu.prototype = {
         this.Grade2 = this.game.add.text(650, 150, '2', font);
         this.Grade3 = this.game.add.text(700, 150, '3', font);
         this.Grade4 = this.game.add.text(750, 150, '4', font);
+        this.GradeCollege = this.game.add.text(800, 150, 'Math Major', font);
 
         // Dictation Options
         this.DictationText = this.game.add.text(300, 200, 'Dictation', font);
@@ -142,6 +144,9 @@ optionsMenu.prototype = {
             case 3:
                 this.Grade4.addColor('#ff0000', 0);
                 break;
+            case 4:
+                this.GradeCollege.addColor('#ff0000', 0);
+                break;
         }
 
         switch (Globals.NumberBubbles) {
@@ -183,6 +188,7 @@ optionsMenu.prototype = {
         this.Grade2.addColor('#ffffff', 0);
         this.Grade3.addColor('#ffffff', 0);
         this.Grade4.addColor('#ffffff', 0);
+        this.GradeCollege.addColor('#ffffff', 0);
 
         this.DictationText.addColor('#ffffff', 0);
         this.DictationOn.addColor('#ffffff', 0);
@@ -274,7 +280,7 @@ optionsMenu.prototype = {
                 break;
             case 1:
                 if (this.gradeSel - 1 < 0) {
-                    this.gradeSel = 3;
+                    this.gradeSel = 4;
                 } else {
                     this.gradeSel --;
                 }
@@ -319,7 +325,7 @@ optionsMenu.prototype = {
                 Globals.NumberBubbles = this.bubbleSel;
                 break;
             case 1:
-                if (this.gradeSel + 1 > 3) {
+                if (this.gradeSel + 1 > 4) {
                     this.gradeSel = 0;
                 } else {
                     this.gradeSel ++;
@@ -386,6 +392,9 @@ optionsMenu.prototype = {
                         break;
                     case 3:
                         this.Grade4.addColor('#00ff00', 0);
+                        break;
+                    case 4:
+                        this.GradeCollege.addColor('#00ff00', 0);
                         break;
                 }
                 break;

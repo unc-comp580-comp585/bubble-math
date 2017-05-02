@@ -162,7 +162,7 @@ gamemode2.prototype = {
 
     initializeNewGame: function() {
         this.operations = Globals.GradeSel >= 2 ? ['+', '-', '*', '/'] : ['+', '-'];
-        this.fractions = Globals.GradeSel % 2 == 1;
+        this.fractions = Globals.GradeSel % 2 == 1 || Globals.GradeSel === 4;
 
         this.answerIndex = 0;
         this.bubbleSelection = 0;
@@ -185,6 +185,8 @@ gamemode2.prototype = {
         if (Globals.ControlSel === 1) {
             this.bindSwitch();
         }
+
+        this.wand.rotateTo(0);
     },
 
     bindSpeechKeys: function() {
@@ -220,9 +222,14 @@ gamemode2.prototype = {
     },
 
     updateGFX: function() {
-        this.text.score.setText("Score: " + this.score);
+        let clipped_score = this.score;
+        let score_str = this.score.toString();
+        if (score_str.length >= 8) {
+            clipped_score = score_str.substring(0, 5) + "...";
+        }
+        this.text.score.setText("Score: " + clipped_score);
         this.text.multiplier.setText("x" + this.score_multiplier);
-        this.text.question.setText(this.question.replace("*", "×").replace("/", "÷"));
+        this.text.question.setText(this.question.replace(/\*/g, "×").replace(/\//g, "÷"));
     },
 
     drawGFX: function() {
@@ -367,7 +374,7 @@ gamemode2.prototype = {
 
             let tooMany = count > 2;
 
-            if (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany) {
+            if (Globals.GradeSel !== 4 && (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany)) {
                 continue;
             } else {
                 j++
@@ -547,7 +554,7 @@ gamemode2.prototype = {
                 if(Globals.ControlSel === 1)
                     this.rotateCW();
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-                this.score_multiplier ++;
+                this.score_multiplier = Math.min(20, this.score_multiplier + 1);
                 this.score_selectors = 0;
 
                 // Mechanics stuff
@@ -609,7 +616,7 @@ gamemode2.prototype = {
             if (result === given) {
                 // Score stuff
                 this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-                this.score_multiplier ++;
+                this.score_multiplier =  Math.min(20, this.score_multiplier + 1);
                 this.score_selectors = 0;
 
                 // Animation stuff
@@ -720,34 +727,79 @@ gamemode2.prototype = {
         let b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
         let bubble1 = this.bubbles[0][b1Index];
 
-        while (bubble1.popped) {
-            b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
-            bubble1 = this.bubbles[0][b1Index];
+        let possibAnswer = false;
+        for(let bubble1_Index in this.bubbles[0]) {
+            let bubble1 = this.bubbles[0][bubble1_Index];
+            if(bubble1.popped)
+                continue;
+            for(let bubble2_Index in this.bubbles[1]) {
+                let bubble2 = this.bubbles[1][bubble2_Index];
+                if(bubble2.popped)
+                    continue;
+                let answer = eval(this.answers[0][bubble1_Index] + ' ' + this.answers[1][bubble2_Index]);
+                if(Number.isInteger(answer))
+                    possibAnswer = true;
+
+            }
         }
 
-        let b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1);
-        let bubble2 = this.bubbles[1][b2Index];
+        if(Globals.GradeSel !== 4 && !possibAnswer)  {
 
-        while (bubble2.popped) {
-            b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1)
-            bubble2 = this.bubbles[1][b2Index];
-        }
+            for(let bubble1 of this.bubbles[0]) {
+                if(!bubble1.popped) {
+                        bubble1.sprite.animations.play('bubble-pop');
+                        bubble1.popped = true;
+                        bubble1.numText.visible = false;
+                        if (bubble1.opText) {
+                            bubble1.opText.visible = false;
+                        }
+                }
+            }
 
-        let answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
+            for(let bubble2 of this.bubbles[1]) {
+                    if(!bubble2.popped)
+                    {
+                        bubble2.sprite.animations.play('bubble-pop');
+                        bubble2.popped = true;
+                        bubble2.numText.visible = false;
+                        if (bubble2.opText) {
+                            bubble2.opText.visible = false;
+                        }
+                    }
+            }
 
-        let notInt = !Number.isInteger(answer);
-        let neg = answer < 0;
-
-        if (notInt && this.killIterations < 1000) {
-            answer = this.selectQuestion();
-        }
-
-        this.killIterations = 0;
-
-        if (this.killIterations == 1000) {
-            sound.readEq("You monster. You Killed me.");
             this.won = true;
+            this.updateProgressBar();
+            this.sounds['win'].play();
+            return;
         }
+        let isInt = false;
+        let answer = null;
+
+        while(!isInt) {
+            let b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1);
+            let bubble1 = this.bubbles[0][b1Index];
+            while (bubble1.popped) {
+                b1Index = this.game.rnd.integerInRange(0, this.bubbles[0].length - 1)
+                bubble1 = this.bubbles[0][b1Index];
+            }
+
+            let b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1);
+            let bubble2 = this.bubbles[1][b2Index];
+
+            while (bubble2.popped) {
+                b2Index = this.game.rnd.integerInRange(0, this.bubbles[1].length - 1)
+                bubble2 = this.bubbles[1][b2Index];
+            }
+
+            answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
+
+            isInt = Number.isInteger(answer);
+            if(Globals.GradeSel === 4) 
+                break;
+        }
+
+
         this.question = ''+answer;
 
         return answer;
@@ -944,6 +996,12 @@ gamemode2.prototype = {
     },
 
     update: function() {
+
+        if(this.won) {
+            this.initializeNewGame();
+            this.won = !this.won;
+        }
+
         if (this.answerIndex < this.answers[0].length) {
             this.updateBubbleColors();
             this.updateBubbleAlphas();
