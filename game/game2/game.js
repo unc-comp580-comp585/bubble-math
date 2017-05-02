@@ -291,10 +291,11 @@ gamemode2.prototype = {
     drawBubbles: function() {
         const radii = [
             [70, 100, 140],
-            [130, 160, 210]
+            [150, 170, 210]
         ];
 
-        const radius = 15;
+        const inner_radius = 24;
+        const outer_radius = 17;
 
         this.bubbles = [[], []];
 
@@ -309,8 +310,8 @@ gamemode2.prototype = {
             let inner_num = this.answers[0][i];
             let outer_num = this.answers[1][i];
 
-            this.bubbles[0].push(new Bubble(this.game, cx_inner, cy_inner, radius, inner_num, true));
-            this.bubbles[1].push(new Bubble(this.game, cx_outer, cy_outer, radius, outer_num, false));
+            this.bubbles[0].push(new Bubble(this.game, cx_inner, cy_inner, inner_radius, inner_num, true));
+            this.bubbles[1].push(new Bubble(this.game, cx_outer, cy_outer, outer_radius, outer_num, false));
         }
     },
 
