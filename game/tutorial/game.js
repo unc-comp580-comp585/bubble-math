@@ -159,18 +159,19 @@ tutorial.prototype = {
                 switch (Globals.ControlSel) {
                     case 0:
                         // Keyboard
-                        this.text += "Use the A and D keys to move around the circle and Space to select a bubble.";
+                        this.text += "Use the A and D keys to move around the circle and Space to select a bubble. ";
                         break;
                     case 1:
                         // Switch
-                        this.text += "Wait until the bubble you want is selected, then press Space on the keyboard or A on the controller.";
+                        this.text += "Wait until the bubble you want is selected, then press Space on the keyboard or A on the controller. ";
                         break;
                     case 2:
                     case 3:
                         // Controller
-                        this.text += "Use the analog stick or the D Pad to move around the circle and press A to select a bubble";
+                        this.text += "Use the analog stick or the D Pad to move around the circle and press A to select a bubble. ";
                         break;
                 }
+                this.text += "If the answer on the bubble is right, it will pop.";
                 if (Globals.DictationEnabled) {
                     Speech.read(this.text);
                 }
