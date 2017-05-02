@@ -316,7 +316,7 @@ gamemode1.prototype = {
             this.text.question.setText(text);
             this.text.question.lineSpacing = -30;
         } else {
-            text = text.replace("*", "×").replace("/", "÷");
+            text = text.replace(/\*/g, "×").replace(/\//g, "÷");
             this.text.question.setText(text);
         }
     },

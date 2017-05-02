@@ -229,7 +229,7 @@ gamemode2.prototype = {
         }
         this.text.score.setText("Score: " + clipped_score);
         this.text.multiplier.setText("x" + this.score_multiplier);
-        this.text.question.setText(this.question.replace("*", "×").replace("/", "÷"));
+        this.text.question.setText(this.question.replace(/\*/g, "×").replace(/\//g, "÷"));
     },
 
     drawGFX: function() {
