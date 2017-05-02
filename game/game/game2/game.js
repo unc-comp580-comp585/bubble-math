@@ -735,19 +735,20 @@ gamemode2.prototype = {
 
         let answer = eval(this.answers[0][b1Index] + ' ' + this.answers[1][b2Index]);
 
-        let notInt = !Number.isInteger(answer);
+        let notInt = Number.isInteger(answer);
         let neg = answer < 0;
 
         if (notInt && this.killIterations < 1000) {
             answer = this.selectQuestion();
         }
 
-        this.killIterations = 0;
-
         if (this.killIterations == 1000) {
             sound.readEq("You monster. You Killed me.");
             this.won = true;
         }
+        
+        this.killIterations = 0;
+        
         this.question = ''+answer;
 
         return answer;
