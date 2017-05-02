@@ -642,8 +642,19 @@ gamemode2.prototype = {
                     this.won = true;
                     return;
                 } else {
-                    if(Globals.ControlSel === 1)
+                    if(Globals.ControlSel >= 1)
                         this.rotateCW();
+
+                if(Globals.ControlSel >= 2) {
+                    for(let index in this.bubbles[0]) {
+                        if(!this.bubbles[0][index].popped)
+                        {
+                            this.bubbleSelection = index;
+                            this.wand.rotateTo(this.angles[Globals.NumberBubbles][index]);
+                            break;
+                        }
+                    }
+                }
                     
                     this.selectQuestion();
                 }

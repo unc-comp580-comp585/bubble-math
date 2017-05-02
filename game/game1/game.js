@@ -603,6 +603,16 @@ gamemode1.prototype = {
             if(Globals.ControlSel === 1)
                 this.rotateCW();
 
+            if(Globals.ControlSel >= 2) {
+                    for(let index in this.bubbles) {
+                        if(!this.bubbles[index].popped)
+                        {
+                            this.bubbleSelection = index;
+                            this.wand.rotateTo(this.angles[Globals.NumberBubbles][index]);
+                            break;
+                        }
+                    }
+                }
                  
             if (Globals.DictationEnabled) {
                 Speech.readEq(this.questions[this.questionIndex]);
