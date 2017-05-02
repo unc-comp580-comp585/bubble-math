@@ -9,6 +9,7 @@ bootGame.prototype = {
     },
 
     create: function() {
+        console.info(Globals.DictationEnabled);
         this.game.state.start("loadMainMenu");
     }
 };

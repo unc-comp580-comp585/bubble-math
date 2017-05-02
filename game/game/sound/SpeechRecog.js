@@ -7,7 +7,7 @@ SpRecog.init = function(recognition){
     var numbers = [];
     for (var i = 0; i < 30; i++){
         numbers.push(String(i));
-    } 
+    }
     var grammar = '#JSGF V1.0; grammar numbers; public <number> = ' + numbers.join(' | ') + ' ;'
     recognition = new SpeechRecognition();
     var speechRecognitionList = new SpeechGrammarList();
@@ -19,6 +19,16 @@ SpRecog.init = function(recognition){
     recognition.maxAlternatives = 1;
     return recognition;
 }
+
+// Parses recognized english equation into math
+SpRecog.parseEq = function(input){
+    input = input.replace(new RegExp('minus', 'g'), '-');
+    input = input.replace(new RegExp('divided by', 'g'), '/');
+    input = input.replace(new RegExp('times', 'g'), '*');
+    input = input.replace(new RegExp('x', 'g'), '*');
+    input = input.replace(new RegExp('equals', 'g'), '=');
+    return input;
+};
 
 // Starts speech recognition instance to answer current question
 SpRecog.listen = function(recognition){
