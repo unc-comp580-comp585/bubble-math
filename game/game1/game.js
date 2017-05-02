@@ -876,7 +876,7 @@ gamemode1.prototype = {
                     tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);
                 }
                 if (Globals.SoundEnabled) {
-                    Speech.read(String(bubble_text[i]));
+                    Speech.readEq(String(bubble_text[i]));
                 }
             });
         }
