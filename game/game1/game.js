@@ -266,7 +266,12 @@ gamemode1.prototype = {
     },
 
     updateGFX: function() {
-        this.text.score.setText("Score: " + this.score);
+        let clipped_score = this.score;
+        let score_str = this.score.toString();
+        if (score_str.length >= 8) {
+            clipped_score = score_str.substring(0, 5) + "...";
+        }
+        this.text.score.setText("Score: " + clipped_score);
         this.text.multiplier.setText("x" + this.score_multiplier);
 
         let text = this.questions[this.questionIndex];
