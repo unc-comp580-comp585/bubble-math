@@ -464,7 +464,7 @@ tutorial.prototype = {
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
-                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+                Speech.readEq("The question is: " + this.questions[this.questionIndex]);
             }, this);
             
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
@@ -593,12 +593,13 @@ tutorial.prototype = {
                     return;
                 }
 
+                if (Globals.DictationEnabled) {
+                    Speech.read("Next question: " + this.questions[this.questionIndex]);
+                }
+
                 if(Globals.ControlSel === 1)
                     this.rotateCW();
 
-                if (Globals.DictationEnabled) {
-                    Speech.readEq(this.questions[this.questionIndex]);
-                }
             } else {
                 if (Globals.SoundEnabled) {
                     this.sounds['wrong'].play();
@@ -731,7 +732,9 @@ tutorial.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
             console.info("Y Button");
-            Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+            if (Globals.DictationEnabled) {
+                Speech.readEq("The question is: " + this.questions[this.questionIndex]);
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
@@ -831,7 +834,7 @@ tutorial.prototype = {
         clearTimeouts();
         window.speechSynthesis.cancel();
         Globals.speech_lock = false;
-        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection]);
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
         msg.volume = Globals.voice.volume;
         msg.rate = Globals.voice.rate;
         msg.pitch = Globals.voice.pitch;

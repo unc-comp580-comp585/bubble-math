@@ -151,6 +151,8 @@ gamemode1.prototype = {
         this.bindEssentialKeys();
 
         this.initializeNewGame();
+
+        this.wand.rotateTo(0);
     },
 
     initializeNewGame: function() {
@@ -174,7 +176,7 @@ gamemode1.prototype = {
         this.updateProgressBar();
 
         if (Globals.DictationEnabled) {
-            Speech.readEq(this.questions[this.questionIndex]);
+            Speech.readEq("The first question is: " + this.questions[this.questionIndex]);
         }
 
         if (Globals.ControlSel === 1) {
@@ -510,7 +512,7 @@ gamemode1.prototype = {
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             R.onDown.add(function() {
-                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+                Speech.readEq("The question is: " + this.questions[this.questionIndex]);
             }, this);
             
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
@@ -639,7 +641,7 @@ gamemode1.prototype = {
                 }
                  
             if (Globals.DictationEnabled) {
-                Speech.readEq(this.questions[this.questionIndex]);
+                Speech.read("Next question: " + this.questions[this.questionIndex]);
             }
         } else {
             if (Globals.SoundEnabled) {
@@ -775,7 +777,7 @@ gamemode1.prototype = {
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
             console.info("Y Button");
             if (Globals.DictationEnabled) {
-                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+                Speech.readEq("The question is: " + this.questions[this.questionIndex]);
             }
         }
 
@@ -829,7 +831,8 @@ gamemode1.prototype = {
 
     update: function() {
         if(this.won) {
-            this.initializeNewGame();
+            cb = this.initializeNewGame();
+            Speech.readAndWin('Great job! Let\'s play again.' + this.questions[this.questionIndex], cb);
             this.won = false;
             this.updateProgressBar();
         }
@@ -936,7 +939,7 @@ gamemode1.prototype = {
         clearTimeouts();
         window.speechSynthesis.cancel();
         Globals.speech_lock = false;
-        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection]);
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
         msg.volume = Globals.voice.volume;
         msg.rate = Globals.voice.rate;
         msg.pitch = Globals.voice.pitch;

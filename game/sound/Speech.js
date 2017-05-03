@@ -30,6 +30,29 @@ var Speech = {
         Speech.read(input, options);
     },
 
+    readAndWin: function(input, callback){
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+        Globals.speech_lock = false;
+        input = input.replace(new RegExp('-', 'g'), 'minus');
+        input = input.replace(new RegExp('/', 'g'), 'divided by');
+        input = input.replace(new RegExp('÷', 'g'), 'divided by');
+        input = input.replace(new RegExp('\\*', 'g'), 'times');
+        input = input.replace(new RegExp('=', 'g'), 'equals');
+        var msg = new SpeechSynthesisUtterance(input);
+        msg.volume = Globals.voice.volume;
+        msg.rate = Globals.voice.rate;
+        msg.pitch = Globals.voice.pitch;
+        msg.lang = Globals.voice.lang;
+        msg.onstart = function(){
+            callback();
+        }
+        msg.onend = function(){
+            Globals.speech_lock = true;
+        }
+        window.speechSynthesis.speak(msg);
+    },
+
     increaseRate: function() {
         Globals.voice.rate = Math.min(Globals.voice.rate+0.2, 2.0);
     },
