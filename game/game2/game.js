@@ -182,33 +182,6 @@ gamemode2.prototype = {
         this.wand.rotateTo(0);
     },
 
-    onSpeechRecog: function() {
-        this.speechRecog.onresult = (event) => {
-            let last = event.results.length - 1;
-            let answer = event.results[last][0].transcript;
-            console.dir("Recieved: " + answer);
-            this.spoken_input = SpRecog.parseEq(answer);
-            if (this.spoken_input.indexOf(new RegExp("/\+|\-|=|\\|\\*/"))) {
-                this.Select();
-            }
-        }
-
-        this.speechRecog.onspeechend = (event) => {
-            console.log("ended recog");
-            this.speechRecog.stop();
-        }
-
-        this.speechRecog.onnomatch = (event) => {
-            console.warn("what?");
-        }
-
-        this.speechRecog.onerror = (event) => {
-            console.error("error occured in recognition " + event.error );
-        }
-
-        SpRecog.listen(this.speechRecog);
-    },
-
     updateGFX: function() {
         let clipped_score = this.score;
         let score_str = this.score.toString();
@@ -730,15 +703,12 @@ gamemode2.prototype = {
         return answer;
     },
 
-    suggestSolution: async function(given) {
+    suggestSolution: function(given) {
         for (let inner_bubble of this.bubbles[0]) {
             for (let outer_bubble of this.bubbles[1]) {
                 if (!inner_bubble.popped && !outer_bubble.popped) {
-                    if (eval(inner_bubble.numText.text + outer_bubble.numText.text) === given) {
-                        Speech.read("Try this: ");
-                        await this.sleep(700).then(() => {
-                            Speech.readEq(inner_bubble.numText.text + outer_bubble.numText.text + ' = ' + given);
-                        });
+                    if (eval(inner_bubble.num + outer_bubble.num) === given) {
+                        Speech.read("Try this: " + String(inner_bubble.num + outer_bubble.num + ' = ' + given));
                         return;
                     }
                 }
