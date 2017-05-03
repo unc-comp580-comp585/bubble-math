@@ -15,6 +15,7 @@ gamemode1.prototype = {
     sounds: {},
     notes: ["c", "d", "e", "f", "g", "a", "b", "c", "d", "e", "f", "g"],
     octaves: [4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5],
+    speechTimeout: null,
 
     // Graphics
     bubbles: [],
@@ -116,7 +117,7 @@ gamemode1.prototype = {
             this.sounds['win'] = this.game.add.audio('win');
 
             tones.attack = 0;
-            tones.release = 200;
+            tones.release = 100;
             tones.type = "triangle";
             // tones.volume = 0.4;
 
@@ -156,7 +157,7 @@ gamemode1.prototype = {
         this.drawGFX();
 
         this.operations = Globals.GradeSel >= 2 ? ['+', '-', '*', '/'] : ['+', '-'];
-        this.fractions = Globals.GradeSel % 2 == 1;
+        this.fractions = Globals.GradeSel % 2 == 1 || Globals.GradeSel === 4;
 
         this.questionIndex = 0;
 
@@ -170,6 +171,8 @@ gamemode1.prototype = {
 
         this.updateGFX();
 
+        this.updateProgressBar();
+
         if (Globals.DictationEnabled) {
             Speech.readEq(this.questions[this.questionIndex]);
         }
@@ -177,6 +180,8 @@ gamemode1.prototype = {
         if (Globals.ControlSel === 1) {
             this.bindSwitch();
         }
+
+        this.wand.rotateTo(0);
     },
 
     bindSpeechKeys: function() {
@@ -194,6 +199,7 @@ gamemode1.prototype = {
             } else {
                 this.selectAnswer(parseInt(Globals.numbers[number]));
             }
+            return true;
         }
 
         this.speechRecog.onspeechend = (event) => {
@@ -226,7 +232,7 @@ gamemode1.prototype = {
         if (given === result) {
             // Score stuff
             this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-            this.score_multiplier += 1;
+            this.score_multiplier = Math.min(20, this.score_multiplier + 1);
             this.score_selectors = 0;
 
             // Animation stuff
@@ -264,7 +270,12 @@ gamemode1.prototype = {
     },
 
     updateGFX: function() {
-        this.text.score.setText("Score: " + this.score);
+        let clipped_score = this.score;
+        let score_str = this.score.toString();
+        if (score_str.length >= 8) {
+            clipped_score = score_str.substring(0, 5) + "...";
+        }
+        this.text.score.setText("Score: " + clipped_score);
         this.text.multiplier.setText("x" + this.score_multiplier);
 
         let text = this.questions[this.questionIndex];
@@ -309,7 +320,7 @@ gamemode1.prototype = {
             this.text.question.setText(text);
             this.text.question.lineSpacing = -30;
         } else {
-            text = text.replace("*", "×").replace("/", "÷");
+            text = text.replace(/\*/g, "×").replace(/\//g, "÷");
             this.text.question.setText(text);
         }
     },
@@ -396,7 +407,16 @@ gamemode1.prototype = {
     genEquations: function() {
         let builtEq = [];
         let builtAns = [];
-        const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        let nums = null;
+
+        if(Globals.GradeSel < 4)
+            nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        else
+        {
+            nums = [];
+            for(let i = 0; i <= 100; i++)
+                nums.push(i);
+        }
         let length = (1 + Globals.NumberBubbles) * 4;
         let j =0;
         while (j < length) {
@@ -445,7 +465,7 @@ gamemode1.prototype = {
 
             let tooMany = count > 2;
 
-            if (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany) {
+            if (Globals.GradeSel !== 4 && (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany)) {
                 continue;
             } else {
                 j++
@@ -494,7 +514,12 @@ gamemode1.prototype = {
             }, this);
             
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
-            F.onDown.add(this.readBubbles, this);
+            F.onDown.add(function(){
+                this.sleep(0).then(this.readBubbles());
+            }, this);
+
+            let C = this.game.input.keyboard.addKey(Phaser.Keyboard.C);
+            C.onDown.add(this.currentBubble, this);
         }
     },
 
@@ -576,7 +601,7 @@ gamemode1.prototype = {
         if (given === result) {
             // Score stuff
             this.score += ((100) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-            this.score_multiplier += 1;
+            this.score_multiplier = Math.min(20, this.score_multiplier + 1);
             this.score_selectors = 0;
 
             // Animation stuff
@@ -742,15 +767,16 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
-            // if (Globals.MusicEnabled) {
-            //     this.sounds['bgm'].stop();
-            // }
-            // this.game.state.start("bootMainMenu");
+            if (Globals.DictationEnabled) {
+                this.currentBubble();
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
             console.info("Y Button");
-            Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+            if (Globals.DictationEnabled) {
+                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {
@@ -802,6 +828,12 @@ gamemode1.prototype = {
     },
 
     update: function() {
+        if(this.won) {
+            this.initializeNewGame();
+            this.won = false;
+            this.updateProgressBar();
+        }
+
         if (this.questionIndex < this.questions.length) {
             this.updateBubbleColors();
             this.updateGFX();
@@ -855,34 +887,71 @@ gamemode1.prototype = {
         this.progressBar.endFill();
     },
 
-    readBubbles: async function() {
-        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
-        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
+    readBubbles: function() {
         let count = 0;
         let bubble_text = [];
         let tone_index = [];
+        let utterances = [];
         for (let i = 0; i < this.bubbles.length; i++) {
             if (!this.bubbles[i].popped) {
                 count++;
                 bubble_text.push(String(this.bubbles[i].numText.text));
+                let input = String(this.bubbles[i].numText.text);
                 tone_index.push(i);
+                input = input.replace(new RegExp('-', 'g'), 'minus');
+                input = input.replace(new RegExp('/', 'g'), 'divided by');
+                input = input.replace(new RegExp('\\*', 'g'), 'times');
+                input = input.replace(new RegExp('=', 'g'), 'equals');
+                let msg = new SpeechSynthesisUtterance(input);
+                utterances.push(msg);
+                msg.volume = Globals.voice.volume;
+                msg.rate = Globals.voice.rate;
+                msg.pitch = Globals.voice.pitch;
+                msg.lang = Globals.voice.lang;
+                let note = this.notes[tone_index.length-1];
+                let oct = this.octaves[tone_index.length-1];
+                let next = utterances.length;
+                msg.onstart = function(event){
+                    tones.play(note, oct);
+                };
+                msg.onend = function(event){
+                    if(Globals.speech_lock){
+                        try{
+                            window.speechSynthesis.speak(utterances[next]);
+                        } catch(e){
+                            // console.log("End of bubbles");
+                        }
+                    }
+                };
             }
         }
-        Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
-        await this.sleep(delay);
-        for (let i = 0; i < bubble_text.length; i++) {
-            await this.sleep(ring_delay).then(() => {
-                if (Globals.SoundEnabled) {
-                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);
-                }
-                if (Globals.SoundEnabled) {
-                    Speech.read(String(bubble_text[i]));
-                }
-            });
-        }
+        Speech.read("The remaining: " + String(count) + ".. bubbles are: ", utterances[0]);
     },
 
     sleep: function (time) {
         return new Promise((resolve) => setTimeout(resolve, time));
+    },
+
+    currentBubble: function(){
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+        Globals.speech_lock = false;
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection]);
+        msg.volume = Globals.voice.volume;
+        msg.rate = Globals.voice.rate;
+        msg.pitch = Globals.voice.pitch;
+        msg.lang = Globals.voice.lang;
+        let note = this.notes[this.bubbleSelection]
+        let oct = this.octaves[this.bubbleSelection]
+        msg.onend = function(event){
+            Globals.speech_lock = true;
+        };
+        msg.onboundary = function(event) {
+            // console.log(event);
+            if (event.target.text[event.charIndex] == '~' && Globals.SoundEnabled) {
+                tones.play(note, oct);
+            }
+        };
+        window.speechSynthesis.speak(msg);
     },
 }

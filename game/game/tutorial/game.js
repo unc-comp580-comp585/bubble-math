@@ -100,6 +100,7 @@ tutorial.prototype = {
 
         this.drawGFX();
         this.drawBubbles();
+        this.updateProgressBar();
 
         this.tutorial_state_idx = -1;
         this.tutorial_running = true;
@@ -159,18 +160,19 @@ tutorial.prototype = {
                 switch (Globals.ControlSel) {
                     case 0:
                         // Keyboard
-                        this.text += "Use the A and D keys to move around the circle and Space to select a bubble.";
+                        this.text += "Use the A and D keys to move around the circle and Space to select a bubble. ";
                         break;
                     case 1:
                         // Switch
-                        this.text += "Wait until the bubble you want is selected, then press Space on the keyboard or A on the controller.";
+                        this.text += "Wait until the bubble you want is selected, then press Space on the keyboard or A on the controller. ";
                         break;
                     case 2:
                     case 3:
                         // Controller
-                        this.text += "Use the analog stick or the D Pad to move around the circle and press A to select a bubble";
+                        this.text += "Use the analog stick or the D Pad to move around the circle and press A to select a bubble. ";
                         break;
                 }
+                this.text += "If the answer on the bubble is right, it will pop.";
                 if (Globals.DictationEnabled) {
                     Speech.read(this.text);
                 }
@@ -319,7 +321,7 @@ tutorial.prototype = {
             this.sounds['win'] = this.game.add.audio('win');
 
             tones.attack = 0;
-            tones.release = 200;
+            tones.release = 125;
             tones.type = "triangle";
 
             this.sounds['win'].volume = 0.3;
@@ -467,6 +469,9 @@ tutorial.prototype = {
             
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
             F.onDown.add(this.readBubbles, this);
+
+            let C = this.game.input.keyboard.addKey(Phaser.Keyboard.C);
+            C.onDown.add(this.currentBubble, this);
         }
     },
 
@@ -598,6 +603,17 @@ tutorial.prototype = {
                 if (Globals.SoundEnabled) {
                     this.sounds['wrong'].play();
                 }
+                if (Globals.DictationEnabled) {
+                    if (this.incorrectCounter < 2) {
+                        if (given < result) {
+                            Speech.read("Too small, try again");
+                        } else {
+                            Speech.read("Too large, try again");
+                        }
+                    } else {
+                        Speech.readEq(String(this.questions[this.questionIndex]) + " equals " + String(result));
+                    }
+                }
 
                 this.score_multiplier = 1;
                 this.incorrectCounter++;
@@ -708,10 +724,9 @@ tutorial.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
-            // if (Globals.MusicEnabled) {
-            //     this.sounds['bgm'].stop();
-            // }
-            // this.game.state.start("bootMainMenu");
+            if (Globals.DictationEnabled) {
+                this.currentBubble();
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
@@ -767,34 +782,70 @@ tutorial.prototype = {
         }
     },
 
-    readBubbles: async function() {
-        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
-        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
+    readBubbles: function() {
         let count = 0;
         let bubble_text = [];
         let tone_index = [];
+        let utterances = [];
         for (let i = 0; i < this.bubbles.length; i++) {
             if (!this.bubbles[i].popped) {
                 count++;
                 bubble_text.push(String(this.bubbles[i].numText.text));
+                let input = String(this.bubbles[i].numText.text);
                 tone_index.push(i);
+                input = input.replace(new RegExp('-', 'g'), 'minus');
+                input = input.replace(new RegExp('/', 'g'), 'divided by');
+                input = input.replace(new RegExp('\\*', 'g'), 'times');
+                input = input.replace(new RegExp('=', 'g'), 'equals');
+                let msg = new SpeechSynthesisUtterance(input);
+                utterances.push(msg);
+                msg.volume = Globals.voice.volume;
+                msg.rate = Globals.voice.rate;
+                msg.pitch = Globals.voice.pitch;
+                msg.lang = Globals.voice.lang;
+                let note = this.notes[tone_index.length-1];
+                let oct = this.octaves[tone_index.length-1];
+                let next = utterances.length;
+                msg.onstart = function(event){
+                    tones.play(note, oct);
+                };
+                msg.onend = function(event){
+                    if(Globals.speech_lock){
+                        try{
+                            window.speechSynthesis.speak(utterances[next]);
+                        } catch(e){
+                            // console.log("End of bubbles");
+                        }
+                    }
+                };
             }
         }
-        Speech.read("The remaining: " + String(count) + ".. bubbles are: ");
-        await this.sleep(delay);
-        for (let i = 0; i < bubble_text.length; i++) {
-            await this.sleep(ring_delay).then(() => {
-                if (Globals.SoundEnabled) {
-                    tones.play(this.notes[tone_index[i]], this.octaves[tone_index[i]]);
-                }
-                if (Globals.SoundEnabled) {
-                    Speech.read(String(bubble_text[i]));
-                }
-            });
-        }
+        Speech.read("The remaining: " + String(count) + ".. bubbles are: ", utterances[0]);
     },
 
     sleep: function (time) {
         return new Promise((resolve) => setTimeout(resolve, time));
+    },
+
+    currentBubble: function(){
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+        Globals.speech_lock = false;
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection]);
+        msg.volume = Globals.voice.volume;
+        msg.rate = Globals.voice.rate;
+        msg.pitch = Globals.voice.pitch;
+        msg.lang = Globals.voice.lang;
+        let note = this.notes[this.bubbleSelection]
+        let oct = this.octaves[this.bubbleSelection]
+        msg.onend = function(event){
+            Globals.speech_lock = true;
+        };
+        msg.onboundary = function(event) {
+            if (event.target.text[event.charIndex] == '~' && Globals.SoundEnabled) {
+                tones.play(note, oct);
+            }
+        };
+        window.speechSynthesis.speak(msg);
     },
 };
