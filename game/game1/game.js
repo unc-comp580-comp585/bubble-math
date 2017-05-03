@@ -515,6 +515,9 @@ gamemode1.prototype = {
             F.onDown.add(function(){
                 this.sleep(0).then(this.readBubbles());
             }, this);
+
+            let C = this.game.input.keyboard.addKey(Phaser.Keyboard.C);
+            C.onDown.add(this.currentBubble, this);
         }
     },
 
@@ -765,7 +768,7 @@ gamemode1.prototype = {
             // if (Globals.MusicEnabled) {
             //     this.sounds['bgm'].stop();
             // }
-            // this.game.state.start("bootMainMenu");
+            this.game.state.start("bootMainMenu");
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
@@ -923,5 +926,28 @@ gamemode1.prototype = {
 
     sleep: function (time) {
         return new Promise((resolve) => setTimeout(resolve, time));
+    },
+
+    currentBubble: function(){
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+        Globals.speech_lock = false;
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection]);
+        msg.volume = Globals.voice.volume;
+        msg.rate = Globals.voice.rate;
+        msg.pitch = Globals.voice.pitch;
+        msg.lang = Globals.voice.lang;
+        let note = this.notes[this.bubbleSelection]
+        let oct = this.octaves[this.bubbleSelection]
+        msg.onend = function(event){
+            Globals.speech_lock = true;
+        };
+        msg.onboundary = function(event) {
+            // console.log(event);
+            if (event.target.text[event.charIndex] == '~' && Globals.SoundEnabled) {
+                tones.play(note, oct);
+            }
+        };
+        window.speechSynthesis.speak(msg);
     },
 }
