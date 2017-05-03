@@ -832,7 +832,7 @@ gamemode1.prototype = {
     update: function() {
         if(this.won) {
             cb = this.initializeNewGame();
-            Speech.readAndWin('Great job! Let\'s play again.' + this.questions[this.questionIndex], cb);
+            Speech.readAndWin('Great job! Let\'s play again: ' + this.questions[this.questionIndex], cb);
             this.won = false;
             this.updateProgressBar();
         }
