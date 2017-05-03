@@ -834,7 +834,7 @@ tutorial.prototype = {
         clearTimeouts();
         window.speechSynthesis.cancel();
         Globals.speech_lock = false;
-        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
+        let msg = new SpeechSynthesisUtterance("Current bubble is: " + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
         msg.volume = Globals.voice.volume;
         msg.rate = Globals.voice.rate;
         msg.pitch = Globals.voice.pitch;
