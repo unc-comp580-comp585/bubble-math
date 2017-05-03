@@ -321,7 +321,7 @@ tutorial.prototype = {
             this.sounds['win'] = this.game.add.audio('win');
 
             tones.attack = 0;
-            tones.release = 200;
+            tones.release = 125;
             tones.type = "triangle";
 
             this.sounds['win'].volume = 0.3;
@@ -724,10 +724,9 @@ tutorial.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
-            // if (Globals.MusicEnabled) {
-            //     this.sounds['bgm'].stop();
-            // }
-            this.game.state.start("bootMainMenu");
+            if (Globals.DictationEnabled) {
+                this.currentBubble();
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {

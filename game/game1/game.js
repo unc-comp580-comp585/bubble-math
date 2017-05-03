@@ -117,7 +117,7 @@ gamemode1.prototype = {
             this.sounds['win'] = this.game.add.audio('win');
 
             tones.attack = 0;
-            tones.release = 200;
+            tones.release = 100;
             tones.type = "triangle";
             // tones.volume = 0.4;
 
@@ -767,15 +767,16 @@ gamemode1.prototype = {
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_B, 20) && !this.won) {
             console.info("B Button");
-            // if (Globals.MusicEnabled) {
-            //     this.sounds['bgm'].stop();
-            // }
-            this.game.state.start("bootMainMenu");
+            if (Globals.DictationEnabled) {
+                this.currentBubble();
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_Y, 20) && !this.won) {
             console.info("Y Button");
-            Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+            if (Globals.DictationEnabled) {
+                Speech.readEq("The question is: " + this.questions[this.questionIndex] + ". Your score is: " + this.score);
+            }
         }
 
         if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_X, 20) && !this.won) {

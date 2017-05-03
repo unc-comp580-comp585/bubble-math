@@ -99,8 +99,8 @@ optionsMenu.prototype = {
         this.ControlText = this.game.add.text(300, 400, 'Control Mode', font);
         this.ControlKeyboard = this.game.add.text(150, 450, 'Keyboard', font);
         this.ControlSwitch = this.game.add.text(325, 450, 'Switch', font);
-        this.ControlGamepad1 = this.game.add.text(450, 450, 'Controller (1)', font);
-        this.ControlGamepad2 = this.game.add.text(675, 450, "Controller (2)", font);
+        this.ControlGamepad1 = this.game.add.text(450, 450, 'Controller', font);
+        // this.ControlGamepad2 = this.game.add.text(675, 450, "Controller (2)", font);
 
         // Back
         this.ApplyText = this.game.add.text(100, 530, 'Back', font);
@@ -172,7 +172,7 @@ optionsMenu.prototype = {
                 this.ControlGamepad1.addColor('#ff0000', 0);
                 break;
             case 3:
-                this.ControlGamepad2.addColor('#ff0000', 0);
+                this.ControlGamepad1.addColor('#ff0000', 0);
                 break;
         }
     },
@@ -210,7 +210,7 @@ optionsMenu.prototype = {
         this.ControlKeyboard.addColor('#ffffff', 0);
         this.ControlSwitch.addColor('#ffffff', 0);
         this.ControlGamepad1.addColor('#ffffff', 0);
-        this.ControlGamepad2.addColor('#ffffff', 0);
+        // this.ControlGamepad2.addColor('#ffffff', 0);
 
         this.ApplyText.addColor('#ffffff', 0);
     },
@@ -304,11 +304,11 @@ optionsMenu.prototype = {
                 break;
             case 6:
                 if (this.controlSel - 1 < 0) {
-                    this.controlSel = 3;
+                    this.controlSel = 2;
                 } else {
                     this.controlSel --;
                 }
-                Globals.ControlSel = this.controlSel;
+                Globals.ControlSel = (this.controlSel==2)?3:this.controlSel;
                 break;
         }
     },
@@ -354,7 +354,7 @@ optionsMenu.prototype = {
                 } else {
                     this.controlSel ++;
                 }
-                Globals.ControlSel = this.controlSel;
+                Globals.ControlSel = (this.controlSel==2)?3:this.controlSel;
                 break;
         }
     },
@@ -443,7 +443,7 @@ optionsMenu.prototype = {
                         this.ControlGamepad1.addColor('#00ff00', 0);
                         break;
                     case 3:
-                        this.ControlGamepad2.addColor('#00ff00', 0);
+                        this.ControlGamepad1.addColor('#00ff00', 0);
                         break;
                 }
                 break;
