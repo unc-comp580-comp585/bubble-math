@@ -150,11 +150,6 @@ gamemode2.prototype = {
                 this.gamepad = this.game.input.gamepad.pad1;
         }
 
-        if (Globals.SpeechRecognitionEnabled) {
-            this.speechRecog = SpRecog.init(this.speechRecog);
-            this.bindSpeechKeys();
-        }
-
         this.bindEssentialKeys();
 
         this.initializeNewGame();
@@ -187,11 +182,6 @@ gamemode2.prototype = {
         }
 
         this.wand.rotateTo(0);
-    },
-
-    bindSpeechKeys: function() {
-        let T = this.game.input.keyboard.addKey(Phaser.Keyboard.T);
-        T.onDown.add(this.onSpeechRecog, this);
     },
 
     onSpeechRecog: function() {
@@ -546,69 +536,6 @@ gamemode2.prototype = {
             this.initializeNewGame();
             this.wand.rotateTo(0);
             return;
-        } else if (this.spoken_input) {
-            let given = eval(this.question);
-            let result = (Number.isFinite(eval(this.spoken_input)) ? eval(this.spoken_input) : null);
-            if (given == result) {
-                // Score stuff
-                if(Globals.ControlSel === 1)
-                    this.rotateCW();
-                this.score += ((200) * this.score_multiplier) * Math.max(1, 12 - this.score_selectors);
-                this.score_multiplier = Math.min(20, this.score_multiplier + 1);
-                this.score_selectors = 0;
-
-                // Mechanics stuff
-                this.answerIndex++;
-                this.incorrectCounter = 0;
-
-                this.updateProgressBar();
-
-                if (Globals.SoundEnabled) {
-                    this.sounds['pops'][this.game.rnd.integerInRange(0, this.sounds.pops.length - 1)].play();
-                }
-                if (this.answerIndex === this.answers[0].length) {
-                    if (Globals.SoundEnabled) {
-                        this.sounds['win'].play();
-                    }
-                    this.won = true;
-                    return;
-                } else {
-                    this.selectQuestion();
-                }
-                if (Globals.DictationEnabled) {
-                    Speech.readEq(this.question);
-                }
-
-
-
-                // Selection reset
-                this.isInnerRing = true;
-                this.selectedBubbles = [];
-                this.selectedIndicies = [];
-
-            } else {
-                if (Globals.SoundEnabled) {
-                    this.sounds['wrong'].play();
-                }
-                if (Globals.DictationEnabled) {
-                    if (this.incorrectCounter < 2) {
-                        if (given > result) {
-                            Speech.read("Too small, try again");
-                        } else {
-                            Speech.read("Too large, try again");
-                        }
-                    } else {
-                        this.suggestSolution(given);
-                    }
-                }
-
-                // Reset score multiplier
-                this.score_multiplier = 1;
-                this.incorrectCounter++;
-                this.isInnerRing = true;
-            }
-            // Reset spoken answer
-            this.spoken_input = null;
         } else if (this.selectedBubbles.length == 1) {
             let result = eval(''+this.selectedBubbles[0] + this.answers[1][this.bubbleSelection]);
             this.selectedIndicies.push(this.bubbleSelection);

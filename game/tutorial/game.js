@@ -599,6 +599,17 @@ tutorial.prototype = {
                 if (Globals.SoundEnabled) {
                     this.sounds['wrong'].play();
                 }
+                if (Globals.DictationEnabled) {
+                    if (this.incorrectCounter < 2) {
+                        if (given < result) {
+                            Speech.read("Too small, try again");
+                        } else {
+                            Speech.read("Too large, try again");
+                        }
+                    } else {
+                        Speech.readEq(String(this.questions[this.questionIndex]) + " equals " + String(result));
+                    }
+                }
 
                 this.score_multiplier = 1;
                 this.incorrectCounter++;
