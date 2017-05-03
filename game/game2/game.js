@@ -149,6 +149,8 @@ gamemode2.prototype = {
 
         this.bindEssentialKeys();
 
+        this.bindDictationKeys();
+
         this.initializeNewGame();
     },
 
@@ -506,8 +508,10 @@ gamemode2.prototype = {
         if (this.answerIndex === this.answers[0].length) {
             this.initializeNewGame();
             this.wand.rotateTo(0);
+            this.won = false;
             return;
-        } else if (this.selectedBubbles.length == 1) {
+        }
+        if (this.selectedBubbles.length == 1) {
             let result = eval(''+this.selectedBubbles[0] + this.answers[1][this.bubbleSelection]);
             this.selectedIndicies.push(this.bubbleSelection);
             let given = eval(this.question);
@@ -894,7 +898,8 @@ gamemode2.prototype = {
 
         if(this.won) {
             this.initializeNewGame();
-            this.won = !this.won;
+            this.won = false;
+            this.updateProgressBar();
         }
 
         if (this.answerIndex < this.answers[0].length) {
@@ -999,57 +1004,130 @@ gamemode2.prototype = {
         this.progressBar.endFill();
     },
 
-    readBubbles: async function() {
-        let delay = 900 * (1 + Math.round(Globals.voice.rate / 2.0));
-        let ring_delay = 450 * (1 + Math.round(Globals.voice.rate / 2.0));
+    readBubbles: function() {
+        console.dir(this.bubbles);
         let count = 0;
-        let outer_count = 0;
-        let bubble_text = [];
+        for(let i = 0; i < this.bubbles[0].length; i++){
+            if(!this.bubbles[0][i].popped){
+                count++;
+            }
+        }
         let tone_index = [];
-        let outer_bubble_text = [];
-        let outer_tone_index = [];
+        let outer_tone_index = [0];
+        let inner_utterances = [];
+        let outer_utterances = [];
+        let outer_msg = new SpeechSynthesisUtterance("And the remaining: " + String(count) + ".. right hand numbers are: ");
+        outer_utterances.push(outer_msg);
+        outer_msg.volume = Globals.voice.volume;
+        outer_msg.rate = Globals.voice.rate;
+        outer_msg.pitch = Globals.voice.pitch;
+        outer_msg.lang = Globals.voice.lang;
+        next = outer_utterances.length;
+        outer_msg.onend = function(event){
+            if(Globals.speech_lock){
+                try{
+                    window.speechSynthesis.speak(outer_utterances[next]);
+                } catch(e){
+                    // console.log("End of bubbles");
+                }
+            }
+        };
         for (let i = 0; i < this.bubbles[0].length; i++) {
             if (!this.bubbles[0][i].popped) {
-                count++;
-                bubble_text.push(String(this.bubbles[0][i].numText.text));
                 tone_index.push(i);
+                let input = String(this.bubbles[0][i].num);
+                input = input.replace(new RegExp('-', 'g'), 'minus');
+                input = input.replace(new RegExp('/', 'g'), 'divided by');
+                input = input.replace(new RegExp('\\*', 'g'), 'times');
+                input = input.replace(new RegExp('=', 'g'), 'equals');
+                let msg = new SpeechSynthesisUtterance(input);
+                inner_utterances.push(msg);
+                msg.volume = Globals.voice.volume;
+                msg.rate = Globals.voice.rate;
+                msg.pitch = Globals.voice.pitch;
+                msg.lang = Globals.voice.lang;
+                let note = this.notes[tone_index.length-1];
+                let oct = this.octaves[0][tone_index.length-1];
+                let next = inner_utterances.length;
+                msg.onstart = function(event){
+                    tones.play(note, oct);
+                };
+                msg.onend = function(event){
+                    if(Globals.speech_lock){
+                        try{
+                            window.speechSynthesis.speak(inner_utterances[next]);
+                        } catch(e){
+                            // console.log("End of bubbles");
+                        }
+                    }
+                };
             }
             if (!this.bubbles[1][i].popped) {
-                outer_count++;
-                outer_bubble_text.push(String(this.bubbles[1][i].numText.text));
-                outer_tone_index.push(i);
+                outer_tone_index.push(i-1);
+                let input = String(this.bubbles[1][i].num);
+                input = input.replace(new RegExp('-', 'g'), 'minus');
+                input = input.replace(new RegExp('/', 'g'), 'divided by');
+                input = input.replace(new RegExp('\\*', 'g'), 'times');
+                input = input.replace(new RegExp('=', 'g'), 'equals');
+                let msg = new SpeechSynthesisUtterance(input);
+                outer_utterances.push(msg);
+                msg.volume = Globals.voice.volume;
+                msg.rate = Globals.voice.rate;
+                msg.pitch = Globals.voice.pitch;
+                msg.lang = Globals.voice.lang;
+                let note = this.notes[outer_tone_index.length-1];
+                let oct = this.octaves[1][outer_tone_index.length-1];
+                let next = outer_utterances.length;
+                msg.onstart = function(event){
+                    tones.play(note, oct);
+                };
+                msg.onend = function(event){
+                    if(Globals.speech_lock){
+                        try{
+                            window.speechSynthesis.speak(outer_utterances[next]);
+                        } catch(e){
+                            // console.log("End of bubbles");
+                        }
+                    }
+                };
             }
         }
-        Speech.read("The remaining: " + String(count) + ".. numbers with operators are: ");
-        await this.sleep(delay);
-        for (let i = 0; i < bubble_text.length; i++) {
-            await this.sleep(ring_delay).then(() => {
-                if (Globals.SoundEnabled) {
-                    tones.play(this.notes[tone_index[i]], this.octaves[0][tone_index[i]]);
+        inner_utterances[inner_utterances.length-1].onend = function(event){
+            if(Globals.speech_lock){
+                try{
+                    window.speechSynthesis.speak(outer_utterances[0]);
+                } catch(e){
+                    // console.log("End of bubbles");
                 }
-                if (Globals.DictationEnabled) {
-                    Speech.readEq(String(bubble_text[i]));
-                }
-            });
-        }
-        await this.sleep(delay);
-        Speech.read("And the remaining: " + String(outer_count) + ".. numbers are: ");
-        tones.volume = 0.8;
-        await this.sleep(delay);
-        for (let i = 0; i < outer_bubble_text.length; i++) {
-            await this.sleep(ring_delay).then(() => {
-                if (Globals.SoundEnabled) {
-                    tones.play(this.notes[outer_tone_index[i]], this.octaves[1][outer_tone_index[i]]);
-                }
-                if (Globals.DictationEnabled) {
-                    Speech.readEq(String(outer_bubble_text[i]));
-                }
-            });
-        }
-        tones.volume = 1.0;
+            }
+        };
+        Speech.read("The remaining: " + String(count) + ".. lefthand numbers with operators are: ", inner_utterances[0]);
     },
 
     sleep: function (time) {
         return new Promise((resolve) => setTimeout(resolve, time));
+    },
+
+    currentBubble: function(){
+        clearTimeouts();
+        window.speechSynthesis.cancel();
+        Globals.speech_lock = false;
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection]);
+        msg.volume = Globals.voice.volume;
+        msg.rate = Globals.voice.rate;
+        msg.pitch = Globals.voice.pitch;
+        msg.lang = Globals.voice.lang;
+        let note = this.notes[this.bubbleSelection]
+        let oct = this.octaves[this.bubbleSelection]
+        msg.onend = function(event){
+            Globals.speech_lock = true;
+        };
+        msg.onboundary = function(event) {
+            // console.log(event);
+            if (event.target.text[event.charIndex] == '~' && Globals.SoundEnabled) {
+                tones.play(note, oct);
+            }
+        };
+        window.speechSynthesis.speak(msg);
     },
 }
