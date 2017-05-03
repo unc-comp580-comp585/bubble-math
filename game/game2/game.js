@@ -381,7 +381,7 @@ gamemode2.prototype = {
 
             let tooMany = count > 2;
 
-            if (Globals.GradeSel !== 4 && (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany) || result == NaN) {
+            if (Globals.GradeSel !== 4 && (fractionalAns || notInt || alreadyGenerated || tooMany) || result == NaN || divByZero) {
                 continue;
             } else {
                 j++
