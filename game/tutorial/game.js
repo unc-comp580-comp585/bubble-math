@@ -100,6 +100,7 @@ tutorial.prototype = {
 
         this.drawGFX();
         this.drawBubbles();
+        this.updateProgressBar();
 
         this.tutorial_state_idx = -1;
         this.tutorial_running = true;

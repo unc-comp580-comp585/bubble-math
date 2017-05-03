@@ -171,6 +171,8 @@ gamemode1.prototype = {
 
         this.updateGFX();
 
+        this.updateProgressBar();
+
         if (Globals.DictationEnabled) {
             Speech.readEq(this.questions[this.questionIndex]);
         }
@@ -828,6 +830,7 @@ gamemode1.prototype = {
         if(this.won) {
             this.initializeNewGame();
             this.won = false;
+            this.updateProgressBar();
         }
 
         if (this.questionIndex < this.questions.length) {

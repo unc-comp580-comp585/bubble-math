@@ -142,9 +142,6 @@ gamemode2.prototype = {
 
         if (Globals.ControlSel === 0) {
             this.bindKeys();
-            if (Globals.DictationEnabled) {
-                this.bindSpeechKeys();
-            }
         } else if (Globals.ControlSel >= 1) {
                 this.game.input.gamepad.start();
                 this.gamepad = this.game.input.gamepad.pad1;
@@ -168,6 +165,7 @@ gamemode2.prototype = {
         this.drawBubbles();
         this.selectQuestion();
         this.updateGFX();
+        this.updateProgressBar();
 
         this.isInnerRing = true;
         this.selectedBubbles = [];
