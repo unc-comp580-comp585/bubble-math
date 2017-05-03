@@ -224,16 +224,16 @@ optionsMenu.prototype = {
 
         this.selection = 0;
 
-        let up = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+        let up = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
         up.onDown.add(this.decreaseSel, this);
 
-        let down = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+        let down = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         down.onDown.add(this.increaseSel, this);
 
-        let left = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+        let left = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         left.onDown.add(this.decreaseOptionSel, this);
 
-        let right = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+        let right = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         right.onDown.add(this.increaseOptionSel, this);
 
         let enter = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
