@@ -454,14 +454,20 @@ tutorial.prototype = {
     },
 
     bindKeys: function() {
+        let LEFT = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        LEFT.onDown.add(this.rotateCCW, this);
+
         let A = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
         A.onDown.add(this.rotateCCW, this);
+
+        let RIGHT = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        RIGHT.onDown.add(this.rotateCW, this);
 
         let D = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
         D.onDown.add(this.rotateCW, this);
 
-        let Spacebar = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        Spacebar.onDown.add(this.Select, this);
+        let SPACE = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        SPACE.onDown.add(this.Select, this);
 
         if (Globals.DictationEnabled) {
             let R = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
@@ -469,11 +475,26 @@ tutorial.prototype = {
                 Speech.readEq("The question is: " + this.questions[this.questionIndex]);
             }, this);
 
+            let SHIFT = this.game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+            SHIFT.onDown.add(function() {
+                Speech.readEq("The question is: " + this.questions[this.questionIndex]);
+            }, this);
+            
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
-            F.onDown.add(this.readBubbles, this);
+            F.onDown.add(function(){
+                this.sleep(0).then(this.readBubbles());
+            }, this);
+
+            let QMARK = this.game.input.keyboard.addKey(Phaser.Keyboard.QUESTION_MARK);
+            QMARK.onDown.add(function(){
+                this.sleep(0).then(this.readBubbles());
+            }, this);
 
             let C = this.game.input.keyboard.addKey(Phaser.Keyboard.C);
             C.onDown.add(this.currentBubble, this);
+
+            let ALT = this.game.input.keyboard.addKey(Phaser.Keyboard.ALT);
+            ALT.onDown.add(this.currentBubble, this);
         }
     },
 
@@ -481,8 +502,14 @@ tutorial.prototype = {
         let Q = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
         Q.onDown.add(Speech.decreaseRate);
 
+        let DOWN = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        DOWN.onDown.add(Speech.decreaseRate);
+
         let E = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
         E.onDown.add(Speech.increaseRate);
+
+        let UP = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        UP.onDown.add(Speech.increaseRate);
     },
 
     bindEssentialKeys: function() {
