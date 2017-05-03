@@ -228,7 +228,8 @@ tutorial.prototype = {
                             // Keyboard
                             this.text += "To increase or decrease the dictation rate, use the Q and E keys. ";
                             this.text += "To hear what all the bubbles are, press the F key. ";
-                            this.text += "To hear the current question and your score, press the R key. ";
+                            this.text += "To hear the current bubble again, press the C key. ";
+                            this.text += "To hear the current question, press the R key. ";
                             this.text += "To go back to the main menu, press Escape. ";
                             break;
                         case 1:
@@ -239,7 +240,8 @@ tutorial.prototype = {
                             // Controller
                             this.text += "To increase or decrease the dictation rate, use the left and right bumpers. ";
                             this.text += "To hear what all the bubbles are, press the X button. ";
-                            this.text += "To hear the current question and your score, press the Y button. ";
+                            this.text += "To hear the current bubble again, press the B button. ";
+                            this.text += "To hear the current question, press the Y button. ";
                             this.text += "To go back to the main menu, press Start. ";
                             break;
                     }
@@ -466,7 +468,7 @@ tutorial.prototype = {
             R.onDown.add(function() {
                 Speech.readEq("The question is: " + this.questions[this.questionIndex]);
             }, this);
-            
+
             let F = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
             F.onDown.add(this.readBubbles, this);
 
@@ -834,7 +836,7 @@ tutorial.prototype = {
         clearTimeouts();
         window.speechSynthesis.cancel();
         Globals.speech_lock = false;
-        let msg = new SpeechSynthesisUtterance("Current bubble is: ~" + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
+        let msg = new SpeechSynthesisUtterance("Current bubble is: " + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
         msg.volume = Globals.voice.volume;
         msg.rate = Globals.voice.rate;
         msg.pitch = Globals.voice.pitch;
