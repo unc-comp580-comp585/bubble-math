@@ -10,3 +10,4 @@ _site/*
 tags
 node_modules/
 temp.js
+.versions
