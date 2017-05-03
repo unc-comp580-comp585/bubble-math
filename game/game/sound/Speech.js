@@ -45,7 +45,11 @@ var Speech = {
         msg.pitch = Globals.voice.pitch;
         msg.lang = Globals.voice.lang;
         msg.onstart = function(){
-            callback();
+            try{
+                callback();
+            }catch(e){
+                // Nothing
+            }
         }
         msg.onend = function(){
             Globals.speech_lock = true;

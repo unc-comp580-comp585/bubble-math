@@ -836,7 +836,7 @@ tutorial.prototype = {
         clearTimeouts();
         window.speechSynthesis.cancel();
         Globals.speech_lock = false;
-        let msg = new SpeechSynthesisUtterance("Current bubble is: " + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
+        let msg = new SpeechSynthesisUtterance("Current bubble is: ?" + this.answers[this.bubbleSelection] + ". Your score is: " + this.score);
         msg.volume = Globals.voice.volume;
         msg.rate = Globals.voice.rate;
         msg.pitch = Globals.voice.pitch;
@@ -847,7 +847,7 @@ tutorial.prototype = {
             Globals.speech_lock = true;
         };
         msg.onboundary = function(event) {
-            if (event.target.text[event.charIndex] == '~' && Globals.SoundEnabled) {
+            if (event.target.text[event.charIndex] == '?' && Globals.SoundEnabled) {
                 tones.play(note, oct);
             }
         };
