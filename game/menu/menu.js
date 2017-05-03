@@ -56,10 +56,10 @@ mainMenu.prototype = {
         let enter = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enter.onDown.add(this.nextState, this);
 
-        let up = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+        let up = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
         up.onDown.add(this.decreaseSel, this);
 
-        let down = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+        let down = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         down.onDown.add(this.increaseSel, this);
 
         this.game.input.gamepad.start();
