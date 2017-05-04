@@ -288,7 +288,15 @@ gamemode2.prototype = {
     genEquations: function() {
         let builtEq = [];
         let builtAns = [[], []];
-        const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        let nums = [];
+        if(Globals.GradeSel < 4)
+            nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        else
+        {
+            nums = [];
+            for(let i = 0; i <= 100; i++)
+                nums.push(i);
+        }
         let length = (1 + Globals.NumberBubbles) * 4;
         let j =0;
         while (j < length) {
@@ -298,7 +306,11 @@ gamemode2.prototype = {
             let op = this.operations[opIndex];
 
             let num1 = (nums[this.game.rnd.integerInRange(0, nums.length - 1)]);
-            let num2 = nums[this.game.rnd.integerInRange(0, (op === '-' ? num1 : nums.length)) - 1];
+            let num2 = null;
+            if(Globals.GradeSel < 4)
+                num2 = nums[this.game.rnd.integerInRange(0, (op === '-' ? num1 : nums.length)) - 1];
+            else
+                num2 = (nums[this.game.rnd.integerInRange(0, nums.length - 1)]);
             let den1 = 1;
             let den2 = 1;
             let fractionalAns = false;
@@ -337,7 +349,7 @@ gamemode2.prototype = {
 
             let tooMany = count > 2;
 
-            if (Globals.GradeSel !== 4 && (divByZero || fractionalAns || notInt || alreadyGenerated || tooMany)) {
+            if (Globals.GradeSel !== 4 && (fractionalAns || notInt || alreadyGenerated || tooMany) || result == NaN || divByZero) {
                 continue;
             } else {
                 j++
