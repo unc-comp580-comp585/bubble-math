@@ -160,7 +160,7 @@ tutorial.prototype = {
                 switch (Globals.ControlSel) {
                     case 0:
                         // Keyboard
-                        this.text += "Use the A and D keys to move around the circle and Space to select a bubble. ";
+                        this.text += "Use the left and right arrow keys to move around the circle and Space to select a bubble. ";
                         break;
                     case 1:
                         // Switch
@@ -169,7 +169,7 @@ tutorial.prototype = {
                     case 2:
                     case 3:
                         // Controller
-                        this.text += "Use the analog stick or the D Pad to move around the circle and press A to select a bubble. ";
+                        this.text += "Use the D Pad to move around the circle and press A to select a bubble. ";
                         break;
                 }
                 this.text += "If the answer on the bubble is right, it will pop.";
@@ -226,7 +226,7 @@ tutorial.prototype = {
                     switch (Globals.ControlSel) {
                         case 0:
                             // Keyboard
-                            this.text += "To increase or decrease the dictation rate, use the Q and E keys. ";
+                            this.text += "To increase or decrease the dictation rate, use the up and down arrow keys. ";
                             this.text += "To hear what all the bubbles are, press the F key. ";
                             this.text += "To hear the current bubble again, press the C key. ";
                             this.text += "To hear the current question, press the R key. ";
